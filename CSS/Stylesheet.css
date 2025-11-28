@@ -35,9 +35,9 @@ body {
     border-radius: 0.5cm;
     padding: 15px 32px;
     text-align: center;
-    text-decoration: none;
     display: inline-block;
     font-size: 16px;
+    color: aliceblue;
     box-shadow: 2cm;
     box-shadow: lavender;
 }
