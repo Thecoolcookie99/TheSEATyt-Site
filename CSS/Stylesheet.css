@@ -16,6 +16,13 @@ h2 {
     color: aliceblue;
 }
 
+h3 {
+    text-align: center;
+    padding-top: 5cm;
+    color: aliceblue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 
 body {
     height: 100%;
@@ -24,9 +31,18 @@ body {
 }
 
 .titlecard {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    align-self: center;
-    align-items: center;
-    align-content: center;
+    background-color: #6456ffbe;    
+    border-radius: 0.5cm;
+    padding: 15px 32px;
     text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    box-shadow: 2cm;
+    box-shadow: lavender;
+}
+
+.titlecard:hover {
+    box-shadow: 2cm;
+    box-shadow: rgb(154, 154, 255);
 }
