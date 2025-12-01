@@ -19,6 +19,7 @@ h2 {
 h3 {
     text-align: center;
     padding-top: 5cm;
+    size: 15cm;
     color: aliceblue;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -31,18 +32,22 @@ body {
 }
 
 .titlecard {
-    background-color: #6456ffbe;    
-    border-radius: 0.5cm;
-    padding: 15px 32px;
+    display: flex;
+    background-color: rgba(68, 46, 94, 0.641);
+    border: 2cm;
+    border-radius: 0.5cm;    
     text-align: center;
-    display: inline-block;
-    font-size: 16px;
+    padding: 0.8cm;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: aliceblue;
-    box-shadow: 2cm;
-    box-shadow: lavender;
+    width: 2cm;
+    justify-content: center;
+    justify-self: center;
+    outline-width: 0.2cm;
+    outline-color: aliceblue;
+    outline-style: outset;
 }
 
-.titlecard:hover {
-    box-shadow: 2cm;
-    box-shadow: rgb(154, 154, 255);
+.titlecard-boxes {
+    align-items: center;
 }
