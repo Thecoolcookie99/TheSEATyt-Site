@@ -1,30 +1,170 @@
-<html>
-<head>
-    <link rel="stylesheet" href="./CSS/Stylesheet.css">
-</head>
-<body>
-    <h1 class="heading">
-        Hello, I am theSEAT!
-    </h1>
-    <h2>
-        I am a learning developer and content creator who has an interest in tech.
-    </h2>
-    <h3>
-        What I am doing:
-    </h3> 
-    
-    <div class="titlecard-boxes">
-        <div class="titlecard">
-            <a>
-                Youtube
-            </a>
-        </div>
-        
-        <div class="titlecard">
-            <a>
-                Twitch
-            </a>
-        </div>
-    </div>
-</body>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>theSEAT — Developer & Creator</title>
+        <link rel="stylesheet" href="./css/stylesheet.css">
+    </head>
+    <body>
+        <header class="site-header surface" role="banner">
+            <div class="brand">
+                <div class="logo-placeholder" aria-hidden="true">TS</div>
+                <div>
+                    <div style="font-weight:800;color:var(--muted)">theSEAT</div>
+                    <div style="font-size:.78rem;color:rgba(255,255,255,0.7)">web · projects · creations</div>
+                </div>
+            </div>
+
+            <nav class="site-nav" role="navigation" aria-label="Main site links">
+                <a href="index.html">Home</a>
+                <a href="html/Projects/">Projects</a>
+                <a href="html/Youtube/Youtube.html">YouTube</a>
+                <a href="html/Skills/">Skills</a>
+                <a href="html/About.html">About</a>
+            </nav>
+        </header>
+
+        <main class="container">
+            <section class="surface" aria-labelledby="welcome">
+                <h1 id="welcome" class="heading">Welcome — I'm theSEAT</h1>
+                <p class="lead">A learning developer & content creator — I make tools, projects, and videos. Explore projects below, or open any page to learn more.</p>
+
+                <div class="titlecard" role="group" aria-label="theSEAT profile card" style="margin-top:1rem;">
+                    <div class="titlecard-avatar" aria-hidden="true"><img src="./assets/icons/about.svg" alt="site logo" style="width:60px;height:60px;object-fit:contain;"/></div>
+                    <div class="titlecard-meta">
+                        <div class="name">theSEAT — Dev & Creator</div>
+                        <div class="text">Focused on web projects, hardware tinkering, and sharing step-by-step learning.</div>
+                        <div class="titlecard-boxes">
+                            <a href="html/Projects/" class="cta">View all projects</a>
+                            <a href="html/Youtube/Youtube.html" class="cta ghost">Go to YouTube</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects grid -->
+            <section class="surface" aria-labelledby="projects-heading" style="margin-top:1.25rem;">
+                <h3 id="projects-heading">Projects</h3>
+                <div class="card-grid" id="projects-grid">
+                    <!-- Add project cards here -->
+                    <article class="card">
+                        <div class="flare"></div>
+                        <div class="card-head">
+                            <div class="card-icon"><img src="./assets/icons/casio.svg" alt="Casio icon"/></div>
+                            <div>
+                                <h4>Casio FX-82AU — Calculator hacking</h4>
+                                <p>Reverse-engineered and hacked the FX-82AU second edition. Guides & tooling.</p>
+                            </div>
+                        </div>
+                        <div class="meta">
+                            <a class="tag" href="html/Projects/casio-fx82au.html">Read</a>
+                        </div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head">
+                            <div class="card-icon"><img src="./assets/icons/napbypass.svg" alt="NapBypass icon"/></div>
+                            <div>
+                                <h4>NapBypass</h4>
+                                <p>How we bypassed and broke out of the browser sandbox.</p>
+                            </div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/napbypass.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/scratchsploit.svg" alt="ScratchSploit icon"/></div>
+                            <div><h4>ScratchSploit</h4><p>Scratch exploit extension and research notes.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/scratchsploit.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/youtube.svg" alt="YouTube icon"/></div>
+                            <div><h4>YouTube</h4><p>Notes and pages related to YouTube content and ideas.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Youtube/Youtube.html">Watch</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/scratch.svg" alt="Scratch projects icon"/></div>
+                            <div><h4>Scratch Projects</h4><p>Collection of Scratch projects and walkthroughs.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/scratch-projects.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/forgotten.svg" alt="Forgotten Archives icon"/></div>
+                            <div><h4>The Forgotten Archives</h4><p>An Undertale-inspired RPG — development notes & assets.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/forgotten-archives.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/cml.svg" alt="Chrome Music Lab icon"/></div>
+                            <div><h4>Chrome Music Lab Covers</h4><p>Music experiments built in the browser using CML.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/chrome-music-lab.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/userscripts.svg" alt="Userscripts icon"/></div>
+                            <div><h4>Userscripts</h4><p>Helpful userscripts for browser customisation.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/userscripts.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/vtubing.svg" alt="Vtubing icon"/></div>
+                            <div><h4>Vtubing</h4><p>Setup notes and utilities for Vtubing workflows.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/vtubing.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/discord.svg" alt="Discord Bots icon"/></div>
+                            <div><h4>Discord Bots</h4><p>Bot projects and code snippets for Discord.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/discord-bots.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/recommended.svg" alt="Recommended programs icon"/></div>
+                            <div><h4>Recommended Programs</h4><p>Tooling & software suggestions that I use and like.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/recommended-programs.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/interests.svg" alt="Interests icon"/></div>
+                            <div><h4>Interests</h4><p>Random interests and long-running explorations.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/Projects/interests.html">Read</a></div>
+                    </article>
+
+                    <article class="card">
+                        <div class="card-head"><div class="card-icon"><img src="./assets/icons/about.svg" alt="About icon"/></div>
+                            <div><h4>About me</h4><p>Short bio, contact and a link to a longer about page.</p></div>
+                        </div>
+                        <div class="meta"><a class="tag" href="html/About.html">Read</a></div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Ongoing projects -- >
+            <section class="surface" aria-labelledby="ongoing-heading" style="margin-top:1.25rem;">
+                <h3 id="ongoing-heading">Ongoing projects</h3>
+                <div class="card-grid" id="ongoing-grid">
+                    <article class="card"><div class="card-head"><div class="card-icon"><img src="./assets/icons/old-q550.svg" alt="Old Q550 icon"/></div><div><h4>Old Q550 tablet</h4><p>Retro tablet restoration and recovery.</p></div></div><div class="meta"><a class="tag" href="html/Projects/old-q550.html">Read</a></div></article>
+                    <article class="card"><div class="card-head"><div class="card-icon"><img src="./assets/icons/ps3.svg" alt="PS3 Jailbreak icon"/></div><div><h4>Jailbreaking PS3</h4><p>Notes about PS3 jailbreak & toolchains.</p></div></div><div class="meta"><a class="tag" href="html/Projects/ps3-jailbreak.html">Read</a></div></article>
+                    <article class="card"><div class="card-head"><div class="card-icon"><img src="./assets/icons/ivr.svg" alt="VR iVRy icon"/></div><div><h4>VR iVRy Setup</h4><p>VR setup documentation & tips with iVRy.</p></div></div><div class="meta"><a class="tag" href="html/Projects/ivr-setup.html">Read</a></div></article>
+                    <article class="card"><div class="card-head"><div class="card-icon"><img src="./assets/icons/badapple.svg" alt="Bad Apple icon"/></div><div><h4>Bad Apple on CD-G</h4><p>CD-Graphics port of the Bad Apple demo — experiments.</p></div></div><div class="meta"><a class="tag" href="html/Projects/badapple-cdg.html">Read</a></div></article>
+                </div>
+            </section>
+
+        </main>
+
+        <script src="./js/main.js"></script>
+    </body>
 </html>

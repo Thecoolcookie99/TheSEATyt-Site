@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs><linearGradient id="g13" x1="0" x2="1"><stop offset="0" stop-color="#ff6a00"/><stop offset="1" stop-color="#ff2e2e"/></linearGradient></defs>
+  <rect width="64" height="64" rx="12" fill="url(#g13)" />
+  <rect x="14" y="12" width="36" height="36" rx="4" fill="#111" />
+  <rect x="28" y="50" width="8" height="4" rx="1" fill="#111" />
+</svg>
