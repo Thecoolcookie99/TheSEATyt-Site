@@ -26,6 +26,14 @@
     --accent-yellow: #ffcf33;/* highlight yellow */
     --muted: #f6e9da;        /* warm readable text */
 
+    /* GREEN ACCENT */
+    --bg-1g: #060606;         /* almost black */
+    --bg-2g: #0a2b0c;         /* deep maroon */
+    --accentg: #31931f;       /* primary orange */
+    --accent-2g: #26fd00;     /* strong red */
+    --accent-yellowg: #00ff3c;/* highlight yellow */
+    --mutedg: #deffe1; 
+
     /* spacing / sizing */
     --radius: 0.65rem;
     --gutter: 1rem;
@@ -225,6 +233,19 @@ h3 {
     box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease;
 }
+
+.cta_green {
+    display: inline-block;
+    padding: .5rem 0.9rem;
+    border-radius: 8px;
+    background: linear-gradient(0deg,var(--accentg), var(--accent-2g));
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+}
+
 .cta:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.45); }
 .cta.ghost { background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.06); box-shadow: none; }
 .cta.ghost:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
