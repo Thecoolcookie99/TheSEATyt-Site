@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="../css/stylesheet.css">
   </head>
   <body>
-    <header class="site-header surface">
-      <div class="brand"><img class="logo-placeholder" src="../../assets/icons/theSEAT.png"></img><div><div style="font-weight:800;color:var(--muted)">theSEAT</div><div style="font-size:.78rem;color:rgba(255,255,255,0.7)">about</div></div></div>
-      <nav class="site-nav"><a href="../index.html">Home</a><a href="./Projects/">Projects</a></nav>
-    </header>
+    <div id="titlebar"></div>
+    <script>
+    fetch("/html/titlebar.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("titlebar").innerHTML = html);
+    </script>
 
     <main class="container">
       <article class="surface" style="margin-top:1rem;">
