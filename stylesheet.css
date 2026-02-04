@@ -17,14 +17,32 @@
     margin: auto
 }
 
-h2 {
+.top-text {
     font-size: 40px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
     display: flex;
-    margin: 4cm;
-    align-items: center;
+    position: fixed;
+    top: 50%;
     left: 50%;
+    transform: translate(-50%, -200%) translate(-3cm, 0cm);
+    white-space: nowrap;
+    text-wrap-mode: wrap;
+    margin-top: 1cm;
+}
+
+.bottom-text {
+    font-size: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgb(130, 130, 130);
+    display: flex;
+    position: fixed;
+    white-space: nowrap;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -200%) translate(2cm, 0cm);
+    text-wrap-mode: wrap;
+    margin-top: 3cm;
 }
 
 
