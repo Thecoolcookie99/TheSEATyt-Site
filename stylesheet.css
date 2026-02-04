@@ -2,12 +2,17 @@
     --primary: rgb(237, 137, 137);
     --primary-light: rgb(225, 43, 43);
     --primary-lighter: yellow;
-    --dark: rgb(56, 56, 56);
+    --dark: rgb(0, 0, 0);
     --darker: rgb(0, 0, 0);
-    --text: rgb(144, 144, 144);
+    --text: rgb(196, 196, 196);
     --heading: rgb(235, 235, 235);
     --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
  
+}
+
+.text {
+    color: var(--text);
+    font-family: var(--font);
 }
 
 *, *::before, *::after {
@@ -90,6 +95,10 @@ body {
     transform: translate(-50%, -200%) translate(2cm, 0cm);
     text-wrap-mode: wrap;
     margin-top: 3cm;
+}
+
+.Center {
+    transform: translateY(10px);
 }
 
 
