@@ -22,5 +22,56 @@
         </header>
         <h2 class='top-text'>Hello 👋, I am theSEAT!</h2>
         <h3 class="bottom-text">I enjoy creating content on youtube</h3>
+        <h3 class="heading-lower">
+            Projects & Creations
+        </h3>
+        <div class="card-grid">
+            <div class="card" tabindex="0">
+                <h4>Title</h4>
+                <h5>Description & content here also it should wrap around like thisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</h5>
+                <div class="card-extra" hidden>
+                    <p><strong>Title</strong> — This is extended information for the first card. You can add paragraphs, links, lists, and long content here. The modal will scroll this area independently while the background stays fixed.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.</p>
+                </div>
+            </div>
+            <div class="card" tabindex="0">
+                <h4>Title</h4>
+                <h5>Description & content here also it should wrap around like thisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</h5>
+                <div class="card-extra" hidden>
+                    <p><strong>Title</strong> — Second card extended details. This demonstrates content that will be displayed inside the modal and can be scrolled independently.</p>
+                    <p>More text: Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor.</p>
+                </div>
+            </div>
+            <div class="card" tabindex="0">
+                <h4>Title</h4>
+                <h5>Description & content here also it should wrap around like thisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</h5>
+                <div class="card-extra" hidden>
+                    <p><strong>Title</strong> — Third card extended description: use this area to add demos, links, or long descriptions that require scrolling in the dialog.</p>
+                    <p>More: Pellentesque nibh. Aenean quam. In scelerisque sem at dolor.</p>
+                </div>
+            </div>
+            <div class="card" tabindex="0">
+                <h4>Title</h4>
+                <h5>Description & content here also it should wrap around like thisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</h5>
+                <div class="card-extra" hidden>
+                    <p><strong>Title</strong> — Fourth card extended notes. Add anything from release notes to long-form descriptions. The modal will let the user read and scroll this content.</p>
+                    <p>Extra: Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-hidden="true">
+            <div class="modal" role="document">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Details</h3>
+                    <button id="modalClose" class="modal-close" aria-label="Close dialog">&times;</button>
+                </div>
+                <div id="modalContent" class="modal-content" tabindex="0">
+                    <p>Extra content will appear here when you click a card.</p>
+                </div>
+            </div>
+        </div>
+
+        <script src="./js/modal.js"></script>
     </body>
 </html>
