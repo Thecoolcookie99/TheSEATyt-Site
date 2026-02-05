@@ -65,6 +65,21 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.setProperty('--g-angle', angle + 'deg');
     });
 
+  // logo click opens modal with larger image
+  const logo = document.querySelector('.theSEAT');
+  if (logo) {
+    logo.addEventListener('click', () => {
+      const imgHtml = '<img src="./assets/the-mysterious-archives-BETA.png" alt="theSEAT logo" style="max-width:100%;height:auto;">';
+      openModal('You found the secret image!', imgHtml, logo);
+    });
+    logo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        logo.click();
+      }
+    });
+  }
+
     card.addEventListener('pointerleave', () => {
       card.style.setProperty('--g-angle', defaultAngle + 'deg');
     });
