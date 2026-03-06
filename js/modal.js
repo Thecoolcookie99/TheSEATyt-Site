@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+  var theme = "orange";
   const cards = document.querySelectorAll('.card');
   const overlay = document.getElementById('modalOverlay');
   const modalTitle = document.getElementById('modalTitle');
   const modalContent = document.getElementById('modalContent');
   const closeBtn = document.getElementById('modalClose');
+  const logo = document.querySelector('.theSEAT');
   let lastFocused = null;
 
   function openModal(title, content, trigger) {
@@ -17,6 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.focus();
     document.addEventListener('keydown', onKeyDown);
   }
+
+  function changeImage() {
+    const body = document.body;
+    const logoImg = document.querySelector('.theSEAT');
+
+    if (theme === "green") {
+      body.style.setProperty('--bg-url', 'url("./green.svg")');
+      if (logoImg) logoImg.src = './assets/icons/theSEAT_Green.png';
+    } else {
+      body.style.setProperty('--bg-url', 'url("./regular.svg")');
+      if (logoImg) logoImg.src = './assets/icons/theSEAT.png';
+    }
+  }
+
 
   function closeModal() {
     overlay.classList.add('hidden');
@@ -69,14 +85,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const logo = document.querySelector('.theSEAT');
   if (logo) {
     logo.addEventListener('click', () => {
-      const imgHtml = '<img src="./assets/the-mysterious-archives-BETA.png" alt="theSEAT logo" style="max-width:100%;height:auto;">';
-      openModal('You found the secret image!', imgHtml, logo);
-    });
-    logo.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        logo.click();
+      if (theme === "orange") {
+        theme = "green";
+        document.documentElement.style.setProperty('--primary', 'rgb(85, 255, 213)');
+        document.documentElement.style.setProperty('--primary-light', 'rgb(0, 255, 195)');
+        document.documentElement.style.setProperty('--primary-lighter', 'rgb(0, 255, 76)');
+        document.documentElement.style.setProperty('--dark', 'black');
+        document.documentElement.style.setProperty('--darker', 'black');
+        document.documentElement.style.setProperty('--text', 'rgb(196,196,196)');
+        document.documentElement.style.setProperty('--heading', 'rgb(235,235,235)');
+        document.documentElement.style.setProperty('--font', "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif");
+      } else {
+        theme = "orange";
+        document.documentElement.style.setProperty('--primary', 'rgb(255, 121, 121)');
+        document.documentElement.style.setProperty('--primary-light', 'rgb(225,43,43)');
+        document.documentElement.style.setProperty('--primary-lighter', 'yellow');
+        document.documentElement.style.setProperty('--dark', 'black');
+        document.documentElement.style.setProperty('--darker', 'black');
+        document.documentElement.style.setProperty('--text', 'rgb(196,196,196)');
+        document.documentElement.style.setProperty('--heading', 'rgb(235,235,235)');
+        document.documentElement.style.setProperty('--font', "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif");
       }
+      changeImage();
     });
   }
 

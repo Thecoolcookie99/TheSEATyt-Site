@@ -1,5 +1,5 @@
 :root {
-    --primary: rgb(237,137,137);
+    --primary: rgb(255, 121, 121);
     --primary-light: rgb(225,43,43);
     --primary-lighter: yellow;
 
@@ -34,16 +34,14 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    filter: blur(500px), saturate(10);
+    filter: blur(10px), saturate(10);
     background:
         black
-        url("./svg (1).svg")
+        var(--bg-url, url("./regular.svg"))
         center
         / cover
         no-repeat;
-
     z-index: -1;
-    
 }
 
 /* base text */
@@ -63,7 +61,7 @@ body::before {
     align-items: center;
     justify-content: space-between;
 
-    width: min(520px, 90%);
+    width: min(400px, 90%);
     height: 70px;
 
     margin: auto;
@@ -139,8 +137,6 @@ body::before {
 
     text-align: center;
 }
-
-/* misc */
 
 .Center {
     transform: translateY(10px);
