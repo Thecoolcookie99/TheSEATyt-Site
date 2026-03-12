@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logo = document.querySelector('.theSEAT');
     let lastFocused = null;
 
-    // Page entrance
+    
     setTimeout(() => {
         document.body.classList.add('loaded');
     }, 80);
