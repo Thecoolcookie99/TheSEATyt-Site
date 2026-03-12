@@ -81,27 +81,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Card tilt effect 
-    card.addEventListener('pointerleave', () => {
-      card.style.setProperty('--g-angle', defaultAngle + 'deg');
-    });
+    // Card interactions — apply to EVERY card
+    cards.forEach(card => {
+        // Card tilt effect 
+        card.addEventListener('pointerleave', () => {
+            card.style.setProperty('--g-angle', defaultAngle + 'deg');
+        });
 
-    card.addEventListener('click', () => {
-      const title = card.querySelector('h4')?.textContent || 'Details';
-      const extraEl = card.querySelector('.card-extra');
-      const extra = extraEl ? extraEl.innerHTML : '<p>No extra info.</p>';
-      openModal(title, extra, card);
-    });
+        card.addEventListener('click', () => {
+            const title = card.querySelector('h4')?.textContent || 'Details';
+            const extraEl = card.querySelector('.card-extra');
+            const extra = extraEl ? extraEl.innerHTML : '<p>No extra info.</p>';
+            openModal(title, extra, card);
+        });
 
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
-      }
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeModal();
     });
-    }),
     closeBtn.addEventListener('click', closeModal);
 });
