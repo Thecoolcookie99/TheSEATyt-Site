@@ -1,0 +1,15 @@
+{
+  "name": "My Fullscreen App",
+  "short_name": "MyApp",
+  "start_url": "/html/testpage.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
