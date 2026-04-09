@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truth or Dare Wheel</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 30px;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 380px;
+      height: 380px;
+      margin: 0 auto 40px;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        #22c55e 0deg 180deg,
+        #ef4444 180deg 360deg   
+      );
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4),
+                  inset 0 8px 20px rgba(255,255,255,0.3),
+                  inset 0 -8px 20px rgba(0,0,0,0.3);
+      transition: transform 4.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+      position: relative;
+      transform: rotate(-90deg);
+    }
+
+    .wheel::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85px;
+      height: 85px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    .label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 2.6rem;
+      font-weight: bold;
+      text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.7);
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      user-select: none;
+    }
+
+    .yes-label {
+      left: 80%;
+      color: white;
+    }
+
+    .no-label {
+      left: 20%;
+      color: white;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 38px solid transparent;
+      border-right: 38px solid transparent;
+      border-top: 75px solid #facc15;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+      z-index: 30;
+    } 
+
+    button {
+      padding: 16px 52px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: #facc15;
+      color: #1f2937;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    button:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result {
+      margin-top: 35px;
+      font-size: 3rem;
+      font-weight: bold;
+      min-height: 100px;
+      text-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Truth or Dare Wheel</h1>
+    
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel">
+        <div class="label yes-label">TRUTH</div>
+        <div class="label no-label">DARE</div>
+      </div>
+    </div>
+
+    <button id="spinBtn">SPIN THE WHEEL</button>
+    
+    <div class="result" id="result">Click SPIN to decide!</div>
+  </div>
+
+  <script>
+    const wheel = document.getElementById('wheel');
+    const spinBtn = document.getElementById('spinBtn');
+    const resultDiv = document.getElementById('result');
+    let isSpinning = false;
+
+    // ================== WEBHOOK CONFIG ==================
+    const WEBHOOK_URL = "https://webhook.site/282ed656-0333-4eaa-935e-1d4b38898d3b"; // ← CHANGE THIS
+
+    async function sendToWebhook(result) {
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            result: result,
+            game: "Truth or Dare Wheel",
+            // You can add more data here (username, room, etc.)
+          })
+        });
+        console.log(`✅ Webhook sent: ${result}`);
+      } catch (error) {
+        console.error("Failed to send webhook:", error);
+      }
+    }
+
+    function spin() {
+      if (isSpinning) return;
+      
+      isSpinning = true;
+      spinBtn.disabled = true;
+      resultDiv.textContent = '';
+
+      // Send webhook immediately when button is pressed
+      sendToWebhook("SPIN_STARTED");
+
+      const extraSpins = Math.floor(Math.random() * 6) + 5;
+      const randomAngle = Math.random() * 360;
+      const rotation = extraSpins * 360 + randomAngle;
+
+      wheel.style.transition = 'none';
+      wheel.style.transform = `rotate(-90deg)`;
+      
+      void wheel.offsetHeight;
+
+      wheel.style.transition = 'transform 4.2s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      wheel.style.transform = `rotate(${rotation - 90}deg)`;
+
+      setTimeout(() => {
+        const finalAngle = ((rotation % 360) + 90) % 360;
+        const result = finalAngle < 180 ? "TRUTH" : "DARE";
+        
+        resultDiv.style.color = result === "TRUTH" ? "#22c55e" : "#ef4444";
+        resultDiv.textContent = result + "!";
+
+        // Send final result to webhook
+        sendToWebhook(result);
+
+        isSpinning = false;
+        spinBtn.disabled = false;
+      }, 4300);
+    }
+
+    spinBtn.addEventListener('click', spin);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' && !isSpinning) {
+        e.preventDefault();
+        spin();
+      }
+    });
+  </script>
+</body>
+</html>
