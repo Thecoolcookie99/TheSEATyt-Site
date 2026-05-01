@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hex Character Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background: #1e1e1e;
+        padding: 20px;
+        border-radius: 10px;
+        width: 320px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+    h2 {
+        text-align: center;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .output {
+        margin-top: 10px;
+        padding: 10px;
+        background: #333;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 18px;
+        min-height: 24px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hex ↔ Character</h2>
+
+    <input id="charInput" maxlength="1" placeholder="Enter a character">
+    <div class="output" id="hexOutput">Hex: --</div>
+
+    <input id="hexInput" maxlength="2" placeholder="Enter hex (00-FF)">
+    <input id="charOutput" readonly placeholder="Character output">
+</div>
+
+<script>
+const charInput = document.getElementById('charInput');
+const hexInput = document.getElementById('hexInput');
+
+const hexOutput = document.getElementById('hexOutput');
+const charOutput = document.getElementById('charOutput');
+
+charInput.addEventListener('input', () => {
+    const char = charInput.value;
+    if (char.length === 0) {
+        hexOutput.textContent = 'Hex: --';
+        return;
+    }
+
+    const code = char.charCodeAt(0);
+
+    if (code > 255) {
+        hexOutput.textContent = 'Out of range (00–FF only)';
+        return;
+    }
+
+    const hex = code.toString(16).toUpperCase().padStart(2, '0');
+    hexOutput.textContent = 'Hex: ' + hex;
+});
+
+hexInput.addEventListener('input', () => {
+    let hex = hexInput.value.toUpperCase();
+
+    if (!/^[0-9A-F]{1,2}$/.test(hex)) {
+        charOutput.value = '';
+        return;
+    }
+
+    const code = parseInt(hex, 16);
+
+    if (code > 255) {
+        charOutput.value = '';
+        return;
+    }
+
+    const char = String.fromCharCode(code);
+    charOutput.value = char;
+});
+</script>
+
+</body>
+</html>
