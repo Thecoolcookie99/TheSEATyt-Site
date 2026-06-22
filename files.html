@@ -2,211 +2,66 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>B2 File Manager</title>
+  <title>B2 Cloudflare File Manager</title>
 </head>
 <body>
-  <h2>Backblaze B2 File Manager</h2>
 
-  <div id="login">
-    <p>Enter password to unlock API key:</p>
-    <input type="password" id="password" />
-    <button onclick="unlock()">Unlock</button>
-  </div>
+<h2>B2 File Manager</h2>
 
-  <div id="app" style="display:none;">
-    <h3>Upload File</h3>
-    <input type="file" id="fileInput" />
-    <button onclick="uploadFile()">Upload</button>
+<div id="app">
+  <button onclick="init()">Connect</button>
 
-    <h3>Files</h3>
-    <button onclick="listFiles()">Refresh</button>
-    <ul id="fileList"></ul>
-  </div>
+  <br><br>
+
+  <input type="file" id="fileInput">
+  <button onclick="upload()">Upload</button>
+
+  <h3>Files</h3>
+  <button onclick="listFiles()">Refresh</button>
+  <ul id="files"></ul>
+</div>
 
 <script>
-// ===============================
-// ENCRYPTED CONFIG
-// ===============================
-const CONFIG = {
-  keyIdEnc: "surh95sCBWfU49qWDyLDnOB8o1ai/8goyyktTA==",
-  saltID: "MxMMY4sGA2lrlLqiTZaUbw==",
-  ivID: "lYS2JSdKoMZQySVF",
 
-  appKeyEnc: "xTTvPDtsb4v3Fo59Tkhj6LNEVKtLTwHBt4LD/TbWn2zv3fpTtulYFBMZmB+eVSTSHdf4BgRsa5AWww==",
-  saltKEY: "cDs0XofoUYBZy3uz5H8beg==",
-  ivKEY: "dTP9K97PPODKjxcF"
-};
+let state = null;
 
-// ===============================
-// STATE
-// ===============================
-let authToken = null;
-let apiUrl = null;
-let bucketId = null;
-let bucketName = null;
-
-// ===============================
-// CRYPTO
-// ===============================
-async function deriveKey(password, salt) {
-  const enc = new TextEncoder();
-
-  const baseKey = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveKey"]
-  );
-
-  return crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt,
-      iterations: 100000,
-      hash: "SHA-256"
-    },
-    baseKey,
-    { name: "AES-GCM", length: 256 },
-    false,
-    ["decrypt"]
-  );
+// ------------------- INIT -------------------
+async function init() {
+  const res = await fetch("/api/auth");
+  state = await res.json();
+  alert("Connected!");
 }
 
-async function decryptData(password, dataB64, saltB64, ivB64) {
-  const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
-  const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
-  const data = Uint8Array.from(atob(dataB64), c => c.charCodeAt(0));
-
-  const key = await deriveKey(password, salt);
-
-  const decrypted = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
-    key,
-    data
-  );
-
-  return new TextDecoder().decode(decrypted);
-}
-
-// ===============================
-// UNLOCK
-// ===============================
-async function unlock() {
-  const password = document.getElementById("password").value;
-
-  try {
-    const keyId = await decryptData(
-      password,
-      CONFIG.keyIdEnc,
-      CONFIG.saltID,
-      CONFIG.ivID
-    );
-
-    const appKey = await decryptData(
-      password,
-      CONFIG.appKeyEnc,
-      CONFIG.saltKEY,
-      CONFIG.ivKEY
-    );
-
-    await authorizeB2(keyId, appKey);
-
-    document.getElementById("login").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    await listFiles();
-  } catch (e) {
-    alert("Unlock failed: " + e.message);
-    console.error(e);
-  }
-}
-
-// ===============================
-// AUTH
-// ===============================
-async function authorizeB2(keyId, appKey) {
-  const res = await fetch("https://api.backblazeb2.com/b2api/v2/b2_authorize_account", {
-    headers: {
-      "Authorization": "Basic " + btoa(keyId + ":" + appKey)
-    }
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) throw new Error(data.message || "Auth failed");
-
-  authToken = data.authorizationToken;
-  apiUrl = data.apiUrl;
-
-  bucketId = data.allowed.bucketId;
-  bucketName = data.allowed.bucketName;
-
-  if (!bucketName) {
-    throw new Error("Bucket name not available. Use a restricted key or set bucketName manually.");
-  }
-}
-
-// ===============================
-// LIST FILES
-// ===============================
+// ------------------- LIST -------------------
 async function listFiles() {
-  const res = await fetch(apiUrl + "/b2api/v2/b2_list_file_names", {
+  const res = await fetch("/api/files", {
     method: "POST",
-    headers: {
-      Authorization: authToken,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      bucketId,
-      maxFileCount: 100
-    })
+    body: JSON.stringify(state)
   });
 
   const data = await res.json();
 
-  if (!res.ok) {
-    alert(data.message || "Failed to list files");
-    return;
-  }
-
-  const list = document.getElementById("fileList");
+  const list = document.getElementById("files");
   list.innerHTML = "";
 
-  data.files.forEach(file => {
+  data.files.forEach(f => {
     const li = document.createElement("li");
-
-    const a = document.createElement("a");
-    a.textContent = file.fileName;
-    a.href = "#";
-    a.onclick = () => downloadFile(file.fileName);
-
-    li.appendChild(a);
+    li.textContent = f.fileName;
     list.appendChild(li);
   });
 }
 
-// ===============================
-// UPLOAD FILE
-// ===============================
-async function uploadFile() {
+// ------------------- UPLOAD -------------------
+async function upload() {
   const file = document.getElementById("fileInput").files[0];
-  if (!file) return alert("No file selected");
+  if (!file) return;
 
-  const uploadUrlRes = await fetch(apiUrl + "/b2api/v2/b2_get_upload_url", {
+  const up = await fetch("/api/upload-url", {
     method: "POST",
-    headers: {
-      Authorization: authToken,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ bucketId })
+    body: JSON.stringify(state)
   });
 
-  const uploadData = await uploadUrlRes.json();
-  if (!uploadUrlRes.ok) {
-    alert(uploadData.message || "Upload URL error");
-    return;
-  }
+  const uploadData = await up.json();
 
   const buffer = await file.arrayBuffer();
 
@@ -225,31 +80,7 @@ async function uploadFile() {
   listFiles();
 }
 
-// ===============================
-// DOWNLOAD FILE
-// ===============================
-async function downloadFile(fileName) {
-  const res = await fetch(
-    apiUrl +
-    "/b2api/v2/b2_get_download_url_by_name?bucketName=" +
-    encodeURIComponent(bucketName) +
-    "&fileName=" +
-    encodeURIComponent(fileName),
-    {
-      headers: { Authorization: authToken }
-    }
-  );
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data.message || "Download failed");
-    return;
-  }
-
-  window.open(data.downloadUrl);
-}
-
 </script>
+
 </body>
 </html>
