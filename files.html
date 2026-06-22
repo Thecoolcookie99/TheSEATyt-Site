@@ -25,22 +25,32 @@
 
 <script>
 // ===============================
-// ENCRYPTED CONFIG PLACEHOLDER
+// ENCRYPTED CONFIG
 // ===============================
-
-// Replace these with your own encrypted values
 const CONFIG = {
-  keyIdEnc: "REPLACE_ME",
-  appKeyEnc: "REPLACE_ME",
-  salt: "REPLACE_ME_BASE64",
-  iv: "REPLACE_ME_BASE64"
+  keyIdEnc: "surh95sCBWfU49qWDyLDnOB8o1ai/8goyyktTA==",
+  saltID: "MxMMY4sGA2lrlLqiTZaUbw==",
+  ivID: "lYS2JSdKoMZQySVF",
+
+  appKeyEnc: "xTTvPDtsb4v3Fo59Tkhj6LNEVKtLTwHBt4LD/TbWn2zv3fpTtulYFBMZmB+eVSTSHdf4BgRsa5AWww==",
+  saltKEY: "cDs0XofoUYBZy3uz5H8beg==",
+  ivKEY: "dTP9K97PPODKjxcF"
 };
 
 // ===============================
-// CRYPTO HELPERS
+// STATE
+// ===============================
+let authToken = null;
+let apiUrl = null;
+let bucketId = null;
+let bucketName = null;
+
+// ===============================
+// CRYPTO
 // ===============================
 async function deriveKey(password, salt) {
   const enc = new TextEncoder();
+
   const baseKey = await crypto.subtle.importKey(
     "raw",
     enc.encode(password),
@@ -52,7 +62,7 @@ async function deriveKey(password, salt) {
   return crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: salt,
+      salt,
       iterations: 100000,
       hash: "SHA-256"
     },
@@ -66,9 +76,9 @@ async function deriveKey(password, salt) {
 async function decryptData(password, dataB64, saltB64, ivB64) {
   const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
   const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
-  const key = await deriveKey(password, salt);
-
   const data = Uint8Array.from(atob(dataB64), c => c.charCodeAt(0));
+
+  const key = await deriveKey(password, salt);
 
   const decrypted = await crypto.subtle.decrypt(
     { name: "AES-GCM", iv },
@@ -80,28 +90,35 @@ async function decryptData(password, dataB64, saltB64, ivB64) {
 }
 
 // ===============================
-// BACKBLAZE STATE
-// ===============================
-let authToken = null;
-let apiUrl = null;
-let bucketId = null;
-
-// ===============================
 // UNLOCK
 // ===============================
 async function unlock() {
   const password = document.getElementById("password").value;
 
   try {
-    const keyId = await decryptData(password, CONFIG.keyIdEnc, CONFIG.salt, CONFIG.iv);
-    const appKey = await decryptData(password, CONFIG.appKeyEnc, CONFIG.salt, CONFIG.iv);
+    const keyId = await decryptData(
+      password,
+      CONFIG.keyIdEnc,
+      CONFIG.saltID,
+      CONFIG.ivID
+    );
+
+    const appKey = await decryptData(
+      password,
+      CONFIG.appKeyEnc,
+      CONFIG.saltKEY,
+      CONFIG.ivKEY
+    );
 
     await authorizeB2(keyId, appKey);
 
     document.getElementById("login").style.display = "none";
     document.getElementById("app").style.display = "block";
+
+    await listFiles();
   } catch (e) {
-    alert("Failed to unlock: " + e);
+    alert("Unlock failed: " + e.message);
+    console.error(e);
   }
 }
 
@@ -117,11 +134,17 @@ async function authorizeB2(keyId, appKey) {
 
   const data = await res.json();
 
+  if (!res.ok) throw new Error(data.message || "Auth failed");
+
   authToken = data.authorizationToken;
   apiUrl = data.apiUrl;
-  bucketId = data.allowed.bucketId;
 
-  console.log("Authorized");
+  bucketId = data.allowed.bucketId;
+  bucketName = data.allowed.bucketName;
+
+  if (!bucketName) {
+    throw new Error("Bucket name not available. Use a restricted key or set bucketName manually.");
+  }
 }
 
 // ===============================
@@ -135,12 +158,17 @@ async function listFiles() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      bucketId: bucketId,
+      bucketId,
       maxFileCount: 100
     })
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Failed to list files");
+    return;
+  }
 
   const list = document.getElementById("fileList");
   list.innerHTML = "";
@@ -165,21 +193,22 @@ async function uploadFile() {
   const file = document.getElementById("fileInput").files[0];
   if (!file) return alert("No file selected");
 
-  // Get upload URL
   const uploadUrlRes = await fetch(apiUrl + "/b2api/v2/b2_get_upload_url", {
     method: "POST",
     headers: {
       Authorization: authToken,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      bucketId: bucketId
-    })
+    body: JSON.stringify({ bucketId })
   });
 
   const uploadData = await uploadUrlRes.json();
+  if (!uploadUrlRes.ok) {
+    alert(uploadData.message || "Upload URL error");
+    return;
+  }
 
-  const arrayBuffer = await file.arrayBuffer();
+  const buffer = await file.arrayBuffer();
 
   await fetch(uploadData.uploadUrl, {
     method: "POST",
@@ -189,7 +218,7 @@ async function uploadFile() {
       "Content-Type": file.type || "b2/auto",
       "X-Bz-Content-Sha1": "do_not_verify"
     },
-    body: arrayBuffer
+    body: buffer
   });
 
   alert("Uploaded!");
@@ -200,11 +229,23 @@ async function uploadFile() {
 // DOWNLOAD FILE
 // ===============================
 async function downloadFile(fileName) {
-  const res = await fetch(apiUrl + "/b2api/v2/b2_get_download_url_by_name?bucketName=theSEAT&fileName=" + encodeURIComponent(fileName), {
-    headers: { Authorization: authToken }
-  });
+  const res = await fetch(
+    apiUrl +
+    "/b2api/v2/b2_get_download_url_by_name?bucketName=" +
+    encodeURIComponent(bucketName) +
+    "&fileName=" +
+    encodeURIComponent(fileName),
+    {
+      headers: { Authorization: authToken }
+    }
+  );
 
   const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Download failed");
+    return;
+  }
 
   window.open(data.downloadUrl);
 }
