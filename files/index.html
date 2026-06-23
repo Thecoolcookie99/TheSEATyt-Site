@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2 Upload</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <svg class="logo-flame" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2C14 2 6 9 6 16a8 8 0 0016 0C22 9 14 2 14 2z" fill="#FF6600"/>
+      <path d="M14 10c0 0-4 3.5-4 6a4 4 0 008 0C18 13.5 14 10 14 10z" fill="#FFB347"/>
+    </svg>
+    <span class="logo-text">Backblaze B2</span>
+  </div>
+  <div class="endpoint-badge">s3.us-east-005.backblazeb2.com</div>
+  <h1>Upload files to <span>B2</span></h1>
+</header>
+
+<div class="card">
+
+  <div class="grid-2">
+    <div class="field">
+      <label>Bucket Name</label>
+      <input type="text" id="bucket" placeholder="my-bucket" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label>Region</label>
+      <input type="text" id="region" value="us-east-005" autocomplete="off" />
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="field">
+      <label>Key ID (Access Key)</label>
+      <input type="text" id="keyId" placeholder="00xxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="field-hint">B2 Application Key ID</div>
+    </div>
+    <div class="field">
+      <label>Application Key (Secret)</label>
+      <input type="password" id="appKey" placeholder="K00xxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="field-hint">B2 Application Key</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="options-row">
+    <label class="toggle-label">
+      <input type="checkbox" id="publicAcl" />
+      Public-read ACL
+    </label>
+    <label class="toggle-label">
+      Folder prefix:
+      <input type="text" class="prefix-field" id="prefix" placeholder="uploads/" />
+    </label>
+  </div>
+
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" multiple />
+    <div class="drop-icon">📂</div>
+    <div class="drop-label">Drop files here or click to browse</div>
+    <div class="drop-sub">Any file type · Multiple files supported</div>
+  </div>
+
+  <div id="file-list"></div>
+
+  <button class="btn-upload" id="uploadBtn" disabled>Upload to B2</button>
+
+  <div id="log"></div>
+  <div id="summary"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+/**theseat, 00564b3b529b7ba0000000001, 00502e14c39c1249359f3787daa9aed8f24248551f**/
