@@ -1,14 +1,14 @@
 async function sha1(buffer) {
   const hash = await crypto.subtle.digest("SHA-1", buffer);
   return [...new Uint8Array(hash)]
-    .map(b => b.toString(16).padStart(2, "0"))
+    .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
   });
 }
 
@@ -17,50 +17,39 @@ export async function onRequestPost({ request, env }) {
     const form = await request.formData();
     const file = form.get("file");
 
-    if (!file) {
-      return json({ error: "No file uploaded" }, 400);
+    if (!file) return json({ error: "No file uploaded" }, 400);
+    if (!env.B2_KEY_ID || !env.B2_APP_KEY || !env.B2_BUCKET_ID) {
+      return json({ error: "Missing B2 env vars" }, 500);
     }
 
-    // AUTH
     const auth = btoa(`${env.B2_KEY_ID}:${env.B2_APP_KEY}`);
 
     const authResp = await fetch(
       "https://api.backblazeb2.com/b2api/v3/b2_authorize_account",
       {
-        headers: { Authorization: `Basic ${auth}` }
+        headers: { Authorization: `Basic ${auth}` },
       }
     );
-
     const authData = await authResp.json();
-
-    if (!authResp.ok) {
-      return json({ error: "Auth failed", authData }, 500);
-    }
+    if (!authResp.ok) return json({ error: "Auth failed", authData }, 500);
 
     const apiUrl = authData.apiInfo.storageApi.apiUrl;
     const authToken = authData.authorizationToken;
-    const bucketId = env.B2_BUCKET_ID;
 
-    // UPLOAD URL
-    const uploadUrlResp = await fetch(
-      `${apiUrl}/b2api/v3/b2_get_upload_url`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: authToken,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ bucketId })
-      }
-    );
+    const uploadUrlResp = await fetch(`${apiUrl}/b2api/v3/b2_get_upload_url`, {
+      method: "POST",
+      headers: {
+        Authorization: authToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bucketId: env.B2_BUCKET_ID }),
+    });
 
     const uploadData = await uploadUrlResp.json();
-
     if (!uploadUrlResp.ok) {
       return json({ error: "Upload URL failed", uploadData }, 500);
     }
 
-    // FILE
     const buffer = await file.arrayBuffer();
     const fileSha1 = await sha1(buffer);
 
@@ -70,13 +59,12 @@ export async function onRequestPost({ request, env }) {
         Authorization: uploadData.authorizationToken,
         "X-Bz-File-Name": encodeURIComponent(file.name),
         "Content-Type": "application/octet-stream",
-        "X-Bz-Content-Sha1": fileSha1
+        "X-Bz-Content-Sha1": fileSha1,
       },
-      body: buffer
+      body: buffer,
     });
 
     const resultText = await uploadResp.text();
-
     let result;
     try {
       result = JSON.parse(resultText);
@@ -84,26 +72,15 @@ export async function onRequestPost({ request, env }) {
       return json({ error: "Invalid B2 response", raw: resultText }, 500);
     }
 
-    if (!uploadResp.ok) {
-      return json({ error: "Upload failed", result }, 500);
-    }
-
-    // FIXED DOWNLOAD URL (fileId-based)
-    const downloadUrl =
-      `${authData.apiInfo.storageApi.downloadUrl}` +
-      `/b2api/v1/b2_download_file_by_id?fileId=${result.fileId}`;
+    if (!uploadResp.ok) return json({ error: "Upload failed", result }, 500);
 
     return json({
       success: true,
       fileId: result.fileId,
       fileName: file.name,
-      downloadUrl
+      downloadUrl: `/download?fileId=${encodeURIComponent(result.fileId)}&name=${encodeURIComponent(file.name)}`,
     });
-
   } catch (err) {
-    return json({
-      error: err.message,
-      stack: err.stack
-    }, 500);
+    return json({ error: err.message, stack: err.stack }, 500);
   }
 }

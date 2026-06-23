@@ -1,119 +1,238 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>B2 File Manager</title>
-
-<style>
-body {
-  font-family: Arial;
-  max-width: 900px;
-  margin: 40px auto;
-}
-
-.card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-}
-
-.file {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-small { color: #666; }
-
-button { padding: 8px 12px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2 File Manager</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+      --ok: #059669;
+      --danger: #dc2626;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p.sub { margin: 0 0 24px; color: var(--muted); }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    input[type="file"] {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+    button, .btn {
+      appearance: none;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button:hover, .btn:hover { background: var(--accent2); }
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .secondary:hover { background: #d1d5db; }
+    .status { margin-top: 12px; color: var(--muted); white-space: pre-wrap; }
+    .list { display: grid; gap: 10px; margin-top: 12px; }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .meta { min-width: 0; }
+    .name { font-weight: 700; word-break: break-word; }
+    .small { color: var(--muted); font-size: 0.9rem; margin-top: 3px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .empty { color: var(--muted); padding: 14px 2px; }
+    @media (max-width: 640px) {
+      .item { flex-direction: column; align-items: stretch; }
+      .actions { justify-content: flex-start; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <h1>Backblaze B2 File Manager</h1>
+    <p class="sub">Upload files, browse the bucket, and download through your Cloudflare Pages backend.</p>
 
-<h1>📦 B2 File Manager</h1>
-
-<div class="card">
-  <h3>Upload</h3>
-  <input type="file" id="file">
-  <button onclick="upload()">Upload</button>
-  <p id="status"></p>
-</div>
-
-<div class="card">
-  <h3>Files</h3>
-  <button onclick="loadFiles()">Refresh</button>
-  <div id="files"></div>
-</div>
-
-<script>
-const status = document.getElementById("status");
-const filesDiv = document.getElementById("files");
-
-async function upload() {
-  const file = document.getElementById("file").files[0];
-  if (!file) return alert("Select a file");
-
-  status.textContent = "Uploading...";
-
-  const form = new FormData();
-  form.append("file", file);
-
-  const res = await fetch("/upload", {
-    method: "POST",
-    body: form
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    status.textContent = "Upload failed";
-    console.log(data);
-    return;
-  }
-
-  status.textContent = "Uploaded: " + data.fileName;
-
-  loadFiles();
-}
-
-async function loadFiles() {
-  filesDiv.innerHTML = "Loading...";
-
-  const res = await fetch("/list");
-  const data = await res.json();
-
-  if (!res.ok) {
-    filesDiv.innerHTML = "Error loading files";
-    return;
-  }
-
-  filesDiv.innerHTML = "";
-
-  data.files.reverse().forEach(file => {
-    const div = document.createElement("div");
-    div.className = "file";
-
-    div.innerHTML = `
-      <div>
-        <b>${file.name}</b><br>
-        <small>${(file.size / 1024).toFixed(1)} KB</small>
+    <div class="grid">
+      <div class="card">
+        <h2 style="margin-top:0">Upload</h2>
+        <div class="row">
+          <input type="file" id="fileInput" />
+          <button id="uploadBtn">Upload</button>
+          <button id="refreshBtn" class="secondary">Refresh list</button>
+        </div>
+        <div id="uploadStatus" class="status"></div>
       </div>
-      <div>
-        <a href="${file.downloadUrl}" target="_blank">
-          Download
-        </a>
+
+      <div class="card">
+        <h2 style="margin-top:0">Files</h2>
+        <div id="files" class="list"></div>
       </div>
-    `;
+    </div>
+  </div>
 
-    filesDiv.appendChild(div);
-  });
-}
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const filesEl = document.getElementById("files");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
 
-loadFiles();
-</script>
+    function fmtSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      const units = ["KB", "MB", "GB", "TB"];
+      let size = bytes / 1024;
+      let i = 0;
+      while (size >= 1024 && i < units.length - 1) {
+        size /= 1024;
+        i++;
+      }
+      return `${size.toFixed(1)} ${units[i]}`;
+    }
 
+    function fmtDate(ts) {
+      return new Date(Number(ts)).toLocaleString();
+    }
+
+    async function upload() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Choose a file first.");
+        return;
+      }
+
+      uploadStatus.textContent = "Uploading...";
+      uploadBtn.disabled = true;
+
+      try {
+        const form = new FormData();
+        form.append("file", file);
+
+        const res = await fetch("/upload", {
+          method: "POST",
+          body: form,
+        });
+
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(text || "Server returned non-JSON response");
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || "Upload failed");
+        }
+
+        uploadStatus.textContent = `Uploaded: ${data.fileName}`;
+        fileInput.value = "";
+        await loadFiles();
+      } catch (err) {
+        uploadStatus.textContent = `ERROR:\n${err.message}`;
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    }
+
+    async function loadFiles() {
+      filesEl.innerHTML = `<div class="empty">Loading...</div>`;
+
+      try {
+        const res = await fetch("/list");
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to load files");
+        }
+
+        const files = data.files || [];
+        if (!files.length) {
+          filesEl.innerHTML = `<div class="empty">No files found.</div>`;
+          return;
+        }
+
+        filesEl.innerHTML = "";
+        for (const file of files) {
+          const item = document.createElement("div");
+          item.className = "item";
+          item.innerHTML = `
+            <div class="meta">
+              <div class="name">${escapeHtml(file.name)}</div>
+              <div class="small">${fmtSize(file.size)} • ${fmtDate(file.uploaded)}</div>
+            </div>
+            <div class="actions">
+              <a class="btn" href="${file.downloadUrl}">Download</a>
+            </div>
+          `;
+          filesEl.appendChild(item);
+        }
+      } catch (err) {
+        filesEl.innerHTML = `<div class="empty" style="color: var(--danger);">ERROR: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    uploadBtn.addEventListener("click", upload);
+    refreshBtn.addEventListener("click", loadFiles);
+
+    loadFiles();
+  </script>
 </body>
 </html>
