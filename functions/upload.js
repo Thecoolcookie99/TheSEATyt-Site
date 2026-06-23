@@ -5,7 +5,7 @@ async function sha1(buffer) {
     .join("");
 }
 
-function safeJSON(data, status = 200) {
+function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
     headers: {
@@ -20,50 +20,39 @@ export async function onRequestPost({ request, env }) {
     const file = form.get("file");
 
     if (!file) {
-      return safeJSON({ error: "No file provided" }, 400);
+      return json({ error: "No file uploaded" }, 400);
     }
 
+    // 1. Authorize with Backblaze
     const auth = btoa(`${env.B2_KEY_ID}:${env.B2_APP_KEY}`);
 
     const authResp = await fetch(
       "https://api.backblazeb2.com/b2api/v3/b2_authorize_account",
       {
-        headers: { Authorization: `Basic ${auth}` }
+        headers: {
+          Authorization: `Basic ${auth}`
+        }
       }
     );
 
     const authData = await authResp.json();
 
     if (!authResp.ok) {
-      return safeJSON({ error: "Auth failed", authData }, 500);
+      return json({ error: "Auth failed", authData }, 500);
     }
 
     const apiUrl = authData.apiInfo.storageApi.apiUrl;
     const authToken = authData.authorizationToken;
 
-    const bucketResp = await fetch(
-      `${apiUrl}/b2api/v3/b2_list_buckets`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: authToken,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ accountId: authData.accountId })
-      }
-    );
+    // 2. DIRECT bucket ID (FIXED)
+    const bucketId = env.B2_BUCKET_ID;
 
-    const bucketData = await bucketResp.json();
-
-    const bucket = bucketData.buckets.find(
-      b => b.bucketName === env.B2_BUCKET
-    );
-
-    if (!bucket) {
-      return safeJSON({ error: "Bucket not found" }, 404);
+    if (!bucketId) {
+      return json({ error: "Missing B2_BUCKET_ID env var" }, 500);
     }
 
-    const uploadResp = await fetch(
+    // 3. Get upload URL
+    const uploadUrlResp = await fetch(
       `${apiUrl}/b2api/v3/b2_get_upload_url`,
       {
         method: "POST",
@@ -71,16 +60,21 @@ export async function onRequestPost({ request, env }) {
           Authorization: authToken,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ bucketId: bucket.bucketId })
+        body: JSON.stringify({ bucketId })
       }
     );
 
-    const uploadData = await uploadResp.json();
+    const uploadData = await uploadUrlResp.json();
 
-    const fileBuffer = await file.arrayBuffer();
-    const fileSha1 = await sha1(fileBuffer);
+    if (!uploadUrlResp.ok) {
+      return json({ error: "Upload URL failed", uploadData }, 500);
+    }
 
-    const uploadFileResp = await fetch(uploadData.uploadUrl, {
+    // 4. Upload file
+    const buffer = await file.arrayBuffer();
+    const fileSha1 = await sha1(buffer);
+
+    const uploadResp = await fetch(uploadData.uploadUrl, {
       method: "POST",
       headers: {
         Authorization: uploadData.authorizationToken,
@@ -88,36 +82,41 @@ export async function onRequestPost({ request, env }) {
         "Content-Type": "application/octet-stream",
         "X-Bz-Content-Sha1": fileSha1
       },
-      body: fileBuffer
+      body: buffer
     });
 
-    const resultText = await uploadFileResp.text();
+    const resultText = await uploadResp.text();
 
     let result;
     try {
       result = JSON.parse(resultText);
     } catch {
-      return safeJSON({
-        error: "Upload response not JSON",
-        raw: resultText
-      }, 500);
+      return json(
+        {
+          error: "Invalid upload response",
+          raw: resultText
+        },
+        500
+      );
     }
 
-    if (!uploadFileResp.ok) {
-      return safeJSON({ error: "Upload failed", result }, 500);
+    if (!uploadResp.ok) {
+      return json({ error: "Upload failed", result }, 500);
     }
 
+    // 5. Public URL
     const url =
       `https://f000.backblazeb2.com/file/${env.B2_BUCKET}/${encodeURIComponent(file.name)}`;
 
-    return safeJSON({
+    return json({
       success: true,
       fileId: result.fileId,
+      fileName: file.name,
       url
     });
 
   } catch (err) {
-    return safeJSON({
+    return json({
       error: err.message,
       stack: err.stack
     }, 500);
