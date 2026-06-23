@@ -8,9 +8,7 @@ async function sha1(buffer) {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: {
-      "Content-Type": "application/json"
-    }
+    headers: { "Content-Type": "application/json" }
   });
 }
 
@@ -23,15 +21,13 @@ export async function onRequestPost({ request, env }) {
       return json({ error: "No file uploaded" }, 400);
     }
 
-    // 1. Authorize with Backblaze
+    // AUTH
     const auth = btoa(`${env.B2_KEY_ID}:${env.B2_APP_KEY}`);
 
     const authResp = await fetch(
       "https://api.backblazeb2.com/b2api/v3/b2_authorize_account",
       {
-        headers: {
-          Authorization: `Basic ${auth}`
-        }
+        headers: { Authorization: `Basic ${auth}` }
       }
     );
 
@@ -43,15 +39,9 @@ export async function onRequestPost({ request, env }) {
 
     const apiUrl = authData.apiInfo.storageApi.apiUrl;
     const authToken = authData.authorizationToken;
-
-    // 2. DIRECT bucket ID (FIXED)
     const bucketId = env.B2_BUCKET_ID;
 
-    if (!bucketId) {
-      return json({ error: "Missing B2_BUCKET_ID env var" }, 500);
-    }
-
-    // 3. Get upload URL
+    // UPLOAD URL
     const uploadUrlResp = await fetch(
       `${apiUrl}/b2api/v3/b2_get_upload_url`,
       {
@@ -70,7 +60,7 @@ export async function onRequestPost({ request, env }) {
       return json({ error: "Upload URL failed", uploadData }, 500);
     }
 
-    // 4. Upload file
+    // FILE
     const buffer = await file.arrayBuffer();
     const fileSha1 = await sha1(buffer);
 
@@ -91,28 +81,23 @@ export async function onRequestPost({ request, env }) {
     try {
       result = JSON.parse(resultText);
     } catch {
-      return json(
-        {
-          error: "Invalid upload response",
-          raw: resultText
-        },
-        500
-      );
+      return json({ error: "Invalid B2 response", raw: resultText }, 500);
     }
 
     if (!uploadResp.ok) {
       return json({ error: "Upload failed", result }, 500);
     }
 
-    // 5. Public URL
-    const url =
-      `https://f000.backblazeb2.com/file/${env.B2_BUCKET}/${encodeURIComponent(file.name)}`;
+    // FIXED DOWNLOAD URL (fileId-based)
+    const downloadUrl =
+      `${authData.apiInfo.storageApi.downloadUrl}` +
+      `/b2api/v1/b2_download_file_by_id?fileId=${result.fileId}`;
 
     return json({
       success: true,
       fileId: result.fileId,
       fileName: file.name,
-      url
+      downloadUrl
     });
 
   } catch (err) {

@@ -9,54 +9,37 @@ body {
   font-family: Arial;
   max-width: 900px;
   margin: 40px auto;
-  background: #0f0f0f;
-  color: #eee;
 }
 
 .card {
-  background: #1a1a1a;
+  border: 1px solid #ddd;
   padding: 15px;
-  border-radius: 10px;
   margin-bottom: 20px;
-}
-
-input, button {
-  padding: 10px;
-  margin: 5px 0;
-}
-
-button {
-  cursor: pointer;
+  border-radius: 10px;
 }
 
 .file {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #eee;
 }
 
-a {
-  color: #4da3ff;
-  text-decoration: none;
-}
+small { color: #666; }
 
-small {
-  color: #aaa;
-}
+button { padding: 8px 12px; }
 </style>
 </head>
 
 <body>
 
-<h1>📦 Backblaze File Manager</h1>
+<h1>📦 B2 File Manager</h1>
 
 <div class="card">
-  <h3>Upload File</h3>
+  <h3>Upload</h3>
   <input type="file" id="file">
-  <br>
   <button onclick="upload()">Upload</button>
-  <p id="uploadStatus"></p>
+  <p id="status"></p>
 </div>
 
 <div class="card">
@@ -66,15 +49,14 @@ small {
 </div>
 
 <script>
-const uploadStatus = document.getElementById("uploadStatus");
+const status = document.getElementById("status");
 const filesDiv = document.getElementById("files");
 
 async function upload() {
   const file = document.getElementById("file").files[0];
-
   if (!file) return alert("Select a file");
 
-  uploadStatus.textContent = "Uploading...";
+  status.textContent = "Uploading...";
 
   const form = new FormData();
   form.append("file", file);
@@ -87,12 +69,12 @@ async function upload() {
   const data = await res.json();
 
   if (!res.ok) {
-    uploadStatus.textContent = "Error uploading";
+    status.textContent = "Upload failed";
     console.log(data);
     return;
   }
 
-  uploadStatus.textContent = "Uploaded: " + data.url;
+  status.textContent = "Uploaded: " + data.fileName;
 
   loadFiles();
 }
@@ -104,7 +86,7 @@ async function loadFiles() {
   const data = await res.json();
 
   if (!res.ok) {
-    filesDiv.innerHTML = "Failed to load files";
+    filesDiv.innerHTML = "Error loading files";
     return;
   }
 
@@ -120,7 +102,9 @@ async function loadFiles() {
         <small>${(file.size / 1024).toFixed(1)} KB</small>
       </div>
       <div>
-        <a href="${file.url}" target="_blank">Download</a>
+        <a href="${file.downloadUrl}" target="_blank">
+          Download
+        </a>
       </div>
     `;
 

@@ -5,9 +5,7 @@ export async function onRequestGet({ env }) {
     const authResp = await fetch(
       "https://api.backblazeb2.com/b2api/v3/b2_authorize_account",
       {
-        headers: {
-          Authorization: `Basic ${auth}`
-        }
+        headers: { Authorization: `Basic ${auth}` }
       }
     );
 
@@ -15,11 +13,10 @@ export async function onRequestGet({ env }) {
 
     const apiUrl = authData.apiInfo.storageApi.apiUrl;
     const authToken = authData.authorizationToken;
-
     const bucketId = env.B2_BUCKET_ID;
 
     const resp = await fetch(
-      `${apiUrl}/b2api/v3/b2_list_file_names`,
+      `${apiUrl}/b2api/v3/b2_list_file_versions`,
       {
         method: "POST",
         headers: {
@@ -36,10 +33,14 @@ export async function onRequestGet({ env }) {
     const data = await resp.json();
 
     const files = (data.files || []).map(f => ({
+      fileId: f.fileId,
       name: f.fileName,
       size: f.contentLength,
       uploaded: f.uploadTimestamp,
-      url: `https://f000.backblazeb2.com/file/${env.B2_BUCKET}/${f.fileName}`
+
+      downloadUrl:
+        `${authData.apiInfo.storageApi.downloadUrl}` +
+        `/b2api/v1/b2_download_file_by_id?fileId=${f.fileId}`
     }));
 
     return Response.json({ files });
