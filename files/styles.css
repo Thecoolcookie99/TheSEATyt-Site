@@ -1,0 +1,118 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --ok: #059669;
+  --danger: #dc2626;
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+h1 { margin: 0 0 8px; font-size: 2rem; }
+p.sub { margin: 0 0 24px; color: var(--muted); }
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+input[type="file"] {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+button, .btn {
+  appearance: none;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+button:hover, .btn:hover { background: var(--accent2); }
+.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+.secondary:hover { background: #d1d5db; }
+.status { margin-top: 12px; color: var(--muted); white-space: pre-wrap; }
+.list { display: grid; gap: 10px; margin-top: 12px; }
+.item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+.meta { min-width: 0; }
+.name { font-weight: 700; word-break: break-word; }
+.small { color: var(--muted); font-size: 0.9rem; margin-top: 3px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.empty { color: var(--muted); padding: 14px 2px; }
+@media (max-width: 640px) {
+  .item { flex-direction: column; align-items: stretch; }
+  .actions { justify-content: flex-start; }
+}
+
+/* Password overlay styles */
+#pwOverlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+}
+.pw-box {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  width: 360px;
+  max-width: 92%;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.pw-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.pw-actions { display:flex; gap:8px; justify-content:center; margin-top:12px; }
+.pw-error { color: var(--danger); margin-top:8px; display:none; }
