@@ -6,6 +6,7 @@ const filesEl = document.getElementById("files");
 const uploadBtn = document.getElementById("uploadBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 let currentPath = ""; // e.g. "folder/subfolder/"
+let initialized = false;
 
 function fmtSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -322,6 +323,8 @@ function fileIconDataUrl(name) {
 }
 
 function init() {
+  if (initialized) return;
+  initialized = true;
   uploadBtn.addEventListener("click", upload);
   refreshBtn.addEventListener("click", loadFiles);
   loadFiles();
