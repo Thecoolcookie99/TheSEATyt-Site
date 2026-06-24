@@ -5,6 +5,7 @@ const uploadStatus = document.getElementById("uploadStatus");
 const filesEl = document.getElementById("files");
 const uploadBtn = document.getElementById("uploadBtn");
 const refreshBtn = document.getElementById("refreshBtn");
+let currentPath = ""; // e.g. "folder/subfolder/"
 
 function fmtSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -91,12 +92,101 @@ async function loadFiles() {
       return;
     }
 
-    filesEl.innerHTML = "";
+    // Build directory view for currentPath
+    const dirs = new Set();
+    const shownFiles = [];
     for (const file of files) {
-      const item = document.createElement("div");
-      item.className = "item";
+      const name = file.name || '';
+      if (!name.startsWith(currentPath)) continue;
+      const rest = name.slice(currentPath.length).replace(/^\//, '');
+      if (!rest) continue;
+      const parts = rest.split('/');
+      if (parts.length > 1) {
+        dirs.add(parts[0]);
+      } else {
+        shownFiles.push(file);
+      }
+    }
 
-      // Meta
+    filesEl.innerHTML = "";
+    // Breadcrumb
+    const bc = document.createElement('div');
+    bc.style.marginBottom = '8px';
+    bc.className = 'breadcrumb';
+    function renderBreadcrumb() {
+      bc.innerHTML = '';
+      const rootBtn = document.createElement('button');
+      rootBtn.className = 'btn secondary';
+      rootBtn.textContent = 'Root';
+      rootBtn.addEventListener('click', () => { currentPath = ''; loadFiles(); });
+      bc.appendChild(rootBtn);
+      if (!currentPath) { filesEl.insertAdjacentElement('beforebegin', bc); return; }
+      const segs = currentPath.replace(/\/$/, '').split('/');
+      let acc = '';
+      for (let i = 0; i < segs.length; i++) {
+        acc += segs[i] + '/';
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.style.marginLeft = '8px';
+        btn.textContent = segs[i];
+        btn.addEventListener('click', () => { currentPath = acc; loadFiles(); });
+        bc.appendChild(btn);
+      }
+      filesEl.insertAdjacentElement('beforebegin', bc);
+    }
+
+    renderBreadcrumb();
+
+    // Render directories first
+    const dirList = Array.from(dirs).sort();
+    for (const d of dirList) {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.style.display = 'flex';
+      meta.style.gap = '12px';
+      meta.style.alignItems = 'center';
+
+      const img = document.createElement('img');
+      img.className = 'fileicon';
+      img.src = `data:image/svg+xml;utf8,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h3l2 2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z' fill='%23e6f0ff' stroke='%232563eb'/></svg>")}`;
+      img.alt = 'folder';
+      img.width = 36; img.height = 36;
+
+      const info = document.createElement('div');
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'name';
+      nameDiv.textContent = d + '/';
+      nameDiv.style.cursor = 'pointer';
+      nameDiv.addEventListener('click', () => { currentPath = currentPath + d + '/'; loadFiles(); });
+      const smallDiv = document.createElement('div');
+      smallDiv.className = 'small';
+      smallDiv.textContent = 'Folder';
+
+      info.appendChild(nameDiv);
+      info.appendChild(smallDiv);
+      meta.appendChild(img);
+      meta.appendChild(info);
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      const openBtn = document.createElement('button');
+      openBtn.className = 'btn';
+      openBtn.textContent = 'Open';
+      openBtn.addEventListener('click', () => { currentPath = currentPath + d + '/'; loadFiles(); });
+      actions.appendChild(openBtn);
+
+      item.appendChild(meta);
+      item.appendChild(actions);
+      filesEl.appendChild(item);
+    }
+
+    // Render files in this directory
+    for (const file of shownFiles.sort((a,b)=> (a.name||'').localeCompare(b.name||''))) {
+      const item = document.createElement('div');
+      item.className = 'item';
+
       const meta = document.createElement('div');
       meta.className = 'meta';
       meta.style.display = 'flex';
@@ -112,7 +202,8 @@ async function loadFiles() {
       const info = document.createElement('div');
       const nameDiv = document.createElement('div');
       nameDiv.className = 'name';
-      nameDiv.textContent = file.name;
+      const baseName = file.name.replace(/^.*\//, '');
+      nameDiv.textContent = baseName;
       const smallDiv = document.createElement('div');
       smallDiv.className = 'small';
       smallDiv.textContent = `${fmtSize(file.size)} • ${fmtDate(file.uploaded)}`;
@@ -122,7 +213,6 @@ async function loadFiles() {
       meta.appendChild(img);
       meta.appendChild(info);
 
-      // Actions
       const actions = document.createElement('div');
       actions.className = 'actions';
 
