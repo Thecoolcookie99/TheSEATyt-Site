@@ -95,108 +95,86 @@ async function loadFiles() {
     for (const file of files) {
       const item = document.createElement("div");
       item.className = "item";
-            item.innerHTML = `
-            <div class="meta" style="display:flex;gap:12px;align-items:center;">
-              <img class="fileicon" src="${fileIconDataUrl(file.name)}" alt="icon" width="36" height="36" />
-              <div>
-                <div class="name">${escapeHtml(file.name)}</div>
-                <div class="small">${fmtSize(file.size)} • ${fmtDate(file.uploaded)}</div>
-              </div>
-            </div>
-            <div class="actions">
-              <button class="btn downloadBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Download</button>
-              <button id="share-${encodeURIComponent(file.fileId)}" class="btn shareBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Share</button>
-              <button class="btn secondary deleteBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Delete</button>
-            </div>
-          `;
+
+      // Meta
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.style.display = 'flex';
+      meta.style.gap = '12px';
+      meta.style.alignItems = 'center';
+
+      const img = document.createElement('img');
+      img.className = 'fileicon';
+      img.src = fileIconDataUrl(file.name);
+      img.alt = 'icon';
+      img.width = 36; img.height = 36;
+
+      const info = document.createElement('div');
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'name';
+      nameDiv.textContent = file.name;
+      const smallDiv = document.createElement('div');
+      smallDiv.className = 'small';
+      smallDiv.textContent = `${fmtSize(file.size)} • ${fmtDate(file.uploaded)}`;
+
+      info.appendChild(nameDiv);
+      info.appendChild(smallDiv);
+      meta.appendChild(img);
+      meta.appendChild(info);
+
+      // Actions
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      const dlBtn = document.createElement('button');
+      dlBtn.className = 'btn';
+      dlBtn.textContent = 'Download';
+      dlBtn.addEventListener('click', () => downloadFile(file.fileId, file.name));
+
+      const shareBtn = document.createElement('button');
+      shareBtn.className = 'btn shareBtn';
+      shareBtn.textContent = 'Share';
+      shareBtn.addEventListener('click', async () => {
+        const hours = prompt(`How long should "${file.name}" be available?\nEnter hours (e.g. 1, 6, 24):`, '1');
+        if (!hours) return;
+        const duration = parseInt(hours, 10);
+        if (isNaN(duration) || duration <= 0) { alert('Invalid duration'); return; }
+        try {
+          const pw = localStorage.getItem('files_password') || '';
+          const res = await fetch('/share', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Files-Password': pw },
+            body: JSON.stringify({ fileId: file.fileId, fileName: file.name, durationSeconds: duration * 3600 })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) { if (res.status === 401) { localStorage.removeItem('files_password'); showOverlay(); return; } throw new Error(data.error || 'Share failed'); }
+          await navigator.clipboard.writeText(data.url);
+          alert(`Share link copied!\n\n${data.url}`);
+        } catch (err) { alert('Share error: ' + err.message); }
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn secondary';
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', async () => {
+        if (!confirm(`Delete "${file.name}"? This cannot be undone.`)) return;
+        try {
+          const pw = localStorage.getItem('files_password') || '';
+          const res = await fetch('/delete', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Files-Password': pw }, body: JSON.stringify({ fileId: file.fileId, fileName: file.name }) });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) { if (res.status === 401) { localStorage.removeItem('files_password'); showOverlay(); return; } throw new Error(data.error || 'Delete failed'); }
+          await loadFiles();
+        } catch (err) { alert('Delete error: ' + err.message); }
+      });
+
+      actions.appendChild(dlBtn);
+      actions.appendChild(shareBtn);
+      actions.appendChild(delBtn);
+
+      item.appendChild(meta);
+      item.appendChild(actions);
       filesEl.appendChild(item);
     }
-    // Attach download handlers
-    document.querySelectorAll('.downloadBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = decodeURIComponent(btn.dataset.id);
-        const name = decodeURIComponent(btn.dataset.name);
-        downloadFile(id, name);
-      });
-    });
-      // Attach delete handlers
-      document.querySelectorAll('.deleteBtn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = decodeURIComponent(btn.dataset.id);
-          const name = decodeURIComponent(btn.dataset.name);
-          if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-          try {
-            const pw = localStorage.getItem('files_password') || '';
-            const res = await fetch('/delete', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'X-Files-Password': pw },
-              body: JSON.stringify({ fileId: id, fileName: name })
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-              if (res.status === 401) { localStorage.removeItem('files_password'); showOverlay(); return; }
-              throw new Error(data.error || 'Delete failed');
-            }
-            await loadFiles();
-          } catch (err) {
-            alert('Delete error: ' + err.message);
-          }
-        });
-      });
-      document.querySelectorAll('.shareBtn').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    const fileId = decodeURIComponent(btn.dataset.id);
-    const fileName = decodeURIComponent(btn.dataset.name);
-
-    const hours = prompt(
-      `How long should "${fileName}" be available?\nEnter hours (e.g. 1, 6, 24):`,
-      "1"
-    );
-
-    if (!hours) return;
-
-    const duration = parseInt(hours, 10);
-    if (isNaN(duration) || duration <= 0) {
-      alert("Invalid duration");
-      return;
-    }
-
-    try {
-      const pw = localStorage.getItem('files_password') || '';
-
-      const res = await fetch('/share', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Files-Password': pw
-        },
-        body: JSON.stringify({
-          fileId,
-          fileName,
-          durationSeconds: duration * 3600
-        })
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          localStorage.removeItem('files_password');
-          showOverlay();
-          return;
-        }
-        throw new Error(data.error || 'Share failed');
-      }
-
-      await navigator.clipboard.writeText(data.url);
-
-      alert(`Share link copied!\n\n${data.url}`);
-
-    } catch (err) {
-      alert('Share error: ' + err.message);
-    }
-  });
-});
   } catch (err) {
     filesEl.innerHTML = `<div class="empty" style="color: var(--danger);">ERROR: ${escapeHtml(err.message)}</div>`;
   }
