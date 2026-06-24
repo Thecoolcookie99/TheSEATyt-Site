@@ -159,6 +159,7 @@ async function loadFiles() {
       const div = document.createElement("div");
       div.className = "item";
 
+      // ADDED: <button class="btn secondary">Share</button> inside .actions
       div.innerHTML = `
         <div class="meta">
           <div>
@@ -168,13 +169,48 @@ async function loadFiles() {
         </div>
         <div class="actions">
           <button class="btn">Download</button>
-          <button class="btn">Delete</button>
+          <button class="btn secondary share-btn">Share</button>
+          <button class="btn danger-btn">Delete</button>
         </div>
       `;
 
-      const [dl, del] = div.querySelectorAll("button");
+      const [dl, share, del] = div.querySelectorAll("button");
 
       dl.onclick = () => downloadFile(f.fileId, f.name);
+
+      // ADDED: Share button click logic
+      share.onclick = async () => {
+        share.disabled = true;
+        share.textContent = "Sharing...";
+        try {
+          const pw = localStorage.getItem("files_password") || "";
+          
+          // Assumes this function is mapped to /api/share or similar backend endpoint
+          const res = await fetch("/share", { 
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Files-Password": pw
+            },
+            body: JSON.stringify({ 
+              fileId: f.fileId, 
+              durationSeconds: 86400 // Link valid for 24 hours
+            })
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Failed to generate share link");
+
+          // Copy the link to clipboard and notify the user
+          await navigator.clipboard.writeText(data.url);
+          alert("Signed download link copied to clipboard! (Valid for 24 hours)");
+        } catch (e) {
+          alert("Error: " + e.message);
+        } finally {
+          share.disabled = false;
+          share.textContent = "Share";
+        }
+      };
 
       del.onclick = async () => {
         if (!confirm("Delete file?")) return;

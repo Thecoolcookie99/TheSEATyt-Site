@@ -125,3 +125,11 @@ button:hover { background: var(--accent2); }
   color: var(--danger);
   margin-top: 8px;
 }
+
+.danger-btn {
+  background: var(--danger);
+  color: white;
+}
+.danger-btn:hover {
+  background: #b91c1c; /* Slightly darker red on hover */
+}
