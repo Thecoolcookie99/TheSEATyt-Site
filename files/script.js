@@ -109,7 +109,8 @@ async function loadFiles() {
     }
 
     filesEl.innerHTML = "";
-    // Breadcrumb
+    // Breadcrumb: remove any existing breadcrumb to avoid duplicates
+    document.querySelectorAll('.breadcrumb').forEach((el) => el.remove());
     const bc = document.createElement('div');
     bc.style.marginBottom = '8px';
     bc.className = 'breadcrumb';
