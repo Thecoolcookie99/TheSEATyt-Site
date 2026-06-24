@@ -105,6 +105,7 @@ async function loadFiles() {
             </div>
             <div class="actions">
               <button class="btn downloadBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Download</button>
+              <button id="share-${encodeURIComponent(file.fileId)}" class="btn shareBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Share</button>
               <button class="btn secondary deleteBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Delete</button>
             </div>
           `;

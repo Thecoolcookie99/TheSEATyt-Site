@@ -47,7 +47,7 @@ export async function onRequestPost({ request, env }) {
 
   // 2. Create download authorization
   const auth2 = await fetch(
-    `${authData.apiInfo.apiUrl}/b2api/v3/b2_get_download_authorization`,
+    `${authData.apiInfo.storageApi.apiUrl}/b2api/v3/b2_get_download_authorization`,
     {
       method: "POST",
       headers: {
@@ -68,7 +68,31 @@ export async function onRequestPost({ request, env }) {
     return new Response(JSON.stringify(auth2Data), { status: 500 });
   }
 
-  const url = `${authData.apiInfo.downloadUrl}/file/${env.B2_BUCKET_NAME}/${encodeURIComponent(fileName)}?Authorization=${auth2Data.authorizationToken}`;
+  const downloadBase = authData.apiInfo.storageApi.downloadUrl || authData.apiInfo.downloadUrl;
+  // Resolve bucket name if not set in env
+  let bucketName = env.B2_BUCKET_NAME;
+  if (!bucketName) {
+    try {
+      const listResp = await fetch(`${authData.apiInfo.storageApi.apiUrl}/b2api/v3/b2_list_buckets`, {
+        method: 'POST',
+        headers: { Authorization: authData.authorizationToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId: authData.accountId })
+      });
+      const listData = await listResp.json();
+      if (listResp.ok && Array.isArray(listData.buckets)) {
+        const b = listData.buckets.find(x => x.bucketId === env.B2_BUCKET_ID);
+        if (b) bucketName = b.bucketName;
+      }
+    } catch (e) {
+      // ignore and fallback
+    }
+  }
+
+  if (!bucketName) {
+    return new Response(JSON.stringify({ error: 'Bucket name not available' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  const url = `${downloadBase}/file/${bucketName}/${encodeURIComponent(fileName)}?Authorization=${auth2Data.authorizationToken}`;
 
   return new Response(JSON.stringify({ url }), {
     headers: { "Content-Type": "application/json" }
