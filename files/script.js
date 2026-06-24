@@ -142,6 +142,60 @@ async function loadFiles() {
           }
         });
       });
+      document.querySelectorAll('.shareBtn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const fileId = decodeURIComponent(btn.dataset.id);
+    const fileName = decodeURIComponent(btn.dataset.name);
+
+    const hours = prompt(
+      `How long should "${fileName}" be available?\nEnter hours (e.g. 1, 6, 24):`,
+      "1"
+    );
+
+    if (!hours) return;
+
+    const duration = parseInt(hours, 10);
+    if (isNaN(duration) || duration <= 0) {
+      alert("Invalid duration");
+      return;
+    }
+
+    try {
+      const pw = localStorage.getItem('files_password') || '';
+
+      const res = await fetch('/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Files-Password': pw
+        },
+        body: JSON.stringify({
+          fileId,
+          fileName,
+          durationSeconds: duration * 3600
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('files_password');
+          showOverlay();
+          return;
+        }
+        throw new Error(data.error || 'Share failed');
+      }
+
+      await navigator.clipboard.writeText(data.url);
+
+      alert(`Share link copied!\n\n${data.url}`);
+
+    } catch (err) {
+      alert('Share error: ' + err.message);
+    }
+  });
+});
   } catch (err) {
     filesEl.innerHTML = `<div class="empty" style="color: var(--danger);">ERROR: ${escapeHtml(err.message)}</div>`;
   }
