@@ -95,15 +95,19 @@ async function loadFiles() {
     for (const file of files) {
       const item = document.createElement("div");
       item.className = "item";
-        item.innerHTML = `
-        <div class="meta">
-          <div class="name">${escapeHtml(file.name)}</div>
-          <div class="small">${fmtSize(file.size)} • ${fmtDate(file.uploaded)}</div>
-        </div>
-        <div class="actions">
-          <button class="btn downloadBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Download</button>
-        </div>
-      `;
+            item.innerHTML = `
+            <div class="meta" style="display:flex;gap:12px;align-items:center;">
+              <img class="fileicon" src="${fileIconDataUrl(file.name)}" alt="icon" width="36" height="36" />
+              <div>
+                <div class="name">${escapeHtml(file.name)}</div>
+                <div class="small">${fmtSize(file.size)} • ${fmtDate(file.uploaded)}</div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn downloadBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Download</button>
+              <button class="btn secondary deleteBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Delete</button>
+            </div>
+          `;
       filesEl.appendChild(item);
     }
     // Attach download handlers
@@ -114,6 +118,30 @@ async function loadFiles() {
         downloadFile(id, name);
       });
     });
+      // Attach delete handlers
+      document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = decodeURIComponent(btn.dataset.id);
+          const name = decodeURIComponent(btn.dataset.name);
+          if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+          try {
+            const pw = localStorage.getItem('files_password') || '';
+            const res = await fetch('/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Files-Password': pw },
+              body: JSON.stringify({ fileId: id, fileName: name })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              if (res.status === 401) { localStorage.removeItem('files_password'); showOverlay(); return; }
+              throw new Error(data.error || 'Delete failed');
+            }
+            await loadFiles();
+          } catch (err) {
+            alert('Delete error: ' + err.message);
+          }
+        });
+      });
   } catch (err) {
     filesEl.innerHTML = `<div class="empty" style="color: var(--danger);">ERROR: ${escapeHtml(err.message)}</div>`;
   }
@@ -154,6 +182,19 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function fileIconDataUrl(name) {
+  const ext = (name || '').split('.').pop().toLowerCase();
+  const imageExts = ['png','jpg','jpeg','gif','webp','bmp','svg'];
+  if (imageExts.includes(ext)) {
+    // simple image icon (green)
+    return `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2' fill='%23e6f0ff' stroke='%232563eb'/><circle cx='8.5' cy='8.5' r='1.5' fill='%232563eb'/><path d='M21 15l-5-5L9 21' stroke='%232563eb' stroke-width='1.2' fill='none'/></svg>`)} `;
+  }
+  // generic file icon (gray)
+  return `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2' fill='%23f3f4f6' stroke='%236b7280'/><path d='M8 7h8M8 12h8M8 17h5' stroke='%236b7280'/></svg>`)} `;
 }
 
 function init() {
