@@ -89,6 +89,13 @@ button:hover { background: var(--accent2); }
 
 .meta { display: flex; gap: 12px; align-items: center; }
 
+/* ensure meta can shrink so actions remain visible */
+.item { align-items: center; }
+.meta { flex: 1 1 auto; min-width: 0; }
+.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; }
+
+.actions { display: flex; gap: 8px; flex-wrap: nowrap; align-items: center; flex: 0 0 auto; }
+
 .name { font-weight: 700; }
 .small { color: var(--muted); font-size: 0.85rem; }
 
@@ -133,3 +140,8 @@ button:hover { background: var(--accent2); }
 .danger-btn:hover {
   background: #b91c1c; /* Slightly darker red on hover */
 }
+
+/* path bar */
+.pathBar { margin-bottom: 6px; }
+.pathBar .small { margin-left: 6px; }
+.secondary[disabled], .secondary:disabled { opacity: 0.55; cursor: not-allowed; }

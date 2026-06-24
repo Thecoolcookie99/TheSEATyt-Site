@@ -48,6 +48,14 @@ function init() {
   uploadBtn.addEventListener("click", upload);
   refreshBtn?.addEventListener("click", loadFiles);
 
+  // path controls (Up / Root)
+  document.getElementById && (() => {
+    const upBtn = document.getElementById("upBtn");
+    const rootBtn = document.getElementById("rootBtn");
+    upBtn?.addEventListener("click", () => { goUp(); });
+    rootBtn?.addEventListener("click", () => { currentPath = ""; loadFiles(); });
+  })();
+
   loadFiles();
 }
 
@@ -92,6 +100,12 @@ async function loadFiles() {
   const seq = ++loadSeq;
 
   filesEl.innerHTML = `<div class="empty">Loading...</div>`;
+
+  // update path UI
+  const pathNameEl = document.getElementById("pathName");
+  const upBtnEl = document.getElementById("upBtn");
+  if (pathNameEl) pathNameEl.textContent = currentPath || '/';
+  if (upBtnEl) upBtnEl.disabled = !currentPath;
 
   try {
     const pw = localStorage.getItem("files_password") || "";
@@ -168,13 +182,16 @@ async function loadFiles() {
         </div>
         <div class="actions">
           <button class="btn">Download</button>
-          <button class="btn">Delete</button>
+          <button class="btn secondary">Share</button>
+          <button class="btn danger-btn">Delete</button>
         </div>
       `;
 
-      const [dl, del] = div.querySelectorAll("button");
+      const [dl, shareBtn, del] = div.querySelectorAll("button");
 
       dl.onclick = () => downloadFile(f.fileId, f.name);
+
+      shareBtn.onclick = () => shareFile(f.fileId, f.name);
 
       del.onclick = async () => {
         if (!confirm("Delete file?")) return;
@@ -225,6 +242,56 @@ async function downloadFile(fileId, name) {
 }
 
 /* ---------------- AUTH OVERLAY ---------------- */
+
+/* ---------------- NAV HELPERS ---------------- */
+
+function goUp() {
+  if (!currentPath) return;
+  let p = currentPath.replace(/\/$/, '');
+  const idx = p.lastIndexOf('/');
+  if (idx === -1) currentPath = '';
+  else currentPath = p.slice(0, idx + 1);
+  loadFiles();
+}
+
+/* ---------------- SHARE ---------------- */
+
+async function shareFile(fileId, name) {
+  const pw = localStorage.getItem("files_password") || "";
+
+  // ask for duration (seconds)
+  let dur = 3600; // default 1 hour
+  try {
+    const val = prompt("Share duration in seconds (leave blank for 3600)", "3600");
+    if (val === null) return; // cancelled
+    if (val.trim() !== "") dur = Math.max(30, parseInt(val, 10) || dur);
+  } catch (e) {}
+
+  try {
+    const res = await fetch("/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Files-Password": pw },
+      body: JSON.stringify({ fileId, durationSeconds: dur })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Share failed");
+
+    const url = data.url;
+    if (!url) throw new Error("No URL returned");
+
+    // copy to clipboard when possible
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("Share link copied to clipboard:\n" + url);
+    } catch (e) {
+      // fallback: show prompt to copy manually
+      prompt("Share URL (copy manually)", url);
+    }
+  } catch (e) {
+    alert("Share failed: " + (e.message || e));
+  }
+}
 
 function showOverlay() {
   let overlay = document.getElementById("pwOverlay");

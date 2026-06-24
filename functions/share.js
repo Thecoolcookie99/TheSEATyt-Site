@@ -92,7 +92,7 @@ export async function onRequestPost({ request, env }) {
     return new Response(JSON.stringify({ error: 'Bucket name not available' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 
-  const url = `${downloadBase}/file/${bucketName}/${encodeURIComponent(fileName)}?Authorization=${auth2Data.authorizationToken}`;
+  const url = `${downloadBase}/file/${bucketName}/${encodeURI(fileName)}?Authorization=${auth2Data.authorizationToken}`;
 
   return new Response(JSON.stringify({ url }), {
     headers: { "Content-Type": "application/json" }

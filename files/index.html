@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B2 File Manager</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 
 <body>
@@ -28,6 +28,15 @@
 
       <div class="card">
         <h2 style="margin-top:0">Files</h2>
+
+        <div id="pathBar" class="pathBar" aria-hidden="false">
+          <div class="row" style="align-items:center; gap:8px; margin-bottom:8px">
+            <button id="upBtn" class="secondary" title="Go up one folder">Up</button>
+            <button id="rootBtn" class="secondary" title="Go to root">Root</button>
+            <div id="pathName" class="small" style="margin-left:8px;">/</div>
+          </div>
+        </div>
+
         <div id="files" class="list"></div>
       </div>
 
@@ -42,6 +51,6 @@
     window.__B2_APP_LOADED__ = true;
   </script>
 
-  <script src="script.js?v=1"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
