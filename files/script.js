@@ -121,7 +121,7 @@ async function loadFiles() {
       rootBtn.textContent = 'Root';
       rootBtn.addEventListener('click', () => { currentPath = ''; loadFiles(); });
       bc.appendChild(rootBtn);
-      if (!currentPath) { filesEl.insertAdjacentElement('beforebegin', bc); return; }
+      if (!currentPath) { filesEl.parentNode.insertBefore(bc, filesEl); return; }
       const segs = currentPath.replace(/\/$/, '').split('/');
       let acc = '';
       for (let i = 0; i < segs.length; i++) {
@@ -133,7 +133,7 @@ async function loadFiles() {
         btn.addEventListener('click', () => { currentPath = acc; loadFiles(); });
         bc.appendChild(btn);
       }
-      filesEl.insertAdjacentElement('beforebegin', bc);
+      filesEl.parentNode.insertBefore(bc, filesEl);
     }
 
     renderBreadcrumb();

@@ -88,6 +88,13 @@ button:hover, .btn:hover { background: var(--accent2); }
   .actions { justify-content: flex-start; }
 }
 
+/* Breadcrumb */
+.breadcrumb { display:flex; gap:8px; align-items:center; margin: 10px 0; }
+
+/* Ensure share button is visible and aligned */
+.shareBtn { background: #10b981; }
+.shareBtn:hover { background: #059669; }
+
 /* Password overlay styles */
 #pwOverlay {
   position: fixed;
