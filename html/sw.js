@@ -2,7 +2,8 @@ const cacheName = 'myapp-cache-v1';
 const filesToCache = [
   '/',
   '/index.html',
-  '/icon.png'
+  '/icon.png',
+  '/error.html'
 ];
 
 self.addEventListener('install', e => {
@@ -10,5 +11,10 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).catch(() => caches.match('/error.html'));
+    })
+  );
 });
