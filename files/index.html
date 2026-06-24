@@ -6,19 +6,23 @@
   <title>B2 File Manager</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <div class="wrap">
     <h1>Backblaze B2 File Manager</h1>
-    <p class="sub">Upload files, browse the bucket, and download through your Cloudflare Pages backend.</p>
+    <p class="sub">Upload files, browse the bucket, and download through your backend.</p>
 
     <div class="grid">
+
       <div class="card">
         <h2 style="margin-top:0">Upload</h2>
+
         <div class="row">
           <input type="file" id="fileInput" />
           <button id="uploadBtn">Upload</button>
           <button id="refreshBtn" class="secondary">Refresh list</button>
         </div>
+
         <div id="uploadStatus" class="status"></div>
       </div>
 
@@ -26,9 +30,18 @@
         <h2 style="margin-top:0">Files</h2>
         <div id="files" class="list"></div>
       </div>
+
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- IMPORTANT: prevent duplicate loading issues -->
+  <script>
+    if (window.__B2_APP_LOADED__) {
+      console.warn("script already loaded once — preventing duplicate execution");
+    }
+    window.__B2_APP_LOADED__ = true;
+  </script>
+
+  <script src="script.js?v=1"></script>
 </body>
 </html>
