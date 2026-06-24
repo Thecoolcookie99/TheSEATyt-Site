@@ -5,8 +5,13 @@ function json(data, status = 200) {
   });
 }
 
-export async function onRequestGet({ env }) {
+export async function onRequestGet({ request, env }) {
   try {
+    // Authenticate using FILES_PASSWORD
+    const provided = request.headers.get('x-files-password') || '';
+    if (!env.FILES_PASSWORD) return json({ error: 'Missing FILES_PASSWORD env var' }, 500);
+    if (provided !== env.FILES_PASSWORD) return json({ error: 'Unauthorized' }, 401);
+
     if (!env.B2_KEY_ID || !env.B2_APP_KEY || !env.B2_BUCKET_ID) {
       return json({ error: "Missing B2 env vars" }, 500);
     }

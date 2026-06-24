@@ -36,9 +36,13 @@ async function upload() {
     const form = new FormData();
     form.append("file", file);
 
+    const pw = localStorage.getItem('files_password') || '';
     const res = await fetch("/upload", {
       method: "POST",
       body: form,
+      headers: {
+        'X-Files-Password': pw,
+      }
     });
 
     const text = await res.text();
@@ -67,10 +71,17 @@ async function loadFiles() {
   filesEl.innerHTML = `<div class="empty">Loading...</div>`;
 
   try {
-    const res = await fetch("/list");
+    const pw = localStorage.getItem('files_password') || '';
+    const res = await fetch("/list", { headers: { 'X-Files-Password': pw } });
     const data = await res.json();
 
     if (!res.ok) {
+      // If unauthorized, prompt for password
+      if (res.status === 401) {
+        localStorage.removeItem('files_password');
+        showOverlay();
+        return;
+      }
       throw new Error(data.error || "Failed to load files");
     }
 
@@ -84,19 +95,55 @@ async function loadFiles() {
     for (const file of files) {
       const item = document.createElement("div");
       item.className = "item";
-      item.innerHTML = `
+        item.innerHTML = `
         <div class="meta">
           <div class="name">${escapeHtml(file.name)}</div>
           <div class="small">${fmtSize(file.size)} • ${fmtDate(file.uploaded)}</div>
         </div>
         <div class="actions">
-          <a class="btn" href="${file.downloadUrl}">Download</a>
+          <button class="btn downloadBtn" data-id="${encodeURIComponent(file.fileId)}" data-name="${encodeURIComponent(file.name)}">Download</button>
         </div>
       `;
       filesEl.appendChild(item);
     }
+    // Attach download handlers
+    document.querySelectorAll('.downloadBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = decodeURIComponent(btn.dataset.id);
+        const name = decodeURIComponent(btn.dataset.name);
+        downloadFile(id, name);
+      });
+    });
   } catch (err) {
     filesEl.innerHTML = `<div class="empty" style="color: var(--danger);">ERROR: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function downloadFile(fileId, name) {
+  const pw = localStorage.getItem('files_password') || '';
+  const url = `/download?fileId=${encodeURIComponent(fileId)}&name=${encodeURIComponent(name)}`;
+  try {
+    const res = await fetch(url, { headers: { 'X-Files-Password': pw } });
+    if (!res.ok) {
+      if (res.status === 401) {
+        localStorage.removeItem('files_password');
+        showOverlay();
+        return;
+      }
+      const txt = await res.text().catch(() => '');
+      throw new Error(txt || 'Download failed');
+    }
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    alert('Download error: ' + err.message);
   }
 }
 
@@ -148,7 +195,8 @@ function showOverlay() {
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.ok) {
-          sessionStorage.setItem('b2_authed', '1');
+          // Save password in localStorage for subsequent requests
+          localStorage.setItem('files_password', val);
           overlay.style.display = 'none';
           init();
         } else {
@@ -173,8 +221,8 @@ function hideOverlay() {
   if (overlay) overlay.style.display = 'none';
 }
 
-// On load, check sessionStorage for auth, otherwise show overlay
-if (sessionStorage.getItem('b2_authed') === '1') {
+// On load, check localStorage for saved password; if missing, show overlay
+if (localStorage.getItem('files_password')) {
   init();
 } else {
   showOverlay();

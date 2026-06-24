@@ -14,6 +14,11 @@ function json(data, status = 200) {
 
 export async function onRequestPost({ request, env }) {
   try {
+    // Authenticate using FILES_PASSWORD header
+    const provided = request.headers.get('x-files-password') || '';
+    if (!env.FILES_PASSWORD) return json({ error: 'Missing FILES_PASSWORD env var' }, 500);
+    if (provided !== env.FILES_PASSWORD) return json({ error: 'Unauthorized' }, 401);
+
     const form = await request.formData();
     const file = form.get("file");
 

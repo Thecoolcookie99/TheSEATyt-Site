@@ -1,5 +1,10 @@
 export async function onRequestGet({ request, env }) {
   try {
+    // Authenticate using FILES_PASSWORD header
+    const provided = request.headers.get('x-files-password') || '';
+    if (!env.FILES_PASSWORD) return new Response(JSON.stringify({ error: 'Missing FILES_PASSWORD env var' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    if (provided !== env.FILES_PASSWORD) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+
     if (!env.B2_KEY_ID || !env.B2_APP_KEY) {
       return new Response("Missing B2 env vars", { status: 500 });
     }
