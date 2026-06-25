@@ -341,3 +341,5 @@ if (localStorage.getItem("files_password")) {
 } else {
   showOverlay();
 }
+
+//refresh api keys
