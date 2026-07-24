@@ -2,6 +2,14 @@ const fileInput = document.getElementById("fileInput");
 const uploadBtn = document.getElementById("uploadBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 const uploadStatus = document.getElementById("uploadStatus");
+const uploadProgressWrap = document.getElementById("uploadProgressWrap");
+const uploadProgressText = document.getElementById("uploadProgressText");
+const uploadProgressPercent = document.getElementById("uploadProgressPercent");
+const uploadProgressFill = document.getElementById("uploadProgressFill");
+const downloadProgressWrap = document.getElementById("downloadProgressWrap");
+const downloadProgressText = document.getElementById("downloadProgressText");
+const downloadProgressPercent = document.getElementById("downloadProgressPercent");
+const downloadProgressFill = document.getElementById("downloadProgressFill");
 const filesEl = document.getElementById("files");
 
 let currentPath = "";
@@ -32,6 +40,24 @@ function escapeHtml(str) {
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function updateProgressBar(progressWrap, progressFill, progressText, progressPercent, percent, text) {
+  if (!progressWrap || !progressFill || !progressText || !progressPercent) return;
+
+  const value = Math.max(0, Math.min(100, percent));
+  progressWrap.hidden = false;
+  progressText.textContent = text;
+  progressPercent.textContent = value + "%";
+  progressFill.style.width = value + "%";
+}
+
+function hideProgressBar(progressWrap, progressFill, progressText, progressPercent) {
+  if (!progressWrap || !progressFill || !progressText || !progressPercent) return;
+  progressWrap.hidden = true;
+  progressFill.style.width = "0%";
+  progressText.textContent = "";
+  progressPercent.textContent = "0%";
 }
 
 /* ---------------- INIT ---------------- */
@@ -67,22 +93,43 @@ async function upload() {
 
   uploadStatus.textContent = "Uploading...";
   uploadBtn.disabled = true;
+  updateProgressBar(uploadProgressWrap, uploadProgressFill, uploadProgressText, uploadProgressPercent, 0, "Preparing upload...");
 
   try {
     const form = new FormData();
     form.append("file", file);
 
     const pw = localStorage.getItem("files_password") || "";
+    const data = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/upload");
+      xhr.setRequestHeader("X-Files-Password", pw);
 
-    const res = await fetch("/upload", {
-      method: "POST",
-      headers: { "X-Files-Password": pw },
-      body: form
+      xhr.upload.addEventListener("progress", (event) => {
+        if (!event.lengthComputable) return;
+        const percent = Math.round((event.loaded / event.total) * 100);
+        updateProgressBar(uploadProgressWrap, uploadProgressFill, uploadProgressText, uploadProgressPercent, percent, `Uploading ${file.name}...`);
+      });
+
+      xhr.addEventListener("load", () => {
+        let body = {};
+        try {
+          body = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+        } catch (e) {
+          body = {};
+        }
+
+        if (xhr.status >= 200 && xhr.status < 300) resolve(body);
+        else reject(new Error(body.error || "Upload failed"));
+      });
+
+      xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+      xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+      xhr.send(form);
     });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || "Upload failed");
-
+    updateProgressBar(uploadProgressWrap, uploadProgressFill, uploadProgressText, uploadProgressPercent, 100, "Upload complete");
     uploadStatus.textContent = "Uploaded: " + data.fileName;
     fileInput.value = "";
 
@@ -91,6 +138,9 @@ async function upload() {
     uploadStatus.textContent = "Error: " + e.message;
   } finally {
     uploadBtn.disabled = false;
+    setTimeout(() => {
+      hideProgressBar(uploadProgressWrap, uploadProgressFill, uploadProgressText, uploadProgressPercent);
+    }, 400);
   }
 }
 
@@ -226,22 +276,47 @@ async function loadFiles() {
 async function downloadFile(fileId, name) {
   const pw = localStorage.getItem("files_password") || "";
 
-  const res = await fetch(
-    `/download?fileId=${encodeURIComponent(fileId)}&name=${encodeURIComponent(name)}`,
-    { headers: { "X-Files-Password": pw } }
-  );
+  updateProgressBar(downloadProgressWrap, downloadProgressFill, downloadProgressText, downloadProgressPercent, 0, `Preparing ${name}...`);
 
-  if (!res.ok) return alert("Download failed");
+  try {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", `/download?fileId=${encodeURIComponent(fileId)}&name=${encodeURIComponent(name)}`);
+      xhr.setRequestHeader("X-Files-Password", pw);
+      xhr.responseType = "blob";
 
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
+      xhr.addEventListener("progress", (event) => {
+        if (!event.lengthComputable) return;
+        const percent = Math.round((event.loaded / event.total) * 100);
+        updateProgressBar(downloadProgressWrap, downloadProgressFill, downloadProgressText, downloadProgressPercent, percent, `Downloading ${name}...`);
+      });
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300 && xhr.response) resolve(xhr.response);
+        else reject(new Error("Download failed"));
+      });
 
-  URL.revokeObjectURL(url);
+      xhr.addEventListener("error", () => reject(new Error("Download failed")));
+      xhr.addEventListener("abort", () => reject(new Error("Download cancelled")));
+
+      xhr.send();
+    });
+
+    updateProgressBar(downloadProgressWrap, downloadProgressFill, downloadProgressText, downloadProgressPercent, 100, `Download complete`);
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert("Download failed: " + e.message);
+  } finally {
+    setTimeout(() => {
+      hideProgressBar(downloadProgressWrap, downloadProgressFill, downloadProgressText, downloadProgressPercent);
+    }, 400);
+  }
 }
 
 /* ---------------- AUTH OVERLAY ---------------- */

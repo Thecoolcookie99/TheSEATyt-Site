@@ -16,6 +16,24 @@
         <button id="refreshBtn" class="secondary">Refresh</button>
       </div>
       <div id="uploadStatus" class="status"></div>
+      <div id="uploadProgressWrap" class="progress-wrap" hidden>
+        <div class="progress-label">
+          <span id="uploadProgressText">Preparing upload…</span>
+          <span id="uploadProgressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="uploadProgressFill" class="progress-fill"></div>
+        </div>
+      </div>
+      <div id="downloadProgressWrap" class="progress-wrap" hidden>
+        <div class="progress-label">
+          <span id="downloadProgressText">Preparing download…</span>
+          <span id="downloadProgressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="downloadProgressFill" class="progress-fill"></div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
