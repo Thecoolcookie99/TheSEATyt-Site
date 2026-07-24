@@ -121,7 +121,7 @@ async function loadFiles() {
 
     const files = data.files || [];
     if (!files.length) {
-      filesEl.innerHTML = `<div class="empty">No files found</div>`;
+      filesEl.innerHTML = `<div class="empty">No files in this folder yet</div>`;
       return;
     }
 
@@ -182,16 +182,19 @@ async function loadFiles() {
         </div>
         <div class="actions">
           <button class="btn">Download</button>
-          <button class="btn secondary">Share</button>
+          <button class="btn secondary">Copy link</button>
+          <button class="btn secondary">Rename</button>
           <button class="btn danger-btn">Delete</button>
         </div>
       `;
 
-      const [dl, shareBtn, del] = div.querySelectorAll("button");
+      const [dl, shareBtn, renameBtn, del] = div.querySelectorAll("button");
 
       dl.onclick = () => downloadFile(f.fileId, f.name);
 
       shareBtn.onclick = () => shareFile(f.fileId, f.name);
+
+      renameBtn.onclick = () => renameFile(f);
 
       del.onclick = async () => {
         if (!confirm("Delete file?")) return;
@@ -252,6 +255,42 @@ function goUp() {
   if (idx === -1) currentPath = '';
   else currentPath = p.slice(0, idx + 1);
   loadFiles();
+}
+
+/* ---------------- RENAME ---------------- */
+
+async function renameFile(file) {
+  const currentName = file.name.split("/").pop();
+  const nextName = prompt("Rename file", currentName);
+  if (!nextName || nextName.trim() === "") return;
+
+  const cleanName = nextName.trim();
+  if (cleanName === currentName) return;
+
+  const pw = localStorage.getItem("files_password") || "";
+
+  try {
+    const res = await fetch("/rename", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Files-Password": pw
+      },
+      body: JSON.stringify({
+        fileId: file.fileId,
+        fileName: file.name,
+        newFileName: (currentPath ? currentPath : "") + cleanName
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Rename failed");
+
+    uploadStatus.textContent = "Renamed to " + cleanName;
+    await loadFiles();
+  } catch (e) {
+    uploadStatus.textContent = "Error: " + e.message;
+  }
 }
 
 /* ---------------- SHARE ---------------- */

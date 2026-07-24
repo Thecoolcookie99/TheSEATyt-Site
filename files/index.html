@@ -9,37 +9,25 @@
 
 <body>
   <div class="wrap">
-    <h1>Backblaze B2 File Manager</h1>
-    <p class="sub">Upload files, browse the bucket, and download through your backend.</p>
+    <div class="card compact-card">
+      <div class="row">
+        <input type="file" id="fileInput" />
+        <button id="uploadBtn">Upload</button>
+        <button id="refreshBtn" class="secondary">Refresh</button>
+      </div>
+      <div id="uploadStatus" class="status"></div>
+    </div>
 
-    <div class="grid">
-
-      <div class="card">
-        <h2 style="margin-top:0">Upload</h2>
-
-        <div class="row">
-          <input type="file" id="fileInput" />
-          <button id="uploadBtn">Upload</button>
-          <button id="refreshBtn" class="secondary">Refresh list</button>
+    <div class="card">
+      <div id="pathBar" class="pathBar" aria-hidden="false">
+        <div class="row" style="align-items:center; gap:8px; margin-bottom:8px">
+          <button id="upBtn" class="secondary" title="Go up one folder">Up</button>
+          <button id="rootBtn" class="secondary" title="Go to root">Root</button>
+          <div id="pathName" class="small" style="margin-left:8px;">/</div>
         </div>
-
-        <div id="uploadStatus" class="status"></div>
       </div>
 
-      <div class="card">
-        <h2 style="margin-top:0">Files</h2>
-
-        <div id="pathBar" class="pathBar" aria-hidden="false">
-          <div class="row" style="align-items:center; gap:8px; margin-bottom:8px">
-            <button id="upBtn" class="secondary" title="Go up one folder">Up</button>
-            <button id="rootBtn" class="secondary" title="Go to root">Root</button>
-            <div id="pathName" class="small" style="margin-left:8px;">/</div>
-          </div>
-        </div>
-
-        <div id="files" class="list"></div>
-      </div>
-
+      <div id="files" class="list"></div>
     </div>
   </div>
 
