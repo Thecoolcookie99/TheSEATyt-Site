@@ -104,8 +104,6 @@ dialog .fields>.frow{display:grid;grid-template-columns:96px 1fr;align-items:cen
 .menu button:hover kbd{color:inherit}
 .menu hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
 
-/* options bar */
-
 .main{flex:1;display:flex;min-height:0;position:relative}
 /* toolbar */
 .tools{width:var(--tools-w,64px);flex:none;border-right:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fill,calc(56px * var(--ui)));justify-content:center;align-content:start;gap:2px;padding:6px 4px;overflow-y:auto;background:var(--chrome)}
@@ -116,12 +114,18 @@ dialog .fields>.frow{display:grid;grid-template-columns:96px 1fr;align-items:cen
 .tool:hover{background:var(--hover)}
 .tool.on{background:var(--accent);color:var(--accent-ink)}
 .tools .gap{grid-column:1/-1;height:1px;background:var(--line);margin:5px 8px}
-.swatches{grid-column:1/-1;justify-self:center;position:relative;width:calc(40px * var(--ui));height:calc(34px * var(--ui));margin-top:8px}
-label.swatch,.swatch{position:absolute;width:calc(30px * var(--ui));height:calc(30px * var(--ui));border-radius:5px;border:2px solid var(--text);overflow:hidden;padding:0}
-.swatch input{position:absolute;inset:-8px;width:40px;height:40px;border:0;padding:0;cursor:pointer;opacity:0}
-.swatch.fg{left:7px;top:3px}
-.swatch.bg{right:0;bottom:0}
-.swapbtn{position:absolute;right:-2px;top:-2px;background:none;border:0;padding:0;color:var(--muted);font-size:11px}
+
+/* fill + outline swatch: the ring is the outline colour, the centre is the fill */
+.swatches{grid-column:1/-1;justify-self:center;position:relative;width:calc(40px * var(--ui));height:calc(40px * var(--ui));margin-top:8px}
+.swatch{position:absolute;inset:0;border:0;padding:0;border-radius:9px;background:none;cursor:pointer}
+.swatch .sw-ring{position:absolute;inset:0;border-radius:9px;background:var(--checker);box-shadow:0 0 0 1px var(--line)}
+.swatch .sw-ring::after{content:"";position:absolute;inset:0;border-radius:9px;background:var(--sw-stroke,#1f232a)}
+.swatch .sw-fill{position:absolute;inset:calc(8px * var(--ui));border-radius:4px;background:var(--checker);box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.swatch .sw-fill::after{content:"";position:absolute;inset:0;border-radius:4px;background:var(--sw-fill,#2f6fed)}
+.swatch.no-stroke .sw-ring{background:none;box-shadow:none;border:1.5px dashed var(--muted)}
+.swatch.no-stroke .sw-ring::after{display:none}
+.swatch:hover .sw-ring,.swatch[aria-expanded="true"] .sw-ring{box-shadow:0 0 0 2px var(--accent)}
+.swatch.no-stroke:hover .sw-ring,.swatch.no-stroke[aria-expanded="true"] .sw-ring{border-color:var(--accent)}
 
 /* stage */
 .stage{flex:1;position:relative;overflow:hidden;background:var(--stage);touch-action:none;min-width:0}
@@ -220,12 +224,33 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .bar.alpha .fill{position:absolute;inset:0;border-radius:7px;background:linear-gradient(to right,transparent,var(--solid))}
 .picker .frow{display:flex;align-items:center;gap:6px;margin-bottom:8px}
 .picker .frow label{font-size:11px;color:var(--muted);min-width:30px}
-.picker input.hx{flex:1;text-transform:uppercase;font-variant-numeric:tabular-nums}
-.picker input.al{width:56px;text-align:right}
+.picker input.hx{flex:1;min-width:0;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.picker input.al{width:52px;text-align:right}
 .picker .swatches-row{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:4px}
 .picker .pre{height:18px;border-radius:4px;cursor:pointer;background-image:var(--checker);background-size:7px 7px;position:relative;border:1px solid var(--line)}
 .picker .pre::after{content:"";position:absolute;inset:0;border-radius:3px;background:var(--pcc)}
 .picker .none{grid-column:1/-1;margin-top:6px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer}
+
+/* two-up picker: fill on the left, outline on the right */
+.picker.dual{width:auto;padding:0;overflow:auto;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px)}
+.dual-cols{display:flex;flex-wrap:wrap}
+.pk-col{flex:1 1 236px;width:236px;min-width:0}
+.pk-col + .pk-col{border-left:1px solid var(--line)}
+.pk-head{display:flex;align-items:center;gap:9px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.pk-head strong{font-size:14px;font-weight:700}
+.pk-head small{margin-left:auto;color:var(--muted);font-size:11px}
+.pk-head .ic{width:20px;height:20px;border-radius:5px;flex:none;position:relative;background:var(--checker)}
+.pk-head .ic::after{content:"";position:absolute;inset:0;border-radius:5px}
+.pk-head .ic.fill::after{background:var(--pc);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.pk-head .ic.ring{background:none}
+.pk-head .ic.ring::after{border:5px solid var(--pc);box-shadow:0 0 0 1px rgba(0,0,0,.18),inset 0 0 0 1px rgba(0,0,0,.18)}
+.pk-body{padding:12px}
+.pk-col.off .pk-body{opacity:.35;pointer-events:none}
+.pk-note{margin:10px 12px 0;color:var(--muted);font-size:12px}
+.pk-thick{margin:4px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.pk-thick .lbl{min-width:0;color:var(--text);font-weight:600}
+@media (max-width:540px){.pk-col + .pk-col{border-left:0;border-top:1px solid var(--line)}}
+
 input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
 output{min-width:40px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
 .slider{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -307,7 +332,6 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .stack-lbl::after{content:"";flex:1;border-top:1px dashed var(--line)}
 
 @media (max-width:820px){
-  /* The panel pushes the canvas over rather than floating above it, same as on wider screens. */
   .resizer{display:none}
   .panels{width:260px}
   .brand span,.hide-sm{display:none}
@@ -331,11 +355,10 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 
 <div class="menu" id="menu-file" role="menu">
   <button data-act="new">New canvas… <kbd>Alt+N</kbd></button>
-  <button data-act="open">Open image… <kbd>Ctrl+O</kbd></button>
-  <button data-act="place">Place image… <kbd>Shift+P</kbd></button>
+  <button data-act="place">Add image… <kbd>Ctrl+O</kbd></button>
   <hr>
-  <button data-act="openProject">Open project…</button>
-  <button data-act="saveProject">Save project <kbd>Ctrl+S</kbd></button>
+  <button data-act="openProject">Import project (.plate)… <kbd>Ctrl+Shift+O</kbd></button>
+  <button data-act="saveProject">Export project (.plate) <kbd>Ctrl+S</kbd></button>
   <hr>
   <button data-act="export">Export as image… <kbd>Ctrl+E</kbd></button>
 </div>
@@ -375,21 +398,33 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 </div>
 <div class="menu" id="menu-ctx" role="menu"></div>
 <div class="flyout" id="flyout" role="menu"></div>
+
 <div class="picker" id="picker" role="dialog" aria-label="Choose a colour">
   <h4><span class="dot"></span><span id="pk-title">Colour</span></h4>
-  <div class="sv" id="pk-sv"><div class="knob"></div></div>
-  <div class="bar hue" id="pk-hue"><div class="knob"></div></div>
-  <div class="bar alpha" id="pk-alpha"><div class="fill"></div><div class="knob"></div></div>
-  <div class="frow"><label>Hex</label><input class="hx" id="pk-hex" spellcheck="false" maxlength="9"><input class="al" id="pk-alpha-num" aria-label="Opacity percent"><span style="color:var(--muted);font-size:11px">%</span></div>
-  <div class="swatches-row" id="pk-presets"></div>
-  <label class="none" id="pk-none-row" hidden><input type="checkbox" id="pk-none"> No colour (transparent)</label>
+  <div id="pk-single"></div>
 </div>
 
+<div class="picker dual" id="picker-dual" role="dialog" aria-label="Fill and outline">
+  <div class="dual-cols">
+    <section class="pk-col" id="pd-fill-col" aria-label="Fill colour">
+      <div class="pk-head"><span class="ic fill"></span><strong>Fill</strong><small id="pd-fill-sub">Inside colour</small></div>
+      <div class="pk-body" id="pd-fill"></div>
+    </section>
+    <section class="pk-col" id="pd-stroke-col" aria-label="Outline colour and thickness">
+      <div class="pk-head"><span class="ic ring"></span><strong>Outline</strong><small>Edge colour</small></div>
+      <p class="pk-note" id="pd-note" hidden>Lines and brush strokes don't have an outline. Use Fill to change their colour.</p>
+      <div class="pk-body">
+        <div id="pd-stroke"></div>
+        <div class="slider pk-thick"><span class="lbl">Thickness</span><input type="range" id="pd-w" min="0" max="100" step="1" aria-label="Outline thickness"><span class="sval"><input type="number" id="pd-w-num" min="0" max="200" step="1" aria-label="Outline thickness in pixels"><i>px</i></span></div>
+      </div>
+    </section>
+  </div>
+</div>
 
 <div class="main">
   <nav class="tools" id="tools" aria-label="Tools">
     <button class="tool" data-tool="select" title="Move (V)" aria-label="Move"><svg class="i" viewBox="0 0 24 24"><path d="M5 3l13 8.5-6 1.5-3 6z"/></svg><span class="tl">Move</span></button>
-    <button class="tool" data-act="place" title="Add image (Shift+P)" aria-label="Add image"><svg class="i" viewBox="0 0 24 24"><path d="M13 18H5a2 2 0 01-2-2V6a2 2 0 012-2h11a2 2 0 012 2v6"/><circle cx="8" cy="9" r="1.5"/><path d="M3.5 15.5l4-4 4.5 4.5 2-2"/><path d="M18.5 14.5v7M15 18h7"/></svg><span class="tl">Image</span></button>
+    <button class="tool" data-act="place" title="Add image (Ctrl+O)" aria-label="Add image"><svg class="i" viewBox="0 0 24 24"><path d="M13 18H5a2 2 0 01-2-2V6a2 2 0 012-2h11a2 2 0 012 2v6"/><circle cx="8" cy="9" r="1.5"/><path d="M3.5 15.5l4-4 4.5 4.5 2-2"/><path d="M18.5 14.5v7M15 18h7"/></svg><span class="tl">Image</span></button>
     <div class="gap"></div>
     <button class="tool" data-tool="text" title="Text (T)" aria-label="Text"><svg class="i" viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg><span class="tl">Text</span></button>
     <button class="tool" data-tool="shape" aria-label="Shapes"><span class="ico"></span><span class="more" title="More shapes"></span><span class="tl">Shape</span></button>
@@ -398,7 +433,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
     <button class="tool" data-tool="brush" title="Brush (B)" aria-label="Brush"><svg class="i" viewBox="0 0 24 24"><path d="M19.5 3.5l1 1-8.6 9.6-2-2z"/><path d="M9.6 12.4c-2.4-.3-4 1-4.3 3.3-.2 1.6-1 2.6-2.3 2.8 2.6 2.2 8.3 1.9 8.6-3.8"/></svg><span class="tl">Brush</span></button>
     <button class="tool" data-tool="eyedrop" title="Eyedropper (I)" aria-label="Eyedropper"><svg class="i" viewBox="0 0 24 24"><path d="M15.2 4.3a2.6 2.6 0 013.7 0l.8.8a2.6 2.6 0 010 3.7l-2.2 2.2.9.9-1.6 1.6-6.2-6.2 1.6-1.6.9.9z"/><path d="M10.2 8.7L4.6 14.3a2 2 0 00-.6 1.4v2.6l-1 1.7.9.9 1.7-1h2.6a2 2 0 001.4-.6l5.6-5.6"/><path d="M7 15.5h5" opacity=".55"/></svg><span class="tl">Pick</span></button>
     <div class="swatches">
-      <button type="button" class="swatch fg" id="sw-fg" title="Fill colour for new and selected layers" aria-label="Colour"></button>
+      <button type="button" class="swatch" id="sw-fg" aria-haspopup="dialog" aria-expanded="false" title="Fill and outline" aria-label="Fill and outline colours"><span class="sw-ring"></span><span class="sw-fill"></span></button>
     </div>
   </nav>
 
@@ -460,7 +495,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
           <span class="sep"></span>
           <button class="ibtn" data-act="group" data-show="multi" title="Group (Ctrl+G)" aria-label="Group"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2.5" stroke-dasharray="3 2.6"/><rect x="7" y="7" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg></button>
           <button class="ibtn" data-act="ungroup" data-show="grouped" title="Ungroup (Ctrl+Shift+G)" aria-label="Ungroup"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><path d="M15 6h3v3M9 18H6v-3"/></svg></button>
-          <button class="ibtn" data-act="duplicate" title="Duplicate (Ctrl+D)" aria-label="Duplicate"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="12" height="12" rx="2"/><path d="M9.5 6.8v5.4M6.8 9.5h5.4"/><path d="M19 8.5v9a2 2 0 01-2 2H8.5"/><path d="M15 8.5v0" opacity="0"/></svg></button>
+          <button class="ibtn" data-act="duplicate" title="Duplicate (Ctrl+D)" aria-label="Duplicate"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="12" height="12" rx="2"/><path d="M9.5 6.8v5.4M6.8 9.5h5.4"/><path d="M19 8.5v9a2 2 0 01-2 2H8.5"/></svg></button>
           <button class="ibtn danger" data-act="delete" title="Delete (Del)" aria-label="Delete"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
         </div>
       </div>
@@ -516,7 +551,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
         <button type="button" class="cbtn" data-color="stroke" aria-label="Stroke color"><span class="chip"></span></button>
         <label class="f" style="flex:1"><span class="scrub">Width</span><input type="number" data-prop="strokeWidth" min="0" step="1"></label>
       </div>
-      <label class="chk" data-show="lineNodes" title="Free: drag an end anywhere to reshape the line. On line: dragging an end only changes its length, keeping the current angle."><input type="checkbox" data-prop="freeNodes"> Free-moving nodes</label>
+      <label class="chk" data-show="lineNodes" title="Free: drag an end anywhere to reshape the line. Off: dragging an end only changes its length, keeping the current angle."><input type="checkbox" data-prop="freeNodes"> Free-moving nodes</label>
       <div class="grp slider" data-show="rect">
         <span class="lbl">Corners</span><input type="range" min="0" max="300" data-prop="radius"><span class="sval"><input type="number" class="svin" data-prop="radius" min="0" max="300" aria-label="radius value"><i>px</i></span>
       </div>
@@ -582,11 +617,9 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
   <span id="st-sel"></span>
 </footer>
 
-<input type="file" id="f-open" accept="image/*" hidden>
 <input type="file" id="f-place" accept="image/*" multiple hidden>
 <input type="file" id="f-bg" accept="image/*" hidden>
-<input type="file" id="f-project" accept=".json,application/json" hidden>
-
+<input type="file" id="f-project" accept=".plate,.json,application/json" hidden>
 
 <dialog id="dlg-shortcuts">
   <form method="dialog">
@@ -706,6 +739,7 @@ function base(type, extra) {
     id: nid(), type, name: defaultName(type), x: 0, y: 0, w: 100, h: 100, rot: 0,
     opacity: 1, blend: 'source-over', visible: true, locked: false, flipX: false, flipY: false,
     fill: S.style.fill, fillOn: true, stroke: S.style.stroke, strokeWidth: S.style.strokeWidth, radius: 0, lockAspect: !['rect','ellipse','triangle','star','line','arrow'].includes(type),
+    freeNodes: true,
     cL: 0, cT: 0, cR: 0, cB: 0,
     adjB: 100, adjC: 100, adjS: 100, adjH: 0, adjBlur: 0, adjG: 0, adjSp: 0,
     shOn: false, shColor: '#000000', shAlpha: 0.35, shBlur: 24, shX: 0, shY: 12
@@ -713,6 +747,7 @@ function base(type, extra) {
 }
 const isLine = o => o.type === 'line' || o.type === 'arrow';
 const isShape = o => ['rect','ellipse','triangle','star'].includes(o.type);
+const lineish = o => isLine(o) || o.type === 'path';
 
 function textFont(o) { return `${o.italic ? 'italic ' : ''}${o.bold ? 700 : 400} ${o.fontSize}px ${fontStack(o.font)}`; }
 function measureText(o) {
@@ -754,7 +789,6 @@ const toDoc = p => ({ x: (p.x - S.px) / S.zoom, y: (p.y - S.py) / S.zoom });
 const toScreen = p => ({ x: p.x * S.zoom + S.px, y: p.y * S.zoom + S.py });
 
 function hit(p) {
-  // When layers overlap, the one on top wins.
   for (let i = S.objects.length - 1; i >= 0; i--) {
     const o = S.objects[i];
     if (o.visible && !o.locked && insideObj(o, p)) return o;
@@ -767,7 +801,7 @@ function insideObj(o, p) {
   if (isLine(o) || o.type === 'path') tol = Math.max(8 / S.zoom, (o.strokeWidth || 0) / 2);
   return Math.abs(l.x) <= o.w / 2 + tol && Math.abs(l.y) <= o.h / 2 + tol;
 }
-const OFF = 4; // selection outline sits this many screen px outside the layer
+const OFF = 4;
 function handlesFor(o) {
   const hs = [];
   const combos = isLine(o) ? [[-1,0],[1,0]] : [[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0]];
@@ -778,7 +812,6 @@ function handlesFor(o) {
   return hs;
 }
 function hitHandle(o, sp, coarse) {
-  // Handles only grab from outside the layer, and their hit area is centred a little further out.
   const l = toLocal(o, toDoc(sp));
   if (Math.abs(l.x) < o.w / 2 && Math.abs(l.y) < o.h / 2) return null;
   const r = coarse ? 22 : 14, push = (coarse ? 8 : 5) / S.zoom;
@@ -946,7 +979,6 @@ function draw() {
   drawBgImage(ctx);
   const mv = drag && drag.mode === 'move' ? drag : null;
   const fastIds = mv && mv.fast ? new Set(mv.origs.map(g => g.o.id)) : null;
-  // The snap shadow is drawn just beneath the lowest dragged layer, so the dragged layers stay on top of it.
   const movingIds = mv && mv.shadow ? new Set(mv.origs.map(g => g.o.id)) : null;
   let shadowDone = !movingIds;
   const drawShadow = () => {
@@ -974,7 +1006,6 @@ function draw() {
   }
   if (drag && drag.mode === 'brush') drawBrushPreview(ctx);
   ctx.restore();
-  // ghost of selected content outside canvas
   const sel = selObjs();
   if (sel.length) {
     ctx.save();
@@ -992,7 +1023,6 @@ function drawCrop() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const o = crop.o, full = cropFullRect();
   const fa = toScreen({ x: full.x, y: full.y }), fb = toScreen({ x: full.x + full.w, y: full.y + full.h });
-  // Dim the cropped-away part of the source.
   const im = getImg(o.src);
   if (im.complete) { ctx.save(); ctx.globalAlpha = 0.35; ctx.drawImage(im, fa.x, fa.y, fb.x - fa.x, fb.y - fa.y); ctx.restore(); }
   const a = toScreen({ x: o.x, y: o.y }), b = toScreen({ x: o.x + o.w, y: o.y + o.h });
@@ -1024,11 +1054,9 @@ let animStart = performance.now();
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 function drawSetupDemo() {
-  // A see-through cursor demonstrating how to drag out a canvas, looping until the person starts drawing.
   const LOOP = 3400;
   const el = performance.now() - animStart;
   const t = reduceMotion ? 2000 : el % LOOP;
-  // Each loop draws the next shape: landscape, portrait, then square.
   const SHAPES = [[1.5, 1], [0.78, 1.18], [1, 1]];
   const [fw, fh] = SHAPES[reduceMotion ? 0 : Math.floor(el / LOOP) % SHAPES.length];
   const base = Math.min(vw / 1.5, vh) * 0.48;
@@ -1064,7 +1092,6 @@ function drawSetup() {
     const r = setupRect(drag);
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.fillStyle = '#ffffff'; ctx.fillRect(r.x, r.y, r.w, r.h); ctx.restore();
     ctx.strokeStyle = C.accent + '99'; ctx.lineWidth = 1.5; ctx.strokeRect(r.x - 3, r.y - 3, r.w + 6, r.h + 6);
-    // The size label follows the cursor (with a small offset) rather than sitting fixed under the shape.
     const t = `${r.w} × ${r.h} px`;
     ctx.font = '600 13px Manrope, system-ui, sans-serif';
     const tw = ctx.measureText(t).width + 16, th = 24;
@@ -1088,8 +1115,6 @@ function outline(o, color, w, dash) {
 }
 function drawOverlay() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // While cropping, the crop tool draws its own handles — skip the normal selection outline/handles so
-  // they don't clutter or compete with it.
   if (crop) return;
   const sel = selObjs();
   if (hoverId && !S.sel.includes(hoverId) && !drag) { const h = byId(hoverId); if (h) outline(h, C.accent + '66', 1, [4, 3]); }
@@ -1181,19 +1206,16 @@ function snapCandidate(d, ax, raw) {
   });
   return best;
 }
-const SNAP_BASE = 7.5;    // snap distance in screen px at a 1000px canvas; scales with canvas size
+const SNAP_BASE = 7.5;
 function snapDist() {
-  // Bigger canvases get a proportionally larger snap distance (in document px), within sensible limits.
   const diag = Math.hypot(S.doc.w, S.doc.h);
   return clamp(SNAP_BASE / S.zoom * (diag / 1414), 4 / S.zoom, 80 / S.zoom);
 }
-const SNAP_DWELL = 280;   // ms the pointer must rest before the layer jumps onto its shadow
-const FAST_SPEED = 1.6;   // px per ms; faster drags show the layer at 80% opacity
+const SNAP_DWELL = 280;
+const FAST_SPEED = 1.6;
 let dwellT = 0;
-const FIGHT_PX = 10;  // screen px of steady pulling away from a snapped line before it gives up
+const FIGHT_PX = 10;
 function snapAxisSmooth(d, A, b) {
-  // Returns the snap offset for one axis. If the person keeps pulling away from a line it has caught,
-  // the snap lets go at once (no easing back) and won't re-catch that line until they've moved clear of it.
   const z = S.zoom, TH = snapDist(), HOLD = TH * 1.5;
   const sk = 'snap' + A, ck = 'cool' + A, dk = 'dist' + A, fk = 'fight' + A, ok = 'off' + A;
   const prevDist = d[dk]; d[dk] = b ? b.dist : null;
@@ -1213,15 +1235,12 @@ function snapAxisSmooth(d, A, b) {
 }
 function placeMove(d) { for (const g of d.origs) { g.o.x = g.x + d.rawDx + (d.offX || 0); g.o.y = g.y + d.rawDy + (d.offY || 0); } }
 function easeSnap(d) {
-  // Glide into and out of snaps instead of jumping: the snap offset eases toward its target each frame.
   placeMove(d);
   if (d.anim) return;
   d.anim = true; d.lastT = performance.now();
   const tick = now => {
     if (drag !== d) { d.anim = false; return; }
     const dt = Math.max(0, now - d.lastT); d.lastT = now;
-    // Decelerating glide: moves a large fraction of the remaining distance each frame, so it covers
-    // most of the gap fast and crawls the last bit — fast snap, soft landing.
     const a = 1 - Math.exp(-dt / 38);
     d.offX = (d.offX || 0) + (d.tx - (d.offX || 0)) * a;
     d.offY = (d.offY || 0) + (d.ty - (d.offY || 0)) * a;
@@ -1235,13 +1254,10 @@ function easeSnap(d) {
 }
 function armDwell(d, sp) {
   clearTimeout(dwellT);
-  const at = { x: sp.x, y: sp.y };
   dwellT = setTimeout(() => {
     if (drag !== d) return;
     d.fast = false;
     if (d.shadow) {
-      // Settle onto the shadow and re-base the drag there, so the next movement continues from the snapped
-      // spot instead of jumping back under the cursor.
       d.start = { x: d.start.x - (d.shadow.dx - d.lastDx), y: d.start.y - (d.shadow.dy - d.lastDy) };
       for (const g of d.origs) { g.o.x = g.x + d.shadow.dx; g.o.y = g.y + d.shadow.dy; }
       d.shadow = null; syncPanel();
@@ -1311,15 +1327,8 @@ function resize() {
   const r = stage.getBoundingClientRect();
   dpr = window.devicePixelRatio || 1; vw = r.width; vh = r.height;
   const nw = Math.round(vw * dpr), nh = Math.round(vh * dpr);
-  if (cv.width !== nw || cv.height !== nh) {
-    // Setting canvas.width/height clears its bitmap immediately. render() only queues a redraw for the
-    // next animation frame, which leaves a blank gap for the browser to paint in between — very visible
-    // during a continuous resize like the side panel's slide. Redraw synchronously, right here, instead.
-    cv.width = nw; cv.height = nh;
-    draw();
-  } else {
-    render();
-  }
+  if (cv.width !== nw || cv.height !== nh) { cv.width = nw; cv.height = nh; draw(); }
+  else render();
 }
 function fit() {
   if (!vw) return;
@@ -1329,10 +1338,6 @@ function fit() {
   zoomLabel(); render();
 }
 function keepCanvasVisible() {
-  // Called after the available workspace shrinks or grows (the side panel opening/closing, or its
-  // resizer being dragged). If the canvas no longer fully fits at the current zoom, scale it down just
-  // enough to fit again and recentre it — rather than leaving part of it sitting behind the panel.
-  // This eases in gently rather than snapping straight to the new size.
   if (!vw) return;
   const D = S.doc, pad = vw < 600 ? 24 : 64;
   const fitZoom = Math.min((vw - pad) / D.w, (vh - pad) / D.h);
@@ -1386,7 +1391,6 @@ function expandSel(ids) {
   return [...out];
 }
 function normalizeGroups() {
-  // Drop empty groups and keep every group's members next to each other in the stack.
   for (const o of S.objects) if (o.group && !groupById(o.group)) o.group = null;
   const live = new Set(S.objects.map(o => o.group).filter(Boolean));
   S.groups = S.groups.filter(g => live.has(g.id));
@@ -1399,7 +1403,6 @@ function normalizeGroups() {
   }
 }
 function cloneSet(list, off, forceNew) {
-  // Copies keep their grouping: a fully copied group becomes a new group.
   const map = {};
   for (const o of list) {
     if (!o.group || o.group in map) continue;
@@ -1497,7 +1500,6 @@ function cursorForTool() {
 function pos(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 
 function snapTargets(ex) {
-  // Only the canvas edges/centre and the topmost 3 other layers act as snap guides, not every layer.
   const xs = [0, S.doc.w / 2, S.doc.w], ys = [0, S.doc.h / 2, S.doc.h];
   let found = 0;
   for (let i = S.objects.length - 1; i >= 0 && found < 3; i--) {
@@ -1507,19 +1509,6 @@ function snapTargets(ex) {
     found++;
   }
   return { xs, ys };
-}
-function snap(b, dx, dy, T) {
-  const th = 6 / S.zoom, g = [];
-  const pick = (targets, vals) => {
-    let best = null;
-    for (const t of targets) for (const v of vals) { const d = Math.abs(t - v); if (d < th && (!best || d < best.d)) best = { d, off: t - v, t }; }
-    return best;
-  };
-  const bx = pick(T.xs, [b.x0 + dx, (b.x0 + b.x1) / 2 + dx, b.x1 + dx]);
-  if (bx) { dx += bx.off; g.push({ x: bx.t }); }
-  const by = pick(T.ys, [b.y0 + dy, (b.y0 + b.y1) / 2 + dy, b.y1 + dy]);
-  if (by) { dy += by.off; g.push({ y: by.t }); }
-  return { dx, dy, g };
 }
 
 const QI = {
@@ -1618,8 +1607,6 @@ cv.addEventListener('pointerdown', e => {
       const h = hit(p);
       if (h && e.shiftKey && S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = S.sel.filter(id => !g.includes(id)); syncAll(); break; }
       if (h) {
-        // Press on a layer selects it (if needed) and dragging moves it straight away.
-        // Clicking a grouped layer picks up its whole group; double-click to pick one layer inside it.
         if (!S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = e.shiftKey ? [...new Set([...S.sel, ...g])] : g; }
         const movable = selObjs().filter(o => o.visible && !o.locked);
         let objs = movable;
@@ -1628,7 +1615,6 @@ cv.addEventListener('pointerdown', e => {
                  box: unionBox(objs), T: snapTargets(objs.map(o => o.id)), sx: null, sy: null,
                  clickPick: null, clickSingle: h.id, shift: e.shiftKey };
       } else {
-        // Click selects; dragging draws a selection box.
         drag = { mode: 'pending', start: p, hitId: h ? h.id : null, shift: e.shiftKey };
       }
       syncAll();
@@ -1647,7 +1633,7 @@ cv.addEventListener('pointerdown', e => {
     }
     case 'line': {
       const sw = Math.max(1, S.style.lineWidth);
-      const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw, freeNodes: false });
+      const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw, freeNodes: true });
       S.objects.push(o); S.sel = [o.id];
       drag = { mode: 'createLine', o, start: p }; break;
     }
@@ -1708,7 +1694,6 @@ cv.addEventListener('pointermove', e => {
       d.fast = ptrSpeed > FAST_SPEED;
       let tx = 0, ty = 0;
       if ((SET.guides || SET.grid) && !e.ctrlKey && !e.metaKey) {
-        // A line already snapped to holds on a little longer than it takes to catch, so it doesn't flicker at the edge.
         tx = snapAxisSmooth(d, 'X', snapCandidate(d, 'x', dx));
         ty = snapAxisSmooth(d, 'Y', snapCandidate(d, 'y', dy));
       }
@@ -1727,8 +1712,6 @@ cv.addEventListener('pointermove', e => {
       if (d.hy > 0) B = Math.min(1 - fy, 1 - T - 0.02);
       crop.L = L; crop.T = T; crop.R = R; crop.B = B;
       o.x = F.x + L * F.w; o.y = F.y + T * F.h; o.w = (1 - L - R) * F.w; o.h = (1 - T - B) * F.h;
-      // Apply the crop live, not just on commit — otherwise the base image keeps rendering uncropped
-      // and gets squeezed (warped) into the shrinking box while the handle is being dragged.
       o.cL = L; o.cT = T; o.cR = R; o.cB = B;
       render(); break;
     }
@@ -1797,7 +1780,6 @@ function endPointer(e) {
     }
     case 'move':
       clearTimeout(dwellT);
-      // Letting go lands exactly on any snap the layer is easing into.
       if (d.rawDx != null) { d.offX = d.tx; d.offY = d.ty; placeMove(d); }
       if (d.moved || d.dup) commit();
       else { if (d.clickPick) S.sel = [d.clickPick]; else if (!d.shift && S.sel.length > 1) { const g = expandSel([d.clickSingle]); if (!(g.length === S.sel.length && g.every(id => S.sel.includes(id)))) S.sel = g; } syncAll(); }
@@ -1831,13 +1813,11 @@ cv.addEventListener('dblclick', e => {
   const p = toDoc(pos(e)); const h = hit(p);
   if (crop) { commitCrop(); return; }
   if (h && h.type === 'image') { S.sel = [h.id]; startCrop(h); return; }
-  // These just confirm a selection already made by the preceding click, so a plain UI sync is used
-  // here — not the full syncAll(), which can reveal the side panel and recentre the camera.
   if (h && h.group && h.type !== 'text') { S.sel = [h.id]; syncUI(); return; }
   if (h && h.type === 'text') { S.sel = [h.id]; syncUI(); focusText(true); }
 });
 
-let crop = null;  // { o, L, T, R, B } in source fractions, while cropping
+let crop = null;
 function startCrop(o) {
   if (!o || o.type !== 'image') return;
   crop = { o, L: o.cL || 0, T: o.cT || 0, R: o.cR || 0, B: o.cB || 0 };
@@ -1856,9 +1836,7 @@ function cancelCrop() {
   Object.assign(o, { x: cropBase.x, y: cropBase.y, w: cropBase.w, h: cropBase.h, cL: cropBase.L, cT: cropBase.T, cR: cropBase.R, cB: cropBase.B });
   crop = null; syncAll(); toast(''); updateQuickBar();
 }
-// Visible rect of the cropped image in document space (what you currently see).
 function cropFullRect() {
-  // The full source, scaled so the kept region equals the object's current box.
   const o = crop.o, L = crop.L, T = crop.T, R = crop.R, B = crop.B;
   const kw = 1 - L - R, kh = 1 - T - B;
   const fullW = o.w / kw, fullH = o.h / kh;
@@ -1873,7 +1851,6 @@ function cropHandles() {
 function doResize(d, p, e) {
   const O = d.orig, o = d.o, hx = d.hx, hy = d.hy;
   if (isLine(O) && O.freeNodes) {
-    // Free nodes: the dragged end follows the cursor exactly, so both the line's length and its angle can change.
     const fromC = e.altKey;
     const fixed = fromC ? center(O) : toWorld(O, { x: -hx * O.w / 2, y: 0 });
     let ex = p.x, ey = p.y;
@@ -1894,14 +1871,11 @@ function doResize(d, p, e) {
   const dx = p.x - c.x, dy = p.y - c.y;
   const L = { x: dx * Math.cos(a) - dy * Math.sin(a), y: dx * Math.sin(a) + dy * Math.cos(a) };
   const fromC = e.altKey;
-  // Signed sizes: dragging past the opposite side flips the layer.
   let w = O.w, h = O.h, diag = false;
   if (hx) w = fromC ? 2 * hx * L.x : hx * L.x + O.w / 2;
   if (hy) h = fromC ? 2 * hy * L.y : hy * L.y + O.h / 2;
   const keepUniform = O.lockAspect && (O.type === 'text' || O.type === 'image');
   if (hx && hy && !isLine(O) && !keepUniform) {
-    // Corner: proportional near the diagonal. The allowed distance from the diagonal scales with how far
-    // the pointer is from the other handles, so it's tight near them and generous out in the open.
     const ax = fromC ? 0 : -hx * O.w / 2, ay = fromC ? 0 : -hy * O.h / 2;
     const Dx = hx * O.w, Dy = hy * O.h, len2 = Dx * Dx + Dy * Dy;
     const Vx = L.x - ax, Vy = L.y - ay;
@@ -1909,7 +1883,6 @@ function doResize(d, p, e) {
     const sp = toScreen(p);
     let near = Infinity;
     for (const h2 of d.others || []) near = Math.min(near, Math.hypot(h2.x - sp.x, h2.y - sp.y));
-    // Never more than 20 screen px from the diagonal before it lets go into a free stretch.
     const th = clamp(near * 0.3, 3, 20);
     d.wasDiag = perp < Math.min(20, d.wasDiag ? th * 1.6 : th);
     if (d.wasDiag || e.shiftKey) {
@@ -1917,7 +1890,6 @@ function doResize(d, p, e) {
       w = O.w * sc; h = O.h * sc; diag = true;
     }
   } else if (!isLine(O) && (keepUniform || (!!O.lockAspect !== e.shiftKey))) {
-    // Uniform scale: pick the axis the handle actually drives and match the other to it.
     const r = O.w / O.h;
     if (hx && hy) { const s2 = Math.max(Math.abs(w) / O.w, Math.abs(h) / O.h); w = Math.sign(w || 1) * O.w * s2; h = Math.sign(h || 1) * O.h * s2; }
     else if (hx) h = Math.sign(h || 1) * Math.abs(w) / r; else w = Math.sign(w || 1) * Math.abs(h) * r;
@@ -1938,9 +1910,6 @@ function doResize(d, p, e) {
 
 function safeArea() { const m = 28; return { x0: m, y0: m, x1: vw - m, y1: vh - 76 }; }
 function revealObjects(objs) {
-  // After placing something: make sure the new layers are fully on screen, gliding the camera with the
-  // same easing as the canvas intro. This never zooms out just because the view happened to be zoomed in —
-  // it only adjusts the view when the new content would otherwise be clipped or off-screen.
   objs = objs.filter(Boolean); if (!objs.length || !vw) return;
   const b = unionBox(objs), A = safeArea(), aw = A.x1 - A.x0, ah = A.y1 - A.y0;
   let z = S.zoom, px = S.px, py = S.py;
@@ -1957,7 +1926,6 @@ function selBox() {
   return { type: 'box', x: b.x0, y: b.y0, w: Math.max(1, b.x1 - b.x0), h: Math.max(1, b.y1 - b.y0), rot: 0, flipX: false, flipY: false, lockAspect: false };
 }
 function applyGroupScale(d) {
-  // Scale every selected layer by how much the selection box changed, keeping their positions relative to it.
   const A = d.orig, B = d.o;
   const sx = (B.flipX ? -1 : 1) * B.w / A.w, sy = (B.flipY ? -1 : 1) * B.h / A.h;
   const ca = { x: A.x + A.w / 2, y: A.y + A.h / 2 }, cb = { x: B.x + B.w / 2, y: B.y + B.h / 2 };
@@ -1982,7 +1950,6 @@ function finishBrush(pts) {
   const w = Math.max(1, x1 - x0), h = Math.max(1, y1 - y0);
   const o = base('path', { x: x0, y: y0, w, h, fillOn: false, stroke: S.style.fill, strokeWidth: sw, points: pts.map(([x, y]) => [(x - x0) / w, (y - y0) / h]) });
   S.objects.push(o);
-  // Consecutive strokes without leaving the brush are collected into one group.
   const prev = brushRun && byId(brushRun.last);
   if (prev) {
     let gid = brushRun.gid && groupById(brushRun.gid) && prev.group === brushRun.gid ? brushRun.gid : null;
@@ -1997,7 +1964,7 @@ function finishBrush(pts) {
 }
 let brushRun = null;
 function createText(p) {
-  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: true, italic: false, underline: false, align: 'left', lineHeight: 1.2, strokeWidth: 0, fill: S.style.fill, stroke: S.style.stroke });
+  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: true, italic: false, underline: false, align: 'left', lineHeight: 1.2, strokeWidth: S.style.strokeWidth, fill: S.style.fill, stroke: S.style.stroke });
   const m = measureText(o); o.iw = m.iw; o.ih = m.ih; o.w = m.iw; o.h = m.ih; o.x = p.x; o.y = p.y - o.h / 2;
   S.objects.push(o); S.sel = [o.id]; commit(); setTool('select'); focusText(true); revealObjects([o]);
   document.fonts && document.fonts.load(textFont(o)).then(() => { updateText(o); render(); }).catch(() => {});
@@ -2098,7 +2065,6 @@ function showCtx(items, x, y) {
 
 /* ---------- keyboard ---------- */
 const isTyping = el => el && ((el.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'color'].includes(el.type)) || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
-/* ---------- rebindable keyboard shortcuts ---------- */
 const TOOL_FOR_KEY = { toolSelect: 'select', toolText: 'text', toolBrush: 'brush', toolEyedrop: 'eyedrop' };
 const KIND_FOR_KEY = { kindRect: ['shape', 'rect'], kindEllipse: ['shape', 'ellipse'], kindLine: ['line', 'line'], kindArrow: ['line', 'arrow'] };
 const SHORTCUT_DEFS = [
@@ -2110,7 +2076,6 @@ const SHORTCUT_DEFS = [
   { id: 'kindEllipse', label: 'Ellipse', mod: 'none', group: 'Tools' },
   { id: 'kindLine', label: 'Line', mod: 'none', group: 'Tools' },
   { id: 'kindArrow', label: 'Arrow', mod: 'none', group: 'Tools' },
-  { id: 'placeImage', label: 'Add image', mod: 'shift', group: 'Tools' },
   { id: 'undo', label: 'Undo', mod: 'ctrl', group: 'Edit' },
   { id: 'redo', label: 'Redo', mod: 'ctrl-shift', group: 'Edit' },
   { id: 'duplicate', label: 'Duplicate', mod: 'ctrl', group: 'Edit' },
@@ -2124,34 +2089,35 @@ const SHORTCUT_DEFS = [
   { id: 'front', label: 'Bring to front', mod: 'ctrl-shift', group: 'Arrange' },
   { id: 'backward', label: 'Send backward', mod: 'ctrl', group: 'Arrange' },
   { id: 'back', label: 'Send to back', mod: 'ctrl-shift', group: 'Arrange' },
-  { id: 'saveProject', label: 'Save project', mod: 'ctrl', group: 'File & view' },
-  { id: 'open', label: 'Open image', mod: 'ctrl', group: 'File & view' },
-  { id: 'export', label: 'Export', mod: 'ctrl', group: 'File & view' },
+  { id: 'placeImage', label: 'Add image', mod: 'ctrl', group: 'File & view' },
+  { id: 'saveProject', label: 'Export project (.plate)', mod: 'ctrl', group: 'File & view' },
+  { id: 'openProject', label: 'Import project', mod: 'ctrl-shift', group: 'File & view' },
+  { id: 'export', label: 'Export image', mod: 'ctrl', group: 'File & view' },
   { id: 'zoomIn', label: 'Zoom in', mod: 'ctrl', group: 'File & view' },
   { id: 'zoomOut', label: 'Zoom out', mod: 'ctrl', group: 'File & view' },
   { id: 'zoom100', label: 'Zoom to 100%', mod: 'ctrl', group: 'File & view' },
 ];
 const DEFAULT_KEYS = {
   toolSelect: 'v', toolText: 't', toolBrush: 'b', toolEyedrop: 'i',
-  kindRect: 'r', kindEllipse: 'o', kindLine: 'l', kindArrow: 'a', placeImage: 'p',
+  kindRect: 'r', kindEllipse: 'o', kindLine: 'l', kindArrow: 'a', placeImage: 'o',
   undo: 'z', redo: 'z', duplicate: 'd', selectAll: 'a', copy: 'c', cut: 'x', paste: 'v',
   group: 'g', ungroup: 'g', forward: ']', front: ']', backward: '[', back: '[',
-  saveProject: 's', open: 'o', export: 'e', zoomIn: '=', zoomOut: '-', zoom100: '1',
+  saveProject: 's', openProject: 'o', export: 'e', zoomIn: '=', zoomOut: '-', zoom100: '1',
 };
+const KEYS_STORE = 'plate-editor:keys:v2';
 let KEYS = { ...DEFAULT_KEYS };
-try { Object.assign(KEYS, JSON.parse(localStorage.getItem('plate-editor:keys') || '{}')); } catch (e) {}
-function saveKeys() { try { localStorage.setItem('plate-editor:keys', JSON.stringify(KEYS)); } catch (e) {} }
+try { Object.assign(KEYS, JSON.parse(localStorage.getItem(KEYS_STORE) || '{}')); } catch (e) {}
+function saveKeys() { try { localStorage.setItem(KEYS_STORE, JSON.stringify(KEYS)); } catch (e) {} }
 function keyLabel(k) {
   if (!k) return '—';
-  const sym = { '=': '+', ' ': 'Space' }[k] || (k.length === 1 ? k.toUpperCase() : k);
-  return sym;
+  return { '=': '+', ' ': 'Space' }[k] || (k.length === 1 ? k.toUpperCase() : k);
 }
 function chordLabel(def) {
-  const base = keyLabel(KEYS[def.id]);
-  if (def.mod === 'ctrl') return `Ctrl+${base}`;
-  if (def.mod === 'ctrl-shift') return `Ctrl+Shift+${base}`;
-  if (def.mod === 'shift') return `Shift+${base}`;
-  return base;
+  const b = keyLabel(KEYS[def.id]);
+  if (def.mod === 'ctrl') return `Ctrl+${b}`;
+  if (def.mod === 'ctrl-shift') return `Ctrl+Shift+${b}`;
+  if (def.mod === 'shift') return `Shift+${b}`;
+  return b;
 }
 document.addEventListener('keydown', e => {
   if (isTyping(e.target)) { if (e.key === 'Escape') e.target.blur(); return; }
@@ -2159,9 +2125,6 @@ document.addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
   if (e.key === ' ') { e.preventDefault(); if (!spaceDown) { spaceDown = true; if (!drag) cv.style.cursor = 'grab'; } return; }
   if (mod) {
-    // Ctrl+V is handled directly, rather than only through the browser's native paste event, so pasting a
-    // copied layer doesn't depend on that event firing reliably in every browser. An OS-clipboard image
-    // paste (when nothing has been copied inside the app) still goes through the native paste listener.
     if (k === KEYS.paste && clip.length) { e.preventDefault(); pasteInternal(); return; }
     if (k === KEYS.undo && !e.shiftKey) { e.preventDefault(); act('undo'); return; }
     if (k === KEYS.redo && e.shiftKey) { e.preventDefault(); act('redo'); return; }
@@ -2171,10 +2134,12 @@ document.addEventListener('keydown', e => {
     if (k === KEYS.front && e.shiftKey) { e.preventDefault(); act('front'); return; }
     if (k === KEYS.backward && !e.shiftKey) { e.preventDefault(); act('backward'); return; }
     if (k === KEYS.back && e.shiftKey) { e.preventDefault(); act('back'); return; }
+    if (k === KEYS.openProject && e.shiftKey) { e.preventDefault(); act('openProject'); return; }
     if (!e.shiftKey) {
       const simple = { [KEYS.duplicate]: 'duplicate', [KEYS.selectAll]: 'selectAll', [KEYS.copy]: 'copy', [KEYS.cut]: 'cut',
-        [KEYS.saveProject]: 'saveProject', [KEYS.open]: 'open', [KEYS.export]: 'export',
+        [KEYS.saveProject]: 'saveProject', [KEYS.placeImage]: 'place', [KEYS.export]: 'export',
         [KEYS.zoom100]: 'zoom100', [KEYS.zoomIn]: 'zoomIn', [KEYS.zoomOut]: 'zoomOut' };
+      delete simple.null; delete simple.undefined;
       if (simple[k]) { e.preventDefault(); act(simple[k]); return; }
     }
     if (k === '0') { e.preventDefault(); act('zoomFit'); }
@@ -2183,7 +2148,13 @@ document.addEventListener('keydown', e => {
   if (e.altKey && k === 'n') { e.preventDefault(); act('new'); return; }
   if (e.key === 'Delete' || e.key === 'Backspace') { if (S.sel.length) { e.preventDefault(); act('delete'); } return; }
   if (crop) { if (e.key === 'Enter') { e.preventDefault(); commitCrop(); return; } if (e.key === 'Escape') { cancelCrop(); return; } }
-  if (e.key === 'Escape') { hideMenus(); if (S.sel.length) { S.sel = []; syncAll(); } else setTool('select'); return; }
+  if (e.key === 'Escape') {
+    const pickerOpen = $('#picker').classList.contains('open') || $('#picker-dual').classList.contains('open');
+    closePicker(); closeDual(); hideMenus();
+    if (pickerOpen) return;
+    if (S.sel.length) { S.sel = []; syncAll(); } else setTool('select');
+    return;
+  }
   if (e.key === 'Tab') { e.preventDefault(); togglePanels(); return; }
   if (e.key.startsWith('Arrow') && S.sel.length) {
     e.preventDefault();
@@ -2193,7 +2164,6 @@ document.addEventListener('keydown', e => {
     for (const o of selObjs()) if (!o.locked) { o.x += dx; o.y += dy; }
     clearTimeout(nudgeT); nudgeT = setTimeout(commit, 350); syncPanel(); render(); return;
   }
-  if (k === KEYS.placeImage && e.shiftKey) { act('place'); return; }
   if (k === '=' || k === '+') { act('zoomIn'); return; }
   if (k === '-') { act('zoomOut'); return; }
   if (e.shiftKey || e.altKey) return;
@@ -2212,6 +2182,7 @@ document.addEventListener('paste', async e => {
 });
 
 /* ---------- drag & drop ---------- */
+const isProjectFile = f => /\.(plate|json)$/i.test(f.name);
 let dragDepth = 0;
 stage.addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; stage.classList.add('dropping'); });
 stage.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; stage.classList.remove('dropping'); } });
@@ -2222,7 +2193,7 @@ stage.addEventListener('drop', async e => {
   const at = toDoc(pos(e));
   for (const f of files) {
     if (f.type.startsWith('image/')) await placeFile(f, at);
-    else if (f.name.endsWith('.json')) await openProjectFile(f);
+    else if (isProjectFile(f)) await openProjectFile(f);
   }
 });
 
@@ -2249,29 +2220,50 @@ function openAsDoc(src, im, name) {
   S.sel = []; setTool('select'); commit(); fit();
   $('#e-name').value = cleanName(name) || 'plate-image';
 }
-async function openFile(file) {
-  try { const src = await readFile(file); const im = await loadImage(src); openAsDoc(src, im, file.name); }
-  catch (err) { toast('That file could not be read as an image.'); }
+
+/* ---------- .plate project files ---------- */
+// A .plate file is JSON: the canvas, every layer (images embedded as data URLs) and the groups.
+function projectBaseName() {
+  const n = ($('#e-name').value || '').replace(/[\\/:*?"<>|]/g, '').trim();
+  return !n || n === 'plate-image' ? 'plate-project' : n;
+}
+async function saveProject() {
+  const data = JSON.stringify({ app: 'plate', kind: 'project', version: 2, savedAt: new Date().toISOString(), doc: S.doc, objects: S.objects, groups: S.groups });
+  const name = projectBaseName();
+  if (downloads) {
+    // Inside Claude, downloads only allow known file types, so the project is saved as .plate.json.
+    // Import reads .plate and .plate.json alike.
+    const filename = name + '.plate.json';
+    try { await downloads.save({ filename, data }); toast(`Exported ${filename}`); }
+    catch (err) {
+      const code = err && err.code;
+      toast(code === 'declined' ? 'Export canceled.' : code === 'rate_limited' ? 'A save prompt is already open.' : 'Saving files is not available in this view.');
+    }
+    return;
+  }
+  // Opened as a standalone file: a normal browser download with the .plate extension.
+  try {
+    const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = name + '.plate';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast(`Exported ${name}.plate`);
+  } catch (err) { toast('Saving files is not available in this view.'); }
 }
 async function openProjectFile(file) {
   try {
     const data = JSON.parse(await file.text());
     if (!data || !data.doc || !Array.isArray(data.objects)) throw new Error('bad');
-    S.doc = { w: 1200, h: 800, bg: '#ffffff', transparent: false, ...data.doc };
+    if (crop) { crop = null; }
+    if (editingId) endTextEdit(false);
+    S.doc = { w: 1200, h: 800, bg: '#ffffff', transparent: false, bgSrc: null, bgFit: 'cover', ...data.doc };
     S.objects = data.objects.map(o => ({ ...base(o.type || 'rect'), ...o }));
     S.groups = Array.isArray(data.groups) ? data.groups : [];
-    S.sel = []; leaveSetup(); commit(); fit(); waitFonts();
+    S.sel = []; leaveSetup(); setTool('select'); commit(); fit(); waitFonts();
+    const nm = (file.name || '').replace(/(\.plate)?\.json$/i, '').replace(/\.plate$/i, '').slice(0, 40);
+    if (nm) $('#e-name').value = nm;
+    toast(`Imported ${file.name}`);
   } catch (err) { toast('That file is not a Plate project.'); }
-}
-async function saveFile(filename, data) {
-  if (!downloads) { toast('Saving files is not available in this view.'); return false; }
-  try { await downloads.save({ filename, data }); return true; }
-  catch (err) {
-    if (err && err.code === 'declined') toast('Save canceled.');
-    else if (err && err.code === 'rate_limited') toast('A save prompt is already open.');
-    else toast('Saving files is not available in this view.');
-    return false;
-  }
 }
 
 /* ---------- arrange & edit ---------- */
@@ -2326,10 +2318,9 @@ function act(a) {
     case 'undo': undo(); break;
     case 'redo': redo(); break;
     case 'new': enterSetup(true); break;
-    case 'open': $('#f-open').click(); break;
     case 'place': $('#f-place').click(); break;
     case 'openProject': $('#f-project').click(); break;
-    case 'saveProject': saveFile(($('#e-name').value || 'plate-project') + '.json', JSON.stringify({ app: 'plate', version: 1, doc: S.doc, objects: S.objects, groups: S.groups })); break;
+    case 'saveProject': saveProject(); break;
     case 'export': openExport(); break;
     case 'copy': if (sel.length) { clip = sel.map(o => ({ ...o })); pasteN = 0; toast(`Copied ${sel.length} layer${sel.length > 1 ? 's' : ''}`); } break;
     case 'cut': if (sel.length) { clip = sel.map(o => ({ ...o })); pasteN = -1; S.objects = S.objects.filter(o => !S.sel.includes(o.id)); S.sel = []; commit(); } break;
@@ -2446,7 +2437,7 @@ function syncPanel() {
   $('#props').hidden = !sel.length;
   if (!sel.length) return;
   const o = sel[0];
-  $('#stroke-lbl').textContent = (isLine(o) || o.type === 'path') ? 'Color' : (o.type === 'text' ? 'Outline' : 'Stroke');
+  $('#stroke-lbl').textContent = (isLine(o) || o.type === 'path') ? 'Color' : 'Outline';
   for (const el of propEls) {
     if (el === document.activeElement) continue;
     const prop = el.dataset.prop; let v = o[prop];
@@ -2459,10 +2450,9 @@ function syncPanel() {
     }
     else el.value = fmt(prop, v);
   }
-  // Colour chips
   $$('#props .cbtn[data-color]').forEach(btn => {
     const prop = btn.dataset.color, val = o[prop];
-    const none = (prop === 'fill' && !o.fillOn) || (prop === 'stroke' && isShape(o) && !o.strokeWidth);
+    const none = (prop === 'fill' && !o.fillOn) || (prop === 'stroke' && (isShape(o) || o.type === 'text') && !o.strokeWidth);
     btn.style.setProperty('--c', none ? 'transparent' : (val || '#000000'));
     btn.querySelector('.chip').style.opacity = none ? 0.25 : 1;
   });
@@ -2493,8 +2483,6 @@ $('#props').addEventListener('input', e => {
   const el = e.target.closest('[data-prop]'); if (!el) return;
   let v = readVal(el); if (v === undefined) return;
   const prop = el.dataset.prop;
-  // A slider's range and its editable number box share a row and must stay in sync, each clamped to
-  // the same bounds — typing a number past the slider's limits clamps it the same way dragging would.
   const row = el.closest('.slider');
   let range, svin;
   if (row) {
@@ -2517,14 +2505,13 @@ $('#props').addEventListener('input', e => {
     setProp(o, prop, v);
   }
   if (prop === 'fill') { selObjs().forEach(o => { if (isShape(o) || o.type === 'text') o.fillOn = true; }); }
-  if (['fill','stroke','fillOn'].includes(prop)) syncSwatches();
+  if (['fill','stroke','fillOn','strokeWidth'].includes(prop)) syncSwatches();
   if (['w','h','fontSize','text','font','lineHeight','bold','italic','strokeWidth'].includes(prop)) syncPanel();
   render();
   if (prop === 'text') renderLayers();
 });
 $('#props').addEventListener('change', e => { if (e.target.closest('[data-prop]')) commit(); });
 
-// drag-to-scrub labels
 $$('.scrub').forEach(lbl => {
   const input = lbl.parentElement.querySelector('input');
   lbl.addEventListener('pointerdown', e => {
@@ -2601,7 +2588,7 @@ function groupRow(g, mem) {
   const vis = mem.some(m => m.visible), locked = mem.every(m => m.locked);
   const cls = nOn === mem.length ? ' on' : nOn ? ' part' : '';
   let thumb = `<svg class="i" viewBox="0 0 24 24">${FOLDER}</svg>`;
-  try { thumb = `<img src="${groupThumbURL(mem)}" alt="">`; } catch (e) { /* mixed-origin images etc: fall back to the folder icon */ }
+  try { thumb = `<img src="${groupThumbURL(mem)}" alt="">`; } catch (e) { }
   return `<li class="layer lgroup${cls}${vis ? '' : ' hidden-l'}" draggable="true" data-gid="${g.id}">
       <button class="ibtn caret${g.open ? ' open' : ''}" aria-expanded="${g.open}" aria-label="${g.open ? 'Collapse' : 'Expand'} group"><svg class="i" viewBox="0 0 24 24">${CHEVRON}</svg></button>
       <span class="th">${thumb}</span><span class="nm" title="Double-click to rename">${esc(g.name)}</span><span class="cnt">${mem.length}</span>
@@ -2703,12 +2690,12 @@ ul.addEventListener('drop', e => {
   const block = S.objects.filter(o => dd.ids.includes(o.id));
   S.objects = S.objects.filter(o => !dd.ids.includes(o.id));
   const span = gid => { const idx = []; S.objects.forEach((o, i) => { if (o.group === gid) idx.push(i); }); return idx.length ? [idx[0], idx[idx.length - 1]] : null; };
-  let at, join;  // join: undefined = keep membership, null = leave groups, id = join that group
+  let at, join;
   if (li.dataset.gid) {
     const sp = span(li.dataset.gid) || [0, -1];
-    if (above) { at = sp[1] + 1; join = dd.gid ? undefined : null; }       // above the group header: outside, above the group
-    else if (dd.gid) { at = sp[0]; }                                        // a group dropped below a header goes under that group
-    else { at = sp[1] + 1; join = li.dataset.gid; }                         // a layer dropped just under a header joins at the top of the group
+    if (above) { at = sp[1] + 1; join = dd.gid ? undefined : null; }
+    else if (dd.gid) { at = sp[0]; }
+    else { at = sp[1] + 1; join = li.dataset.gid; }
   } else {
     const t = byId(li.dataset.id); let ti = S.objects.indexOf(t);
     if (dd.gid && t.group) { const sp = span(t.group); at = above ? sp[1] + 1 : sp[0]; }
@@ -2721,8 +2708,6 @@ ul.addEventListener('dragend', () => { dragData = null; $$('.layer').forEach(l =
 
 /* ---------- status ---------- */
 function editStatusField(elId, key, labels, getValues, onCommit) {
-  // Double-click a status bar field to edit it inline: swaps its text for small number inputs, keeping
-  // the other status updates from clobbering it mid-edit (guarded by the statusEditing flag above).
   const el = $(elId);
   el.addEventListener('dblclick', () => {
     if (!selObjs().length || el.querySelector('input')) return;
@@ -2768,7 +2753,7 @@ editStatusField('#st-doc', 'doc', ['W', 'H'], () => {
   commit();
 });
 let lastCursorDoc = null;
-let statusEditing = null; // 'pos' or 'doc' while one of the status bar fields is being typed into
+let statusEditing = null;
 function showPos(p) {
   lastCursorDoc = p;
   const sel = selObjs();
@@ -2785,20 +2770,19 @@ function updateStatus() {
     $('#st-sel').textContent = '';
     return;
   }
-  // With something selected, this row shows the selection's own position and size instead of the canvas's.
   const b = sel.length === 1 ? { x0: sel[0].x, y0: sel[0].y, x1: sel[0].x + sel[0].w, y1: sel[0].y + sel[0].h } : unionBox(sel);
   if (statusEditing !== 'pos') $('#st-pos').textContent = `X ${Math.round(b.x0)}  Y ${Math.round(b.y0)}`;
   if (statusEditing !== 'doc') $('#st-doc').textContent = `${Math.round(b.x1 - b.x0)} × ${Math.round(b.y1 - b.y0)} px`;
   $('#st-sel').textContent = sel.length === 1 ? `${sel[0].name}${sel[0].rot ? ` · ${sel[0].rot}°` : ''}` : `${sel.length} layers selected`;
 }
 
-/* ---------- options bar & swatches ---------- */
+/* ---------- options bar ---------- */
 const fontOpts = FONTS.map(f => `<option value="${f}" style="font-family:${fontStack(f).replace(/"/g, "'")}">${f}</option>`).join('');
 $('#o-font').innerHTML = fontOpts; $('#p-font').innerHTML = fontOpts;
 $('#o-font').value = S.style.font;
 $('#o-font').addEventListener('change', e => S.style.font = e.target.value);
 $('#o-fs').addEventListener('change', e => S.style.fontSize = clamp(+e.target.value || 72, 4, 1000));
-$('#o-sw').addEventListener('change', e => S.style.strokeWidth = Math.max(0, +e.target.value || 0));
+$('#o-sw').addEventListener('change', e => { S.style.strokeWidth = Math.max(0, +e.target.value || 0); syncSwatches(); });
 $('#o-rad').addEventListener('change', e => S.style.radius = Math.max(0, +e.target.value || 0));
 $('#o-lw').addEventListener('change', e => S.style.lineWidth = Math.max(1, +e.target.value || 1));
 $('#o-bs').addEventListener('input', e => { S.style.brush = +e.target.value; $('#o-bs-out').value = e.target.value; });
@@ -2806,9 +2790,9 @@ $('#o-bs-out').addEventListener('input', e => {
   const n = clamp(Math.round(+e.target.value || 1), 1, 200);
   S.style.brush = n; $('#o-bs').value = n;
 });
+
 /* ---------- colour helpers ---------- */
 function parseColor(str) {
-  // Returns {h,s,v,a} from a #rgb/#rrggbb/#rrggbbaa string. 'none'/'' -> null (no colour).
   if (!str || str === 'none' || str === 'transparent') return null;
   let hex = String(str).replace('#', '');
   if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -2828,100 +2812,179 @@ function hsvHex(c, withAlpha) {
   if (withAlpha && c.a < 0.999) hex += to(c.a);
   return hex;
 }
-const colorHex = str => { const c = parseColor(str); return c ? hsvHex(c, false) : '#000000'; };
 const isNone = str => parseColor(str) === null;
 
-function syncSwatches() {
-  const sw = $('#sw-fg'), o = selObjs().find(x => x.type !== 'image');
-  let fill = S.style.fill;
-  if (o) fill = (isLine(o) || o.type === 'path') ? o.stroke : o.fill;
-  sw.style.cssText = `--c:${fill};background-image:var(--checker);background-size:9px 9px`;
-  sw.style.setProperty('--c', fill);
-  sw.style.position = 'relative';
-  sw.innerHTML = `<span style="position:absolute;inset:0;border-radius:inherit;background:${fill}"></span>`;
-}
-/* ---------- colour picker ---------- */
-const PRESETS = ['#000000','#ffffff','#9aa2ae','#ff6b5e','#f2b544','#5fd068','#2f6fed','#9b5de5','#f15bb5','#00bbf9','#1f232a','#e9ecf1'];
-const PK = { target: null, c: { h: 0, s: 0, v: 0, a: 1 }, allowNone: false, none: false, onChange: null, onCommit: null, live: false };
-function openPicker(anchor, opts) {
-  Object.assign(PK, { allowNone: false, none: false, live: false }, opts);
-  const c = parseColor(opts.value);
-  PK.none = c === null && PK.allowNone; PK.c = c || { h: 0, s: 0, v: 0, a: 1 };
-  $('#pk-title').textContent = opts.title || 'Colour';
-  $('#pk-none-row').hidden = !PK.allowNone;
-  $('#pk-alpha').parentElement; // no-op
-  $('#pk-presets').innerHTML = PRESETS.map(p => `<div class="pre" data-pre="${p}" style="--pcc:${p}" title="${p}"></div>`).join('');
-  drawPicker();
-  const pk = $('#picker'); pk.classList.add('open');
-  const r = anchor.getBoundingClientRect(), w = pk.offsetWidth, h = pk.offsetHeight;
-  let x = r.left, y = r.bottom + 6;
-  if (x + w > innerWidth - 8) x = innerWidth - w - 8;
-  if (y + h > innerHeight - 8) y = Math.max(8, r.top - h - 6);
-  pk.style.left = Math.max(8, x) + 'px'; pk.style.top = y + 'px';
-}
-function closePicker() { $('#picker').classList.remove('open'); PK.target = null; }
-function pickerValue() { return PK.none ? 'none' : hsvHex(PK.c, true); }
-function drawPicker() {
-  const c = PK.c, pk = $('#picker');
-  const solid = hsvHex({ ...c, a: 1 }, false);
-  pk.style.setProperty('--pc', PK.none ? 'transparent' : hsvHex(c, true));
-  $('#pk-sv').style.background = `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${c.h},100%,50%))`;
-  $('#pk-sv').querySelector('.knob').style.cssText = `left:${c.s * 100}%;top:${(1 - c.v) * 100}%`;
-  $('#pk-hue').querySelector('.knob').style.left = (c.h / 360 * 100) + '%';
-  $('#pk-alpha').style.setProperty('--solid', solid);
-  $('#pk-alpha .fill').style.setProperty('--solid', solid);
-  $('#pk-alpha').querySelector('.knob').style.left = (c.a * 100) + '%';
-  if (document.activeElement !== $('#pk-hex')) $('#pk-hex').value = PK.none ? '' : hsvHex(c, c.a < 0.999).toUpperCase();
-  if (document.activeElement !== $('#pk-alpha-num')) $('#pk-alpha-num').value = Math.round(c.a * 100);
-  $('#pk-none').checked = PK.none;
-  $('#pk-hex').disabled = $('#pk-alpha-num').disabled = PK.none;
-}
-function pickerChanged(commitNow) {
-  drawPicker();
-  if (PK.onChange) PK.onChange(pickerValue());
-  if (commitNow && PK.onCommit) PK.onCommit(pickerValue());
-}
-function dragArea(el, fn) {
-  el.addEventListener('pointerdown', e => {
+/* ---------- colour picker component ---------- */
+// One picker = saturation/value square, hue bar, opacity bar, hex + opacity fields and presets.
+// The single picker (panel colour buttons) and the two-up fill/outline picker both use it.
+const PRESETS = ['#000000','#ffffff','#9aa2ae','#ff6b5e','#f2b544','#5fd068','#2f6fed','#9b5de5','#f15bb5','#00bbf9','#1f232a','#e9ecf1','#ff9f1c','#2ec4b6','#8d6e63','#ffd6e0'];
+function makePicker(host) {
+  host.innerHTML = `
+    <div class="sv"><div class="knob"></div></div>
+    <div class="bar hue"><div class="knob"></div></div>
+    <div class="bar alpha"><div class="fill"></div><div class="knob"></div></div>
+    <div class="frow"><label>Hex</label><input class="hx" spellcheck="false" maxlength="9" aria-label="Hex colour"><input class="al" inputmode="numeric" aria-label="Opacity percent"><span style="color:var(--muted);font-size:11px">%</span></div>
+    <div class="swatches-row">${PRESETS.map(p => `<div class="pre" data-pre="${p}" style="--pcc:${p}" title="${p}"></div>`).join('')}</div>
+    <label class="none" hidden><input type="checkbox"> No colour (transparent)</label>`;
+  const q = s => host.querySelector(s);
+  const sv = q('.sv'), hue = q('.hue'), alpha = q('.alpha'), hex = q('.hx'), anum = q('.al'), noneRow = q('.none'), noneCb = q('.none input');
+  const P = { c: { h: 0, s: 0, v: 0, a: 1 }, none: false, allowNone: false, onChange: null, onCommit: null, onDraw: null };
+  P.value = () => P.none ? 'none' : hsvHex(P.c, true);
+  P.set = (value, allowNone) => {
+    const c = parseColor(value);
+    P.allowNone = !!allowNone; P.none = c === null && P.allowNone; P.c = c || { h: 0, s: 0, v: 0, a: 1 };
+    noneRow.hidden = !P.allowNone; draw();
+  };
+  function draw() {
+    const c = P.c, solid = hsvHex({ ...c, a: 1 }, false);
+    sv.style.background = `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${c.h},100%,50%))`;
+    sv.querySelector('.knob').style.cssText = `left:${c.s * 100}%;top:${(1 - c.v) * 100}%`;
+    hue.querySelector('.knob').style.left = (c.h / 360 * 100) + '%';
+    alpha.style.setProperty('--solid', solid);
+    alpha.querySelector('.fill').style.setProperty('--solid', solid);
+    alpha.querySelector('.knob').style.left = (c.a * 100) + '%';
+    if (document.activeElement !== hex) hex.value = P.none ? '' : hsvHex(c, c.a < 0.999).toUpperCase();
+    if (document.activeElement !== anum) anum.value = Math.round(c.a * 100);
+    noneCb.checked = P.none; hex.disabled = anum.disabled = P.none;
+    if (P.onDraw) P.onDraw(P.none ? 'transparent' : hsvHex(c, true));
+  }
+  const changed = commitNow => { draw(); if (P.onChange) P.onChange(P.value()); if (commitNow && P.onCommit) P.onCommit(P.value()); };
+  const area = (el, fn) => el.addEventListener('pointerdown', e => {
     e.preventDefault(); el.setPointerCapture(e.pointerId);
     const r = el.getBoundingClientRect();
-    const mv = ev => { fn((ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height); pickerChanged(false); };
-    const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); pickerChanged(true); };
+    const mv = ev => { fn((ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height); changed(false); };
+    const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); changed(true); };
     el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); mv(e);
   });
+  area(sv, (x, y) => { P.none = false; P.c.s = clamp(x, 0, 1); P.c.v = clamp(1 - y, 0, 1); });
+  area(hue, x => { P.none = false; P.c.h = clamp(x, 0, 1) * 360; });
+  area(alpha, x => { P.none = false; P.c.a = clamp(x, 0, 1); });
+  hex.addEventListener('input', e => { const v = e.target.value.trim(); const c = parseColor(v.startsWith('#') ? v : '#' + v); if (c && /^#?([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v)) { P.c = c; P.none = false; draw(); if (P.onChange) P.onChange(P.value()); } });
+  hex.addEventListener('change', () => changed(true));
+  anum.addEventListener('input', e => { const v = clamp(+e.target.value / 100, 0, 1); if (!isNaN(v)) { P.c.a = v; P.none = false; draw(); if (P.onChange) P.onChange(P.value()); } });
+  anum.addEventListener('change', () => changed(true));
+  noneCb.addEventListener('change', e => { P.none = e.target.checked; changed(true); });
+  q('.swatches-row').addEventListener('click', e => { const d = e.target.closest('[data-pre]'); if (!d) return; const keep = P.c.a; P.c = parseColor(d.dataset.pre); P.c.a = keep; P.none = false; changed(true); });
+  return P;
 }
-dragArea($('#pk-sv'), (x, y) => { PK.none = false; PK.c.s = clamp(x, 0, 1); PK.c.v = clamp(1 - y, 0, 1); });
-dragArea($('#pk-hue'), x => { PK.none = false; PK.c.h = clamp(x, 0, 1) * 360; });
-dragArea($('#pk-alpha'), x => { PK.none = false; PK.c.a = clamp(x, 0, 1); });
-$('#pk-hex').addEventListener('input', e => { const c = parseColor(e.target.value.startsWith('#') ? e.target.value : '#' + e.target.value); if (c) { PK.c = c; PK.none = false; drawPicker(); if (PK.onChange) PK.onChange(pickerValue()); } });
-$('#pk-hex').addEventListener('change', () => pickerChanged(true));
-$('#pk-alpha-num').addEventListener('input', e => { const v = clamp(+e.target.value / 100, 0, 1); if (!isNaN(v)) { PK.c.a = v; PK.none = false; drawPicker(); if (PK.onChange) PK.onChange(pickerValue()); } });
-$('#pk-alpha-num').addEventListener('change', () => pickerChanged(true));
-$('#pk-none').addEventListener('change', e => { PK.none = e.target.checked; pickerChanged(true); });
-$('#pk-presets').addEventListener('click', e => { const d = e.target.closest('[data-pre]'); if (!d) return; const keep = PK.c.a; PK.c = parseColor(d.dataset.pre); PK.c.a = keep; PK.none = false; pickerChanged(true); });
-document.addEventListener('pointerdown', e => { if ($('#picker').classList.contains('open') && !e.target.closest('#picker') && !e.target.closest('.cbtn') && !e.target.closest('#sw-fg')) closePicker(); }, true);
+function placePopup(pk, x, y) {
+  const w = pk.offsetWidth, h = pk.offsetHeight;
+  pk.style.left = clamp(x, 8, Math.max(8, innerWidth - w - 8)) + 'px';
+  pk.style.top = clamp(y, 8, Math.max(8, innerHeight - h - 8)) + 'px';
+}
 
-// left swatch -> style fill / selected layers
-$('#sw-fg').addEventListener('click', () => {
-  openPicker($('#sw-fg'), {
-    title: 'Fill colour', value: S.style.fill, allowNone: false,
-    onChange: v => { S.style.fill = colorHex(v) === v ? v : v; S.style.fill = v === 'none' ? S.style.fill : v;
-      for (const o of selObjs()) { if (o.type === 'image') continue; if (isLine(o) || o.type === 'path') o.stroke = v; else { o.fill = v; o.fillOn = true; } }
-      syncSwatches(); syncPanel(); render(); },
-    onCommit: () => { if (selObjs().some(o => o.type !== 'image')) commit(); }
-  });
-});
+/* single picker: panel colour buttons and the canvas background */
+const PK1 = makePicker($('#pk-single'));
+PK1.onDraw = css => $('#picker').style.setProperty('--pc', css);
+function openPicker(anchor, opts) {
+  closeDual();
+  PK1.onChange = opts.onChange || null; PK1.onCommit = opts.onCommit || null;
+  $('#pk-title').textContent = opts.title || 'Colour';
+  PK1.set(opts.value, opts.allowNone);
+  const pk = $('#picker'); pk.classList.add('open');
+  const r = anchor.getBoundingClientRect();
+  let y = r.bottom + 6;
+  if (y + pk.offsetHeight > innerHeight - 8) y = r.top - pk.offsetHeight - 6;
+  placePopup(pk, r.left, y);
+}
+function closePicker() { $('#picker').classList.remove('open'); }
+
+/* two-up picker: fill on the left, outline + thickness on the right */
+const PF = makePicker($('#pd-fill')), PS = makePicker($('#pd-stroke'));
+PF.onDraw = css => $('#pd-fill-col').style.setProperty('--pc', css);
+PS.onDraw = css => $('#pd-stroke-col').style.setProperty('--pc', css);
+let dualW = 0;
+const dualTargets = () => selObjs().filter(o => o.type !== 'image');
+const outlineTargets = () => dualTargets().filter(o => !lineish(o));
+function currentLook() {
+  const t = dualTargets(), o = t[0], so = t.find(x => !lineish(x));
+  return {
+    fill: o ? (lineish(o) ? o.stroke : o.fill) : S.style.fill,
+    fillOn: o ? (lineish(o) ? true : !!o.fillOn) : true,
+    stroke: so ? so.stroke : S.style.stroke,
+    width: so ? (so.strokeWidth || 0) : (S.style.strokeWidth || 0),
+    outline: !t.length || !!so,
+    onlyLines: t.length > 0 && !so
+  };
+}
+function syncSwatches() {
+  const sw = $('#sw-fg'), L = currentLook();
+  sw.style.setProperty('--sw-fill', L.fillOn ? L.fill : 'transparent');
+  sw.style.setProperty('--sw-stroke', L.stroke);
+  sw.classList.toggle('no-stroke', !L.outline || !L.width);
+  const what = S.sel.length ? 'selection' : 'new layers';
+  sw.title = L.onlyLines ? `Line colour for the ${what}` : `Fill and outline for the ${what}${L.outline && L.width ? ` (outline ${L.width}px)` : ', no outline'}`;
+}
+function showDualWidth() {
+  $('#pd-w').value = Math.min(100, dualW);
+  if (document.activeElement !== $('#pd-w-num')) $('#pd-w-num').value = dualW;
+}
+function setDualW(n) {
+  dualW = clamp(Math.round(+n) || 0, 0, 200);
+  S.style.strokeWidth = dualW; $('#o-sw').value = dualW;
+  for (const o of outlineTargets()) setProp(o, 'strokeWidth', dualW);
+  showDualWidth();
+}
+const afterDual = () => { syncSwatches(); syncPanel(); render(); };
+PF.onChange = v => {
+  const none = isNone(v);
+  if (!none) S.style.fill = v;
+  for (const o of dualTargets()) {
+    if (lineish(o)) { if (!none) o.stroke = v; }
+    else { o.fillOn = !none; if (!none) o.fill = v; }
+  }
+  afterDual();
+};
+PF.onCommit = () => { if (dualTargets().length) commit(); };
+PS.onChange = v => {
+  S.style.stroke = v;
+  for (const o of outlineTargets()) o.stroke = v;
+  // Picking an outline colour while the thickness is 0 gives it a visible width straight away.
+  if (dualW === 0) setDualW(4);
+  afterDual();
+};
+PS.onCommit = () => { if (outlineTargets().length) commit(); };
+$('#pd-w').addEventListener('input', e => { setDualW(e.target.value); afterDual(); });
+$('#pd-w-num').addEventListener('input', e => { if (e.target.value === '') return; setDualW(e.target.value); afterDual(); });
+['#pd-w', '#pd-w-num'].forEach(s => $(s).addEventListener('change', () => { showDualWidth(); if (outlineTargets().length) commit(); }));
+function openDual() {
+  closePicker(); hideMenus();
+  const L = currentLook(), t = dualTargets();
+  PF.set(L.fillOn ? L.fill : 'none', t.length > 0 && t.every(o => !lineish(o)));
+  PS.set(L.stroke, false);
+  dualW = L.width; showDualWidth();
+  $('#pd-stroke-col').classList.toggle('off', !L.outline);
+  $('#pd-note').hidden = L.outline;
+  $('#pd-fill-sub').textContent = L.onlyLines ? 'Line colour' : 'Inside colour';
+  const pk = $('#picker-dual'); pk.classList.add('open');
+  $('#sw-fg').setAttribute('aria-expanded', 'true');
+  const r = $('#sw-fg').getBoundingClientRect();
+  let x = r.right + 10;
+  if (x + pk.offsetWidth > innerWidth - 8) x = innerWidth - pk.offsetWidth - 8;
+  placePopup(pk, x, r.top - 60);
+}
+function closeDual() { $('#picker-dual').classList.remove('open'); $('#sw-fg').setAttribute('aria-expanded', 'false'); }
+$('#sw-fg').addEventListener('click', () => { if ($('#picker-dual').classList.contains('open')) closeDual(); else openDual(); });
+document.addEventListener('pointerdown', e => {
+  if ($('#picker').classList.contains('open') && !e.target.closest('#picker') && !e.target.closest('.cbtn')) closePicker();
+  if ($('#picker-dual').classList.contains('open') && !e.target.closest('#picker-dual') && !e.target.closest('#sw-fg')) closeDual();
+}, true);
+
 // panel colour buttons
 $('#props').addEventListener('click', e => {
   const btn = e.target.closest('.cbtn[data-color]'); if (!btn) return;
   const prop = btn.dataset.color, o0 = selObjs()[0]; if (!o0) return;
-  const label = { fill: 'Fill colour', stroke: isLine(o0) || o0.type === 'path' ? 'Line colour' : o0.type === 'text' ? 'Outline colour' : 'Stroke colour', shColor: 'Shadow colour' }[prop];
+  const label = { fill: 'Fill colour', stroke: lineish(o0) ? 'Line colour' : 'Outline colour', shColor: 'Shadow colour' }[prop];
   openPicker(btn, {
     title: label, value: o0[prop], allowNone: prop === 'fill' || prop === 'stroke',
     onChange: v => {
       for (const o of selObjs()) {
         if (prop === 'fill') { if (!(isShape(o) || o.type === 'text')) continue; o.fillOn = !isNone(v); if (!isNone(v)) o.fill = v; }
-        else if (prop === 'stroke') { if (o.type === 'image') continue; o.stroke = isNone(v) ? o.stroke : v; if (prop === 'stroke' && (isShape(o)) && isNone(v)) o.strokeWidth = 0; }
+        else if (prop === 'stroke') {
+          if (o.type === 'image') continue;
+          if (!isNone(v)) o.stroke = v;
+          if (!lineish(o)) { if (isNone(v)) setProp(o, 'strokeWidth', 0); else if (!o.strokeWidth) setProp(o, 'strokeWidth', 4); }
+        }
         else o[prop] = isNone(v) ? '#000000' : v;
       }
       syncSwatches(); syncPanel(); render();
@@ -2973,7 +3036,6 @@ $$('.tool[data-tool]').forEach(b => {
   const flyoutOpenHere = () => $('#flyout').classList.contains('open') && $('#flyout').dataset.group === b.dataset.tool;
   b.addEventListener('click', e => {
     if (longPressed) { longPressed = false; return; }
-    // Clicking the button again while its menu is open closes the menu.
     if (g && wasOpen) { wasOpen = false; hideMenus(); return; }
     if (g && (e.target.closest('.more') || S.tool === b.dataset.tool)) { openFlyout(b.dataset.tool, b); return; }
     setTool(b.dataset.tool);
@@ -2988,18 +3050,13 @@ $$('.tool[data-tool]').forEach(b => {
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, () => clearTimeout(press)));
 });
 
-$('#f-open').addEventListener('change', e => { const f = e.target.files[0]; if (f) openFile(f); e.target.value = ''; });
 $('#f-place').addEventListener('change', async e => { for (const f of [...e.target.files]) await placeFile(f); e.target.value = ''; });
 $('#f-project').addEventListener('change', e => { const f = e.target.files[0]; if (f) openProjectFile(f); e.target.value = ''; });
 
-/* ---------- side panel: pushes the canvas over as it slides in and out ---------- */
+/* ---------- side panel ---------- */
 const panels = $('#panels');
 let panelAnimT = 0;
 function drivePanelResize(rescale) {
-  // Keeps the canvas correctly sized and redrawn on every frame of the panel's width transition —
-  // relying on the ResizeObserver alone can lag behind a fast CSS transition and leave the canvas blank.
-  // Only rescale/recentre the camera when the panel opened from a direct, deliberate action (the toggle
-  // button, or dragging its resizer) — not as a side effect of merely selecting or placing something.
   cancelAnimationFrame(panelAnimT);
   const until = performance.now() + 260;
   const step = () => {
@@ -3032,15 +3089,12 @@ function finishSetup(w, h, sx, sy) {
 }
 let viewAnim = 0;
 function focusCanvas() {
-  // Glide the freshly drawn canvas to the centre, easing in and out. Very small canvases get a gentle zoom in;
-  // ones that nearly fill the view are eased back so they keep some room around them.
   const D = S.doc, frac = Math.max(D.w * S.zoom / vw, D.h * S.zoom / vh);
   let z = S.zoom;
   if (frac < 0.18) z = S.zoom * Math.min(2, 0.3 / frac);
   else if (frac > 0.9) z = S.zoom * 0.84 / frac;
   animateView(z, (vw - D.w * z) / 2, (vh - D.h * z) / 2, 650);
 }
-// Print sizes at 300dpi, matching the project's other print-ready presets.
 const SIZE_PRESETS = { a4p: [2480, 3508], a4l: [3508, 2480], a5p: [1748, 2480], a5l: [2480, 1748] };
 const dSize = $('#dlg-size');
 $('#setup-choose').addEventListener('click', () => dSize.showModal());
@@ -3075,8 +3129,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { recordingId = null; renderShortcuts(); return; }
   const def = SHORTCUT_DEFS.find(d => d.id === recordingId);
   const k = e.key.toLowerCase();
-  // Only one action may own a given key within the same modifier combination — reassigning it here
-  // frees it from whichever other action was using it, rather than silently creating a conflict.
   for (const other of SHORTCUT_DEFS) if (other.id !== def.id && other.mod === def.mod && KEYS[other.id] === k) KEYS[other.id] = null;
   KEYS[def.id] = k; saveKeys();
   recordingId = null; renderShortcuts(); toast(`${def.label} set to ${chordLabel(def)}`);
@@ -3087,7 +3139,6 @@ function animateView(z1, px1, py1, ms) {
   cancelAnimationFrame(viewAnim);
   const z0 = S.zoom, px0 = S.px, py0 = S.py, t0 = performance.now();
   if (reduceMotion) { S.zoom = z1; S.px = px1; S.py = py1; zoomLabel(); render(); return; }
-  // Interpolate the canvas centre on screen and the zoom (in log space) so the motion stays smooth.
   const c0x = px0 + S.doc.w * z0 / 2, c0y = py0 + S.doc.h * z0 / 2, c1x = px1 + S.doc.w * z1 / 2, c1y = py1 + S.doc.h * z1 / 2;
   const step = now => {
     if (drag) return;
@@ -3099,6 +3150,8 @@ function animateView(z1, px1, py1, ms) {
   };
   viewAnim = requestAnimationFrame(step);
 }
+
+/* ---------- export image ---------- */
 const dExp = $('#dlg-export');
 const MB = 1024 * 1024;
 const fmtSize = b => b < 100 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / MB).toFixed(2)} MB`;
@@ -3112,7 +3165,6 @@ async function encodeQuality(fmt, q) {
   return { blob, w: c.width, h: c.height, q: fmt === 'png' ? null : q, scale: 1, ok: true };
 }
 async function encodeToSize(fmt, bytes) {
-  // Highest quality that fits; shrink the image only when quality would drop too low (or for PNG).
   let scale = 1, last = null;
   for (let pass = 0; pass < 8; pass++) {
     const c = renderDoc(scale, fmt);
@@ -3141,18 +3193,15 @@ async function encodeToSize(fmt, bytes) {
 let estT = 0, estTok = 0, estResult = null, maxTouched = false, baseTok = 0;
 const sameParams = (a, b) => a && b && a.fmt === b.fmt && a.target === b.target;
 function setMaxFromBytes(bytes) {
-  // Show the size in whichever unit reads more precisely: KB under 1 MB, MB above.
   if (bytes < MB) { $('#e-unit').value = 'KB'; $('#e-t').value = Math.ceil(bytes / 1024); }
   else { $('#e-unit').value = 'MB'; $('#e-t').value = Math.ceil(bytes / MB * 100) / 100; }
 }
 async function refreshBaseSize() {
-  // The max size starts at the estimated size of a normal, full-quality export.
   const tok = ++baseTok; $('#e-est').innerHTML = 'Estimating file size…';
   let r; try { r = await encodeQuality($('#e-fmt').value, 0.92); } catch (e) { $('#e-est').textContent = 'The image is too large to estimate.'; return; }
   if (tok !== baseTok || maxTouched || !r || !r.blob) return;
   setMaxFromBytes(r.blob.size); scheduleEstimate();
 }
-function updateExportUI() { scheduleEstimate(); }
 function describe(r) {
   const bits = [`${r.w} × ${r.h} px`];
   if (r.q != null) bits.push(`quality ${Math.round(r.q * 100)}%`);
@@ -3222,7 +3271,7 @@ try {
     S.objects = saved.objects.map(o => ({ ...base(o.type || 'rect'), ...o }));
     S.groups = Array.isArray(saved.groups) ? saved.groups : [];
   }
-} catch (err) { /* ignore */ }
+} catch (err) { }
 cur = snapshot();
 new ResizeObserver(() => { const first = !vw; resize(); if (first) fit(); }).observe(stage);
 $('#s-guides').addEventListener('change', e => { SET.guides = e.target.checked; saveSettings(); syncSettings(); });
