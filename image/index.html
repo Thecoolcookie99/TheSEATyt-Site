@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,6 +62,8 @@ svg.i{width:calc(18px * var(--ui));height:calc(18px * var(--ui));fill:none;strok
 .menu .mrow input[type=number]{width:72px;margin-left:auto}
 .menu .mrow.dim{opacity:.5}
 .mnote{margin:4px 10px 6px;color:var(--muted);font-size:12px;max-width:240px}
+.inline-edit{position:absolute;left:0;top:0;transform-origin:0 0;margin:0;padding:0;border:0;outline:0;resize:none;overflow:hidden;background:transparent;color:transparent;white-space:pre;caret-color:var(--text);z-index:3;box-sizing:border-box}
+.inline-edit::selection{background:rgba(120,170,255,.45)}
 .quickbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;display:flex;gap:2px;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.22);max-width:calc(100% - 24px);overflow-x:auto}
 .quickbar button{border:0;background:none;border-radius:8px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text);min-width:52px}
 .quickbar button:hover{background:var(--hover)}
@@ -84,7 +85,6 @@ svg.i{width:calc(18px * var(--ui));height:calc(18px * var(--ui));fill:none;strok
 .layer .caret{padding:2px;margin:0 -4px 0 -2px;color:var(--muted)}
 .layer .caret svg{width:14px;height:14px;transition:transform .15s}
 .layer .caret.open svg{transform:rotate(90deg)}
-.layer.lgroup .th{background:none;border-color:transparent;color:var(--muted)}
 .layer .cnt{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
 .layer.part{border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
 .orow{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -92,8 +92,8 @@ svg.i{width:calc(18px * var(--ui));height:calc(18px * var(--ui));fill:none;strok
 .orow select{flex:1;min-width:0}
 .layer.ctx{outline:1px dashed var(--accent);outline-offset:-1px}
 dialog .fields>.frow{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:10px;color:var(--muted)}
-.est{margin:10px 0 0;font-weight:600;font-variant-numeric:tabular-nums}
-.est small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.est{margin:10px 0 0;font-weight:600;font-variant-numeric:tabular-nums;min-height:38px}
+.est small{display:block;font-weight:400;color:var(--muted);margin-top:2px;min-height:15px}
 .menu{position:fixed;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;
   box-shadow:0 12px 32px rgba(0,0,0,.35);z-index:100;display:none}
 .menu.open{display:block}
@@ -128,7 +128,35 @@ label.swatch,.swatch{position:absolute;width:calc(30px * var(--ui));height:calc(
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .stage.dropping::after{content:"Drop to place";position:absolute;inset:12px;border:2px dashed var(--accent);border-radius:12px;display:grid;place-items:center;font-size:16px;font-weight:600;color:var(--accent);background:rgba(0,0,0,.2);pointer-events:none}
 .welcome{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);pointer-events:none;width:min(440px,calc(100% - 32px))}
-.setup{position:absolute;left:50%;top:16px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:5;transition:opacity .15s}
+.setup{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:min(380px,calc(100% - 24px));z-index:5;transition:opacity .15s}
+.setup .card{text-align:center}
+.setup .card h1{margin-bottom:10px}
+.size-link{display:inline-block;background:none;border:0;padding:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer}
+.size-link:hover{color:var(--text)}
+.size-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.size-grid button{border:1px solid var(--line);background:var(--panel-2);border-radius:8px;padding:10px 8px;font-weight:600;text-align:center;cursor:pointer}
+.size-grid button:hover{border-color:var(--accent)}
+.size-grid button small{display:block;font-weight:400;color:var(--muted);margin-top:2px;font-size:11px}
+.size-grid button.full{grid-column:1/-1}
+.f i{flex:none;font-style:normal;color:var(--muted);padding:0 8px 0 1px;font-size:12px}
+dialog hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+#dlg-shortcuts{width:min(480px,calc(100vw - 24px))}
+.sc-list{max-height:min(50vh,420px);overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:4px}
+.sc-group{font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);padding:9px 12px 4px}
+.sc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 12px}
+.sc-row .sc-label{font-size:13px}
+.sc-key{border:1px solid var(--line);background:var(--field);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text);cursor:pointer;min-width:90px;text-align:center}
+.sc-key:hover{border-color:var(--accent)}
+.sc-key.recording{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.sc-key.empty{color:var(--muted);font-weight:400}
+.custom-section{text-align:center}
+.custom-fields{display:flex;align-items:flex-start;justify-content:center;gap:10px}
+.cf{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cf .f{width:92px}
+.cf .f input{text-align:center;padding-left:6px}
+.cf label{font-size:11px;color:var(--muted)}
+.cf-x{color:var(--muted);margin-top:8px}
+#size-create{margin-top:14px}
 .setup.drawing{opacity:.2;pointer-events:none}
 .welcome .card,.setup .card{pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;box-shadow:0 16px 40px rgba(0,0,0,.3)}
 .welcome{transition:opacity .3s ease,transform .3s ease}
@@ -141,14 +169,18 @@ label.swatch,.swatch{position:absolute;width:calc(30px * var(--ui));height:calc(
 .welcome h1,.setup h1{font-size:18px;margin:0 0 6px;letter-spacing:-.01em}
 .welcome p,.setup p{margin:0 0 14px;color:var(--muted)}
 .welcome .row,.setup .row{display:flex;gap:8px;flex-wrap:wrap}
+.welcome-row{display:flex;align-items:center;gap:14px}
+.welcome-row p{margin:0;flex:1;min-width:0}
+.welcome-row .btn{flex:none;white-space:nowrap}
 .btn{border:1px solid var(--line);background:var(--panel-2);border-radius:7px;padding:7px 12px;font-weight:600}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn.small{padding:4px 9px;font-weight:500}
 
 /* panels */
-.panels{width:var(--panel-w,300px);flex:none;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;display:flex;flex-direction:column}
-.panels.hidden-panel{display:none}
+.panels{width:var(--panel-w,300px);flex:none;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;display:flex;flex-direction:column;transition:width .22s ease,border-color .22s ease}
+.panels.hidden-panel{width:0;min-width:0;border-left-color:transparent;overflow:hidden}
+.panels.hidden-panel>*{min-width:var(--panel-w,300px)}
 .panels.hidden-panel+.resizer{display:none}
 .sec{border-bottom:1px solid var(--line);padding:10px 12px 12px}
 .sec h2{font-size:12px;font-weight:700;margin:0 0 10px;display:flex;align-items:center;gap:8px;color:var(--text)}
@@ -194,11 +226,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .picker .pre{height:18px;border-radius:4px;cursor:pointer;background-image:var(--checker);background-size:7px 7px;position:relative;border:1px solid var(--line)}
 .picker .pre::after{content:"";position:absolute;inset:0;border-radius:3px;background:var(--pcc)}
 .picker .none{grid-column:1/-1;margin-top:6px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer}
-.layer.ctx{
 input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
 output{min-width:40px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
 .slider{display:flex;align-items:center;gap:8px;margin-top:6px}
-.slider .lbl{min-width:72px}
+.slider .lbl{min-width:64px;flex:none}
+.sval{display:inline-flex;align-items:center;flex:none;background:var(--field);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.sval:focus-within{border-color:var(--accent)}
+.sval input{width:36px;min-width:0;border:0;background:none;padding:4px 1px 4px 6px;text-align:right;outline:none;font-variant-numeric:tabular-nums;font-size:12px;color:var(--text);appearance:textfield;-moz-appearance:textfield}
+.sval input::-webkit-outer-spin-button,.sval input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#props input[type=number]::-webkit-outer-spin-button,#props input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#props input[type=number]{appearance:textfield;-moz-appearance:textfield}
+.sval i{font-style:normal;color:var(--muted);padding:0 6px 0 1px;font-size:11px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--field)}
 .seg label{display:grid;place-items:center;padding:4px 7px;cursor:pointer}
 .seg input{position:absolute;opacity:0;pointer-events:none}
@@ -235,9 +273,13 @@ details[open] summary::after{content:"−"}
 .layer.hidden-l .nm,.layer.hidden-l .th{opacity:.45}
 
 .status{height:24px;flex:none;display:flex;align-items:center;gap:16px;padding:0 12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.status .stf{width:46px;border:0;border-bottom:1px solid var(--accent);background:none;color:var(--text);font:inherit;font-variant-numeric:tabular-nums;padding:0 0 0 2px;outline:none}
+.status .stf::-webkit-outer-spin-button,.status .stf::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.status .stf{appearance:textfield;-moz-appearance:textfield}
+.status span[id^="st-"]:not(#st-sel){cursor:default}
 
 /* dialogs */
-dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);padding:0;width:min(420px,calc(100vw - 24px));box-shadow:0 24px 60px rgba(0,0,0,.45)}
+dialog{border:1.5px solid rgba(0,0,0,.5);border-radius:12px;background:var(--panel);color:var(--text);padding:0;width:min(420px,calc(100vw - 24px));box-shadow:0 24px 60px rgba(0,0,0,.45)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog form{padding:18px 20px}
 dialog h3{margin:0 0 14px;font-size:16px}
@@ -252,8 +294,8 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 [hidden]{display:none !important}
 .tool{position:relative}
 .tool .ico{display:grid;place-items:center;pointer-events:none}
-.tool .more{position:absolute;right:3px;top:3px;width:14px;height:14px}
-.tool .more::after{content:"";position:absolute;right:2px;top:3px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid currentColor;opacity:.55}
+.tool .more{position:absolute;right:3px;bottom:3px;width:14px;height:14px}
+.tool .more::after{content:"";position:absolute;right:2px;bottom:3px;border-left:5px solid transparent;border-bottom:5px solid currentColor;opacity:.55}
 .tool .more:hover::after{opacity:1}
 .flyout{position:fixed;z-index:100;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;box-shadow:0 12px 32px rgba(0,0,0,.35);display:none;min-width:170px}
 .flyout.open{display:block}
@@ -265,10 +307,9 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .stack-lbl::after{content:"";flex:1;border-top:1px dashed var(--line)}
 
 @media (max-width:820px){
-  .panels{position:absolute;right:0;top:0;bottom:0;z-index:20;transform:translateX(100%);transition:transform .2s ease;box-shadow:-12px 0 30px rgba(0,0,0,.3)}
-  .panels.open{transform:none}
+  /* The panel pushes the canvas over rather than floating above it, same as on wider screens. */
   .resizer{display:none}
-  .panels{width:300px}
+  .panels{width:260px}
   .brand span,.hide-sm{display:none}
 }
 @media (prefers-reduced-motion:reduce){.panels{transition:none}}
@@ -323,11 +364,12 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
   <label class="mrow"><input type="checkbox" id="s-showgrid"> Show grid</label>
   <label class="mrow" id="s-size-row">Grid size <input type="number" id="s-gridsize" min="2" max="2000" step="1"> px</label>
   <hr>
-  <label class="mrow"><input type="checkbox" id="s-align"> Show align tools</label>
   <label class="mrow"><input type="checkbox" id="s-blend"> Show blend modes</label>
   <hr>
   <div class="mrow" style="display:block"><div style="display:flex;justify-content:space-between"><span>Interface size</span><span id="s-ui-out" style="color:var(--muted)">100%</span></div>
     <input type="range" id="s-ui" min="80" max="160" step="5" value="100" style="width:100%;accent-color:var(--accent);margin-top:4px"></div>
+  <hr>
+  <button type="button" id="s-shortcuts">Keyboard shortcuts… <span style="color:var(--muted)">›</span></button>
   <hr>
   <p class="mnote">Layers snap to the canvas and each other as you drag. Hold Ctrl to move freely.</p>
 </div>
@@ -363,6 +405,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
   <div class="resizer" id="rz-left" role="separator" aria-orientation="vertical" aria-label="Resize toolbar" title="Drag to resize. Double-click to reset."></div>
   <div class="stage" id="stage">
     <canvas id="view"></canvas>
+    <textarea id="inline-edit" class="inline-edit" hidden spellcheck="false" wrap="off" aria-label="Edit text"></textarea>
     <div class="quickbar" id="quickbar" hidden aria-label="Quick actions"></div>
     <div class="zoomdock" aria-label="Zoom">
       <button class="ibtn" data-act="zoomOut" title="Zoom out (−)" aria-label="Zoom out"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
@@ -376,11 +419,16 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
       <div class="card">
         <button class="wclose" id="welcome-close" aria-label="Dismiss"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         <h1>Your canvas is ready</h1>
-        <p>Drop an image onto it, paste one with Ctrl+V, or pick a tool on the left.</p>
-        <div class="row">
+        <div class="welcome-row">
+          <p>Drop an image onto it, paste one with Ctrl+V, or pick a tool on the left.</p>
           <button class="btn primary" data-act="place">Add image</button>
-          <button class="btn" data-act="bgImage">Use image as background</button>
         </div>
+      </div>
+    </div>
+    <div class="setup" id="setup-card" hidden>
+      <div class="card">
+        <h1>Draw Your Canvas</h1>
+        <button type="button" class="size-link" id="setup-choose">or choose a size</button>
       </div>
     </div>
   </div>
@@ -392,7 +440,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
       <label class="orow" data-tools="shape" hidden><span class="lbl">Stroke</span><input type="number" id="o-sw" min="0" max="200" value="0"></label>
       <label class="orow" data-tools="shape" id="o-rad-wrap" hidden><span class="lbl">Corner radius</span><input type="number" id="o-rad" min="0" max="1000" value="0"></label>
       <label class="orow" data-tools="line" hidden><span class="lbl">Width</span><input type="number" id="o-lw" min="1" max="200" value="6"></label>
-      <label class="orow" data-tools="brush" hidden><span class="lbl">Size</span><input type="range" id="o-bs" min="1" max="200" value="12"><output id="o-bs-out">12</output></label>
+      <label class="orow" data-tools="brush" hidden><span class="lbl">Size</span><input type="range" id="o-bs" min="1" max="200" value="12"><span class="sval"><input type="number" id="o-bs-out" min="1" max="200" value="12" aria-label="Brush size"><i>px</i></span></label>
       <label class="orow" data-tools="text" hidden><span class="lbl">Font</span><select id="o-font"></select></label>
       <label class="orow" data-tools="text" hidden><span class="lbl">Size</span><input type="number" id="o-fs" min="4" max="1000" value="72"></label>
       <p class="empty" id="hint" style="margin-top:8px"></p>
@@ -401,20 +449,10 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
       <h2>Properties <small id="sel-label"></small></h2>
 
       <div class="grp" data-show="sel">
-        <div class="iconrow" role="group" aria-label="Align">
-          <span id="align-tools" style="display:contents">
-          <button class="ibtn" data-act="alignL" title="Align left edges" aria-label="Align left"><svg class="i" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="12" height="4" rx="1"/><rect x="7" y="14" width="7" height="4" rx="1"/></svg></button>
-          <button class="ibtn" data-act="alignCH" title="Align horizontal centers" aria-label="Align center"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/></svg></button>
-          <button class="ibtn" data-act="alignR" title="Align right edges" aria-label="Align right"><svg class="i" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="5" y="6" width="12" height="4" rx="1"/><rect x="10" y="14" width="7" height="4" rx="1"/></svg></button>
-          <button class="ibtn" data-act="alignT" title="Align top edges" aria-label="Align top"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="12" rx="1"/><rect x="14" y="7" width="4" height="7" rx="1"/></svg></button>
-          <button class="ibtn" data-act="alignCV" title="Align vertical centers" aria-label="Align middle"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/></svg></button>
-          <button class="ibtn" data-act="alignB" title="Align bottom edges" aria-label="Align bottom"><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="5" width="4" height="12" rx="1"/><rect x="14" y="10" width="4" height="7" rx="1"/></svg></button>
-          <span class="sep"></span>
-          </span>
+        <div class="iconrow" role="group" aria-label="Arrange">
           <button class="ibtn" data-act="flipH" title="Flip horizontal" aria-label="Flip horizontal"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M9 7L4 17h5zM15 7l5 10h-5z"/></svg></button>
           <button class="ibtn" data-act="flipV" title="Flip vertical" aria-label="Flip vertical"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M7 9L17 4v5zM7 15l10 5v-5z"/></svg></button>
-        </div>
-        <div class="iconrow" style="margin-top:2px" role="group" aria-label="Arrange">
+          <span class="sep"></span>
           <button class="ibtn" data-act="front" title="Bring to front" aria-label="Bring to front"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg></button>
           <button class="ibtn" data-act="forward" title="Bring forward" aria-label="Bring forward"><svg class="i" viewBox="0 0 24 24"><path d="M12 19V6M7 11l5-5 5 5"/></svg></button>
           <button class="ibtn" data-act="backward" title="Send backward" aria-label="Send backward"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v13M7 13l5 5 5-5"/></svg></button>
@@ -433,7 +471,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
           <label class="f"><span class="scrub">Y</span><input type="number" data-prop="y" step="1"></label>
           <label class="f"><span class="scrub">W</span><input type="number" data-prop="w" step="1" min="1"></label>
           <label class="f" data-show="hasH"><span class="scrub">H</span><input type="number" data-prop="h" step="1" min="1"></label>
-          <label class="f"><span class="scrub">∠</span><input type="number" data-prop="rot" step="1"></label>
+          <label class="f"><span class="scrub">∠</span><input type="number" data-prop="rot" step="1"><i>°</i></label>
           <label class="chk" data-show="hasH" style="padding-left:2px"><input type="checkbox" data-prop="lockAspect"> Keep proportions</label>
         </div>
       </div>
@@ -449,6 +487,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
           <div class="seg" role="group" aria-label="Style">
             <label title="Bold"><input type="checkbox" data-prop="bold"><b>B</b></label>
             <label title="Italic"><input type="checkbox" data-prop="italic"><i style="font-family:Georgia,serif">I</i></label>
+            <label title="Underline"><input type="checkbox" data-prop="underline"><u>U</u></label>
           </div>
           <div class="seg" role="radiogroup" aria-label="Alignment">
             <label title="Align left"><input type="radio" name="talign" value="left" data-prop="align"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg></label>
@@ -459,7 +498,7 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
       </div>
 
       <div class="grp" data-show="sel">
-        <div class="slider"><span class="lbl">Opacity</span><input type="range" min="0" max="100" data-prop="opacity" data-scale="100"><output></output></div>
+        <div class="slider"><span class="lbl">Opacity</span><input type="range" min="0" max="100" data-prop="opacity" data-scale="100"><span class="sval"><input type="number" class="svin" data-prop="opacity" min="0" max="100" data-scale="100" aria-label="opacity value"><i>%</i></span></div>
         <div class="slider" id="blend-row"><span class="lbl">Blend</span>
           <select data-prop="blend" style="flex:1">
             <option value="source-over">Normal</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="darken">Darken</option><option value="lighten">Lighten</option><option value="color-dodge">Color dodge</option><option value="color-burn">Color burn</option><option value="hard-light">Hard light</option><option value="soft-light">Soft light</option><option value="difference">Difference</option><option value="exclusion">Exclusion</option><option value="hue">Hue</option><option value="saturation">Saturation</option><option value="color">Color</option><option value="luminosity">Luminosity</option>
@@ -477,29 +516,30 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
         <button type="button" class="cbtn" data-color="stroke" aria-label="Stroke color"><span class="chip"></span></button>
         <label class="f" style="flex:1"><span class="scrub">Width</span><input type="number" data-prop="strokeWidth" min="0" step="1"></label>
       </div>
+      <label class="chk" data-show="lineNodes" title="Free: drag an end anywhere to reshape the line. On line: dragging an end only changes its length, keeping the current angle."><input type="checkbox" data-prop="freeNodes"> Free-moving nodes</label>
       <div class="grp slider" data-show="rect">
-        <span class="lbl">Corners</span><input type="range" min="0" max="300" data-prop="radius"><output></output>
+        <span class="lbl">Corners</span><input type="range" min="0" max="300" data-prop="radius"><span class="sval"><input type="number" class="svin" data-prop="radius" min="0" max="300" aria-label="radius value"><i>px</i></span>
       </div>
 
       <details data-show="sel" id="adj">
         <summary>Adjustments</summary>
-        <div class="slider"><span class="lbl">Brightness</span><input type="range" min="0" max="200" data-prop="adjB"><output></output></div>
-        <div class="slider"><span class="lbl">Contrast</span><input type="range" min="0" max="200" data-prop="adjC"><output></output></div>
-        <div class="slider"><span class="lbl">Saturation</span><input type="range" min="0" max="300" data-prop="adjS"><output></output></div>
-        <div class="slider"><span class="lbl">Hue</span><input type="range" min="-180" max="180" data-prop="adjH"><output></output></div>
-        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="40" step="0.5" data-prop="adjBlur"><output></output></div>
-        <div class="slider"><span class="lbl">Grayscale</span><input type="range" min="0" max="100" data-prop="adjG"><output></output></div>
-        <div class="slider"><span class="lbl">Sepia</span><input type="range" min="0" max="100" data-prop="adjSp"><output></output></div>
+        <div class="slider"><span class="lbl">Brightness</span><input type="range" min="0" max="200" data-prop="adjB"><span class="sval"><input type="number" class="svin" data-prop="adjB" min="0" max="200" aria-label="adjB value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Contrast</span><input type="range" min="0" max="200" data-prop="adjC"><span class="sval"><input type="number" class="svin" data-prop="adjC" min="0" max="200" aria-label="adjC value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Saturation</span><input type="range" min="0" max="300" data-prop="adjS"><span class="sval"><input type="number" class="svin" data-prop="adjS" min="0" max="300" aria-label="adjS value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Hue</span><input type="range" min="-180" max="180" data-prop="adjH"><span class="sval"><input type="number" class="svin" data-prop="adjH" min="-180" max="180" aria-label="adjH value"><i>°</i></span></div>
+        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="40" step="0.5" data-prop="adjBlur"><span class="sval"><input type="number" class="svin" data-prop="adjBlur" min="0" max="40" step="0.5" aria-label="adjBlur value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Grayscale</span><input type="range" min="0" max="100" data-prop="adjG"><span class="sval"><input type="number" class="svin" data-prop="adjG" min="0" max="100" aria-label="adjG value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Sepia</span><input type="range" min="0" max="100" data-prop="adjSp"><span class="sval"><input type="number" class="svin" data-prop="adjSp" min="0" max="100" aria-label="adjSp value"><i>%</i></span></div>
         <div style="margin-top:8px"><button class="btn small" data-act="resetAdj">Reset adjustments</button></div>
       </details>
 
       <details data-show="sel" id="shadow">
         <summary>Drop shadow</summary>
         <div class="row" style="margin-top:8px"><label class="chk"><input type="checkbox" data-prop="shOn"> Show shadow</label><span class="spacer"></span><button type="button" class="cbtn" data-color="shColor" aria-label="Shadow color"><span class="chip"></span></button></div>
-        <div class="slider"><span class="lbl">Opacity</span><input type="range" min="0" max="100" data-prop="shAlpha" data-scale="100"><output></output></div>
-        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="120" data-prop="shBlur"><output></output></div>
-        <div class="slider"><span class="lbl">Offset X</span><input type="range" min="-100" max="100" data-prop="shX"><output></output></div>
-        <div class="slider"><span class="lbl">Offset Y</span><input type="range" min="-100" max="100" data-prop="shY"><output></output></div>
+        <div class="slider"><span class="lbl">Opacity</span><input type="range" min="0" max="100" data-prop="shAlpha" data-scale="100"><span class="sval"><input type="number" class="svin" data-prop="shAlpha" min="0" max="100" data-scale="100" aria-label="shAlpha value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="120" data-prop="shBlur"><span class="sval"><input type="number" class="svin" data-prop="shBlur" min="0" max="120" aria-label="shBlur value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Offset X</span><input type="range" min="-100" max="100" data-prop="shX"><span class="sval"><input type="number" class="svin" data-prop="shX" min="-100" max="100" aria-label="shX value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Offset Y</span><input type="range" min="-100" max="100" data-prop="shY"><span class="sval"><input type="number" class="svin" data-prop="shY" min="-100" max="100" aria-label="shY value"><i>px</i></span></div>
       </details>
     </section>
 
@@ -537,8 +577,8 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 </div>
 
 <footer class="status" id="status">
-  <span id="st-pos">X — Y —</span>
-  <span id="st-doc"></span>
+  <span id="st-pos" title="Double-click to edit">X — Y —</span>
+  <span id="st-doc" title="Double-click to edit"></span>
   <span id="st-sel"></span>
 </footer>
 
@@ -548,6 +588,40 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 <input type="file" id="f-project" accept=".json,application/json" hidden>
 
 
+<dialog id="dlg-shortcuts">
+  <form method="dialog">
+    <h3>Keyboard shortcuts</h3>
+    <div class="sc-list" id="sc-list"></div>
+    <p class="msg">Click a shortcut to change it, then press the new key.</p>
+    <div class="actions">
+      <button type="button" class="btn" id="sc-reset">Reset all to defaults</button>
+      <button class="btn primary" value="cancel">Done</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="dlg-size">
+  <form method="dialog">
+    <h3>Choose a size</h3>
+    <div class="size-grid">
+      <button type="button" data-preset="a4p">A4 portrait<small>2480 × 3508</small></button>
+      <button type="button" data-preset="a4l">A4 landscape<small>3508 × 2480</small></button>
+      <button type="button" data-preset="a5p">A5 portrait<small>1748 × 2480</small></button>
+      <button type="button" data-preset="a5l">A5 landscape<small>2480 × 1748</small></button>
+    </div>
+    <hr>
+    <div class="custom-section">
+      <div class="custom-fields">
+        <div class="cf"><span class="f"><input type="number" id="size-w" min="1" max="10000" value="1200" aria-label="Width"><i>px</i></span><label>Width</label></div>
+        <span class="cf-x">×</span>
+        <div class="cf"><span class="f"><input type="number" id="size-h" min="1" max="10000" value="800" aria-label="Height"><i>px</i></span><label>Height</label></div>
+      </div>
+      <button type="button" class="btn primary small" id="size-create">Create custom size</button>
+    </div>
+    <div class="actions">
+      <button class="btn" value="cancel">Close</button>
+    </div>
+  </form>
+</dialog>
 <dialog id="dlg-export">
   <form method="dialog">
     <h3>Export as image</h3>
@@ -772,6 +846,13 @@ function drawText(c, o) {
     const y = m.sw / 2 + i * m.lh + m.lh / 2;
     if (m.sw > 0) { c.lineWidth = m.sw; c.strokeStyle = o.stroke; c.lineJoin = 'round'; c.strokeText(l, ax, y); }
     if (o.fillOn) { c.fillStyle = o.fill; c.fillText(l, ax, y); }
+    if (o.underline && l) {
+      const lw = c.measureText(l).width;
+      const x0 = o.align === 'left' ? ax - m.sw / 2 : o.align === 'center' ? ax - lw / 2 : ax - lw + m.sw / 2;
+      const uy = y + o.fontSize * 0.14;
+      c.save(); c.lineWidth = Math.max(1, o.fontSize / 16); c.strokeStyle = o.fillOn ? o.fill : o.stroke;
+      c.beginPath(); c.moveTo(x0, uy); c.lineTo(x0 + lw, uy); c.stroke(); c.restore();
+    }
   });
 }
 function drawObj(c, o, k, ghost) {
@@ -905,6 +986,7 @@ function draw() {
   ctx.restore();
   drawOverlay();
   if (crop) drawCrop();
+  if (editingId) positionInlineEdit();
 }
 function drawCrop() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -982,11 +1064,13 @@ function drawSetup() {
     const r = setupRect(drag);
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.fillStyle = '#ffffff'; ctx.fillRect(r.x, r.y, r.w, r.h); ctx.restore();
     ctx.strokeStyle = C.accent + '99'; ctx.lineWidth = 1.5; ctx.strokeRect(r.x - 3, r.y - 3, r.w + 6, r.h + 6);
+    // The size label follows the cursor (with a small offset) rather than sitting fixed under the shape.
     const t = `${r.w} × ${r.h} px`;
     ctx.font = '600 13px Manrope, system-ui, sans-serif';
-    const tw = ctx.measureText(t).width + 16, tx = r.x + r.w / 2 - tw / 2, ty = r.y + r.h + 10;
-    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx, ty, tw, 24, 6) : ctx.rect(tx, ty, tw, 24); ctx.fill();
-    ctx.fillStyle = '#22252b'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, tx + tw / 2, ty + 12);
+    const tw = ctx.measureText(t).width + 16, th = 24;
+    const tx = clamp(drag.b.x + 16, 6, vw - tw - 6), ty = clamp(drag.b.y + 16, 6, vh - th - 6);
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(tx, ty, tw, th, 6) : ctx.rect(tx, ty, tw, th); ctx.fill();
+    ctx.fillStyle = '#22252b'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, tx + tw / 2, ty + th / 2);
   }
 }
 function drawBrushPreview(c) {
@@ -1004,6 +1088,9 @@ function outline(o, color, w, dash) {
 }
 function drawOverlay() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // While cropping, the crop tool draws its own handles — skip the normal selection outline/handles so
+  // they don't clutter or compete with it.
+  if (crop) return;
   const sel = selObjs();
   if (hoverId && !S.sel.includes(hoverId) && !drag) { const h = byId(hoverId); if (h) outline(h, C.accent + '66', 1, [4, 3]); }
   for (const o of sel) outline(o, C.accent + '99', 1.5);
@@ -1080,7 +1167,7 @@ function drawSizePill(o) {
 let lastMove = null, ptrSpeed = 0, ptrMoved = false;
 
 /* ---------- snapping ---------- */
-const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, align: false, blend: false, ui: 100 };
+const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, blend: false, ui: 100 };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('plate-editor:settings') || '{}')); } catch (e) {}
 function snapCandidate(d, ax, raw) {
   const b = d.box, vals = ax === 'x' ? [b.x0, (b.x0 + b.x1) / 2, b.x1] : [b.y0, (b.y0 + b.y1) / 2, b.y1];
@@ -1103,7 +1190,7 @@ function snapDist() {
 const SNAP_DWELL = 280;   // ms the pointer must rest before the layer jumps onto its shadow
 const FAST_SPEED = 1.6;   // px per ms; faster drags show the layer at 80% opacity
 let dwellT = 0;
-const FIGHT_PX = 3;  // screen px of steady pulling away from a snapped line before it gives up
+const FIGHT_PX = 10;  // screen px of steady pulling away from a snapped line before it gives up
 function snapAxisSmooth(d, A, b) {
   // Returns the snap offset for one axis. If the person keeps pulling away from a line it has caught,
   // the snap lets go at once (no easing back) and won't re-catch that line until they've moved clear of it.
@@ -1167,10 +1254,10 @@ function syncSettings() {
   $('#s-guides').checked = SET.guides; $('#s-grid').checked = SET.grid; $('#s-showgrid').checked = SET.showGrid;
   if (document.activeElement !== $('#s-gridsize')) $('#s-gridsize').value = SET.gridSize;
   $('#s-size-row').classList.toggle('dim', !SET.grid && !SET.showGrid);
-  $('#s-align').checked = SET.align; $('#s-blend').checked = SET.blend;
+  $('#s-blend').checked = SET.blend;
   $('#s-ui').value = SET.ui; $('#s-ui-out').textContent = SET.ui + '%';
   document.documentElement.style.setProperty('--ui', SET.ui / 100);
-  $('#align-tools').hidden = !SET.align; $('#blend-row').hidden = !SET.blend;
+  $('#blend-row').hidden = !SET.blend;
 }
 let eyeCache = null;
 function eyeCanvas() { if (!eyeCache) eyeCache = renderDoc(1); return eyeCache; }
@@ -1223,8 +1310,16 @@ function renderDoc(scale, format) {
 function resize() {
   const r = stage.getBoundingClientRect();
   dpr = window.devicePixelRatio || 1; vw = r.width; vh = r.height;
-  cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
-  render();
+  const nw = Math.round(vw * dpr), nh = Math.round(vh * dpr);
+  if (cv.width !== nw || cv.height !== nh) {
+    // Setting canvas.width/height clears its bitmap immediately. render() only queues a redraw for the
+    // next animation frame, which leaves a blank gap for the browser to paint in between — very visible
+    // during a continuous resize like the side panel's slide. Redraw synchronously, right here, instead.
+    cv.width = nw; cv.height = nh;
+    draw();
+  } else {
+    render();
+  }
 }
 function fit() {
   if (!vw) return;
@@ -1232,6 +1327,18 @@ function fit() {
   S.zoom = clamp(Math.min((vw - pad) / S.doc.w, (vh - pad) / S.doc.h, 1), 0.02, 1);
   S.px = (vw - S.doc.w * S.zoom) / 2; S.py = (vh - S.doc.h * S.zoom) / 2;
   zoomLabel(); render();
+}
+function keepCanvasVisible() {
+  // Called after the available workspace shrinks or grows (the side panel opening/closing, or its
+  // resizer being dragged). If the canvas no longer fully fits at the current zoom, scale it down just
+  // enough to fit again and recentre it — rather than leaving part of it sitting behind the panel.
+  // This eases in gently rather than snapping straight to the new size.
+  if (!vw) return;
+  const D = S.doc, pad = vw < 600 ? 24 : 64;
+  const fitZoom = Math.min((vw - pad) / D.w, (vh - pad) / D.h);
+  const z = (fitZoom > 0 && S.zoom > fitZoom) ? Math.max(0.02, fitZoom) : S.zoom;
+  const px = (vw - D.w * z) / 2, py = (vh - D.h * z) / 2;
+  if (Math.abs(z - S.zoom) > 1e-4 || Math.abs(px - S.px) > 0.5 || Math.abs(py - S.py) > 0.5) animateView(z, px, py, 480);
 }
 let zoomTarget = null, zoomFocus = null, zoomRAF = 0;
 function animZoom() {
@@ -1315,7 +1422,11 @@ function after() {
   $('#b-undo').disabled = !hist.length; $('#b-redo').disabled = !fut.length;
   scheduleSave(); syncAll();
 }
-function syncAll() { if (S.sel.length && innerWidth > 820) panels.classList.remove('hidden-panel'); syncPanel(); syncCanvasPanel(); renderLayers(); updateStatus(); updateWelcome(); updateQuickBar(); render(); }
+function syncUI() { syncPanel(); syncCanvasPanel(); renderLayers(); updateStatus(); updateWelcome(); updateQuickBar(); render(); }
+function syncAll() {
+  if (S.sel.length && panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); drivePanelResize(false); }
+  syncUI();
+}
 let welcomeGone = false, welcomeT = 0, welcomeHideT = 0;
 let everHadContent = false;
 function updateWelcome() {
@@ -1386,10 +1497,14 @@ function cursorForTool() {
 function pos(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 
 function snapTargets(ex) {
+  // Only the canvas edges/centre and the topmost 3 other layers act as snap guides, not every layer.
   const xs = [0, S.doc.w / 2, S.doc.w], ys = [0, S.doc.h / 2, S.doc.h];
-  for (const o of S.objects) {
+  let found = 0;
+  for (let i = S.objects.length - 1; i >= 0 && found < 3; i--) {
+    const o = S.objects[i];
     if (ex.includes(o.id) || !o.visible) continue;
     const a = aabb(o); xs.push(a.x0, a.x1); ys.push(a.y0, a.y1);
+    found++;
   }
   return { xs, ys };
 }
@@ -1532,7 +1647,7 @@ cv.addEventListener('pointerdown', e => {
     }
     case 'line': {
       const sw = Math.max(1, S.style.lineWidth);
-      const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw });
+      const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw, freeNodes: false });
       S.objects.push(o); S.sel = [o.id];
       drag = { mode: 'createLine', o, start: p }; break;
     }
@@ -1612,6 +1727,9 @@ cv.addEventListener('pointermove', e => {
       if (d.hy > 0) B = Math.min(1 - fy, 1 - T - 0.02);
       crop.L = L; crop.T = T; crop.R = R; crop.B = B;
       o.x = F.x + L * F.w; o.y = F.y + T * F.h; o.w = (1 - L - R) * F.w; o.h = (1 - T - B) * F.h;
+      // Apply the crop live, not just on commit — otherwise the base image keeps rendering uncropped
+      // and gets squeezed (warped) into the shrinking box while the handle is being dragged.
+      o.cL = L; o.cT = T; o.cR = R; o.cB = B;
       render(); break;
     }
     case 'cropMove': {
@@ -1619,6 +1737,7 @@ cv.addEventListener('pointermove', e => {
       let nx = d.o0.x + (p.x - d.start.x), ny = d.o0.y + (p.y - d.start.y);
       nx = clamp(nx, F.x, F.x + F.w - o.w); ny = clamp(ny, F.y, F.y + F.h - o.h);
       o.x = nx; o.y = ny; crop.L = (nx - F.x) / F.w; crop.T = (ny - F.y) / F.h; crop.R = 1 - crop.L - o.w / F.w; crop.B = 1 - crop.T - o.h / F.h;
+      o.cL = crop.L; o.cT = crop.T; o.cR = crop.R; o.cB = crop.B;
       render(); break;
     }
     case 'resize': doResize(d, { x: p.x + d.grab.x, y: p.y + d.grab.y }, e); syncPanel(); break;
@@ -1692,12 +1811,12 @@ function endPointer(e) {
       const o = d.o;
       if (o.w < 3 && o.h < 3) { o.w = o.h = 180; o.x = d.start.x - 90; o.y = d.start.y - 90; }
       o.w = Math.max(1, o.w); o.h = Math.max(1, o.h);
-      commit(); setTool('select'); revealObjects([o]); break;
+      commit(); setTool('select'); break;
     }
     case 'createLine': {
       const o = d.o;
       if (o.w < 3) { o.w = 220; o.rot = 0; o.x = d.start.x - 110; o.y = d.start.y - o.h / 2; }
-      commit(); setTool('select'); revealObjects([o]); break;
+      commit(); setTool('select'); break;
     }
     case 'crop': case 'cropMove': render(); break;
     case 'brush': finishBrush(d.pts); break;
@@ -1712,8 +1831,10 @@ cv.addEventListener('dblclick', e => {
   const p = toDoc(pos(e)); const h = hit(p);
   if (crop) { commitCrop(); return; }
   if (h && h.type === 'image') { S.sel = [h.id]; startCrop(h); return; }
-  if (h && h.group && h.type !== 'text') { S.sel = [h.id]; syncAll(); return; }
-  if (h && h.type === 'text') { S.sel = [h.id]; syncAll(); focusText(true); }
+  // These just confirm a selection already made by the preceding click, so a plain UI sync is used
+  // here — not the full syncAll(), which can reveal the side panel and recentre the camera.
+  if (h && h.group && h.type !== 'text') { S.sel = [h.id]; syncUI(); return; }
+  if (h && h.type === 'text') { S.sel = [h.id]; syncUI(); focusText(true); }
 });
 
 let crop = null;  // { o, L, T, R, B } in source fractions, while cropping
@@ -1751,6 +1872,24 @@ function cropHandles() {
 }
 function doResize(d, p, e) {
   const O = d.orig, o = d.o, hx = d.hx, hy = d.hy;
+  if (isLine(O) && O.freeNodes) {
+    // Free nodes: the dragged end follows the cursor exactly, so both the line's length and its angle can change.
+    const fromC = e.altKey;
+    const fixed = fromC ? center(O) : toWorld(O, { x: -hx * O.w / 2, y: 0 });
+    let ex = p.x, ey = p.y;
+    if (e.shiftKey) {
+      const ang = Math.round(Math.atan2(ey - fixed.y, ex - fixed.x) / rad(15)) * rad(15);
+      const len = Math.hypot(ex - fixed.x, ey - fixed.y);
+      ex = fixed.x + Math.cos(ang) * len; ey = fixed.y + Math.sin(ang) * len;
+    }
+    const other = fromC ? { x: 2 * fixed.x - ex, y: 2 * fixed.y - ey } : fixed;
+    const sx0 = hx < 0 ? ex : other.x, sy0 = hx < 0 ? ey : other.y;
+    const sx1 = hx < 0 ? other.x : ex, sy1 = hx < 0 ? other.y : ey;
+    const len = Math.max(1, Math.hypot(sx1 - sx0, sy1 - sy0));
+    o.w = len; o.rot = Math.round(Math.atan2(sy1 - sy0, sx1 - sx0) * 1800 / Math.PI) / 10;
+    o.x = (sx0 + sx1) / 2 - len / 2; o.y = (sy0 + sy1) / 2 - o.h / 2;
+    return;
+  }
   const c = { x: O.x + O.w / 2, y: O.y + O.h / 2 }, a = -rad(O.rot);
   const dx = p.x - c.x, dy = p.y - c.y;
   const L = { x: dx * Math.cos(a) - dy * Math.sin(a), y: dx * Math.sin(a) + dy * Math.cos(a) };
@@ -1770,9 +1909,9 @@ function doResize(d, p, e) {
     const sp = toScreen(p);
     let near = Infinity;
     for (const h2 of d.others || []) near = Math.min(near, Math.hypot(h2.x - sp.x, h2.y - sp.y));
-    // Never more than 10 screen px from the diagonal before it lets go into a free stretch.
-    const th = clamp(near * 0.3, 3, 10);
-    d.wasDiag = perp < Math.min(10, d.wasDiag ? th * 1.6 : th);
+    // Never more than 20 screen px from the diagonal before it lets go into a free stretch.
+    const th = clamp(near * 0.3, 3, 20);
+    d.wasDiag = perp < Math.min(20, d.wasDiag ? th * 1.6 : th);
     if (d.wasDiag || e.shiftKey) {
       const sc = (Vx * Dx + Vy * Dy) / len2 * (fromC ? 2 : 1);
       w = O.w * sc; h = O.h * sc; diag = true;
@@ -1799,12 +1938,12 @@ function doResize(d, p, e) {
 
 function safeArea() { const m = 28; return { x0: m, y0: m, x1: vw - m, y1: vh - 76 }; }
 function revealObjects(objs) {
-  // After placing something: zoom back out if the view is zoomed in past 175%, and make sure the new
-  // layers are fully on screen, gliding the camera with the same easing as the canvas intro.
+  // After placing something: make sure the new layers are fully on screen, gliding the camera with the
+  // same easing as the canvas intro. This never zooms out just because the view happened to be zoomed in —
+  // it only adjusts the view when the new content would otherwise be clipped or off-screen.
   objs = objs.filter(Boolean); if (!objs.length || !vw) return;
-  const b = unionBox(objs), A = safeArea(), aw = A.x1 - A.x0, ah = A.y1 - A.y0, D = S.doc;
+  const b = unionBox(objs), A = safeArea(), aw = A.x1 - A.x0, ah = A.y1 - A.y0;
   let z = S.zoom, px = S.px, py = S.py;
-  if (z > 1.75) { z = clamp(Math.min(aw / D.w, ah / D.h, 1), 0.02, 1); px = A.x0 + (aw - D.w * z) / 2; py = A.y0 + (ah - D.h * z) / 2; }
   const fits = (zz, ppx, ppy) => b.x0 * zz + ppx >= A.x0 && b.y0 * zz + ppy >= A.y0 && b.x1 * zz + ppx <= A.x1 && b.y1 * zz + ppy <= A.y1;
   if (!fits(z, px, py)) {
     const bw = Math.max(1, b.x1 - b.x0), bh = Math.max(1, b.y1 - b.y0);
@@ -1858,16 +1997,56 @@ function finishBrush(pts) {
 }
 let brushRun = null;
 function createText(p) {
-  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: true, italic: false, align: 'left', lineHeight: 1.2, strokeWidth: 0, fill: S.style.fill, stroke: S.style.stroke });
+  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: true, italic: false, underline: false, align: 'left', lineHeight: 1.2, strokeWidth: 0, fill: S.style.fill, stroke: S.style.stroke });
   const m = measureText(o); o.iw = m.iw; o.ih = m.ih; o.w = m.iw; o.h = m.ih; o.x = p.x; o.y = p.y - o.h / 2;
   S.objects.push(o); S.sel = [o.id]; commit(); setTool('select'); focusText(true); revealObjects([o]);
   document.fonts && document.fonts.load(textFont(o)).then(() => { updateText(o); render(); }).catch(() => {});
 }
+let editingId = null;
 function focusText(all) {
+  const o = selObjs()[0];
+  if (o && o.type === 'text') { startTextEdit(o, all); return; }
   openPanelsMobile();
   const ta = $('#p-text');
   setTimeout(() => { ta.focus(); if (all) ta.select(); }, 30);
 }
+function startTextEdit(o, selectAll) {
+  editingId = o.id;
+  const ta = $('#inline-edit');
+  ta.value = o.text; ta.hidden = false;
+  positionInlineEdit();
+  openPanelsMobile();
+  setTimeout(() => { ta.focus(); if (selectAll) ta.select(); else ta.setSelectionRange(ta.value.length, ta.value.length); }, 10);
+}
+function positionInlineEdit() {
+  const o = editingId && byId(editingId);
+  const ta = $('#inline-edit');
+  if (!o || o.type !== 'text') { endTextEdit(false); return; }
+  const m = measureText(o), sx = o.w / m.iw, sy = o.h / m.ih, z = S.zoom;
+  const c = toScreen(center(o));
+  const fx = o.flipX ? -1 : 1, fy = o.flipY ? -1 : 1;
+  ta.style.width = m.iw + 'px'; ta.style.height = m.ih + 'px';
+  ta.style.left = c.x + 'px'; ta.style.top = c.y + 'px';
+  ta.style.transform = `translate(-50%,-50%) rotate(${o.rot}deg) scale(${z * sx * fx}, ${z * sy * fy})`;
+  ta.style.font = textFont(o);
+  ta.style.lineHeight = (o.fontSize * o.lineHeight) + 'px';
+  ta.style.textAlign = o.align;
+  ta.style.padding = (m.sw / 2) + 'px';
+  ta.style.textDecoration = o.underline ? 'underline' : 'none';
+}
+function endTextEdit(doCommit) {
+  const o = editingId && byId(editingId);
+  $('#inline-edit').hidden = true;
+  editingId = null;
+  if (o && doCommit) commit();
+}
+const inlineEditEl = document.getElementById('inline-edit');
+inlineEditEl.addEventListener('input', () => {
+  const o = editingId && byId(editingId); if (!o) return;
+  setProp(o, 'text', inlineEditEl.value);
+  positionInlineEdit(); syncPanel(); render();
+});
+inlineEditEl.addEventListener('blur', () => endTextEdit(true));
 function pickColor(p) {
   if (p.x < 0 || p.y < 0 || p.x >= S.doc.w || p.y >= S.doc.h) return;
   try {
@@ -1919,19 +2098,86 @@ function showCtx(items, x, y) {
 
 /* ---------- keyboard ---------- */
 const isTyping = el => el && ((el.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'color'].includes(el.type)) || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
-const TOOLKEYS = { v: 'select', t: 'text', b: 'brush', i: 'eyedrop' };
-const KINDKEYS = { r: ['shape', 'rect'], o: ['shape', 'ellipse'], l: ['line', 'line'], a: ['line', 'arrow'] };
+/* ---------- rebindable keyboard shortcuts ---------- */
+const TOOL_FOR_KEY = { toolSelect: 'select', toolText: 'text', toolBrush: 'brush', toolEyedrop: 'eyedrop' };
+const KIND_FOR_KEY = { kindRect: ['shape', 'rect'], kindEllipse: ['shape', 'ellipse'], kindLine: ['line', 'line'], kindArrow: ['line', 'arrow'] };
+const SHORTCUT_DEFS = [
+  { id: 'toolSelect', label: 'Move tool', mod: 'none', group: 'Tools' },
+  { id: 'toolText', label: 'Text tool', mod: 'none', group: 'Tools' },
+  { id: 'toolBrush', label: 'Brush tool', mod: 'none', group: 'Tools' },
+  { id: 'toolEyedrop', label: 'Eyedropper tool', mod: 'none', group: 'Tools' },
+  { id: 'kindRect', label: 'Rectangle', mod: 'none', group: 'Tools' },
+  { id: 'kindEllipse', label: 'Ellipse', mod: 'none', group: 'Tools' },
+  { id: 'kindLine', label: 'Line', mod: 'none', group: 'Tools' },
+  { id: 'kindArrow', label: 'Arrow', mod: 'none', group: 'Tools' },
+  { id: 'placeImage', label: 'Add image', mod: 'shift', group: 'Tools' },
+  { id: 'undo', label: 'Undo', mod: 'ctrl', group: 'Edit' },
+  { id: 'redo', label: 'Redo', mod: 'ctrl-shift', group: 'Edit' },
+  { id: 'duplicate', label: 'Duplicate', mod: 'ctrl', group: 'Edit' },
+  { id: 'selectAll', label: 'Select all', mod: 'ctrl', group: 'Edit' },
+  { id: 'copy', label: 'Copy', mod: 'ctrl', group: 'Edit' },
+  { id: 'cut', label: 'Cut', mod: 'ctrl', group: 'Edit' },
+  { id: 'paste', label: 'Paste', mod: 'ctrl', group: 'Edit' },
+  { id: 'group', label: 'Group', mod: 'ctrl', group: 'Arrange' },
+  { id: 'ungroup', label: 'Ungroup', mod: 'ctrl-shift', group: 'Arrange' },
+  { id: 'forward', label: 'Bring forward', mod: 'ctrl', group: 'Arrange' },
+  { id: 'front', label: 'Bring to front', mod: 'ctrl-shift', group: 'Arrange' },
+  { id: 'backward', label: 'Send backward', mod: 'ctrl', group: 'Arrange' },
+  { id: 'back', label: 'Send to back', mod: 'ctrl-shift', group: 'Arrange' },
+  { id: 'saveProject', label: 'Save project', mod: 'ctrl', group: 'File & view' },
+  { id: 'open', label: 'Open image', mod: 'ctrl', group: 'File & view' },
+  { id: 'export', label: 'Export', mod: 'ctrl', group: 'File & view' },
+  { id: 'zoomIn', label: 'Zoom in', mod: 'ctrl', group: 'File & view' },
+  { id: 'zoomOut', label: 'Zoom out', mod: 'ctrl', group: 'File & view' },
+  { id: 'zoom100', label: 'Zoom to 100%', mod: 'ctrl', group: 'File & view' },
+];
+const DEFAULT_KEYS = {
+  toolSelect: 'v', toolText: 't', toolBrush: 'b', toolEyedrop: 'i',
+  kindRect: 'r', kindEllipse: 'o', kindLine: 'l', kindArrow: 'a', placeImage: 'p',
+  undo: 'z', redo: 'z', duplicate: 'd', selectAll: 'a', copy: 'c', cut: 'x', paste: 'v',
+  group: 'g', ungroup: 'g', forward: ']', front: ']', backward: '[', back: '[',
+  saveProject: 's', open: 'o', export: 'e', zoomIn: '=', zoomOut: '-', zoom100: '1',
+};
+let KEYS = { ...DEFAULT_KEYS };
+try { Object.assign(KEYS, JSON.parse(localStorage.getItem('plate-editor:keys') || '{}')); } catch (e) {}
+function saveKeys() { try { localStorage.setItem('plate-editor:keys', JSON.stringify(KEYS)); } catch (e) {} }
+function keyLabel(k) {
+  if (!k) return '—';
+  const sym = { '=': '+', ' ': 'Space' }[k] || (k.length === 1 ? k.toUpperCase() : k);
+  return sym;
+}
+function chordLabel(def) {
+  const base = keyLabel(KEYS[def.id]);
+  if (def.mod === 'ctrl') return `Ctrl+${base}`;
+  if (def.mod === 'ctrl-shift') return `Ctrl+Shift+${base}`;
+  if (def.mod === 'shift') return `Shift+${base}`;
+  return base;
+}
 document.addEventListener('keydown', e => {
   if (isTyping(e.target)) { if (e.key === 'Escape') e.target.blur(); return; }
   if (S.setup) { if (e.key === 'Escape' && S.setupCancel) { leaveSetup(); syncAll(); } return; }
   const mod = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
   if (e.key === ' ') { e.preventDefault(); if (!spaceDown) { spaceDown = true; if (!drag) cv.style.cursor = 'grab'; } return; }
   if (mod) {
-    const map = { z: e.shiftKey ? 'redo' : 'undo', y: 'redo', d: 'duplicate', a: 'selectAll', c: 'copy', x: 'cut', s: 'saveProject', o: 'open', e: 'export', '0': 'zoomFit', '1': 'zoom100', '=': 'zoomIn', '+': 'zoomIn', '-': 'zoomOut' };
-    if (k === 'g') { e.preventDefault(); act(e.shiftKey ? 'ungroup' : 'group'); return; }
-    if (k === ']') { e.preventDefault(); act(e.shiftKey ? 'front' : 'forward'); return; }
-    if (k === '[') { e.preventDefault(); act(e.shiftKey ? 'back' : 'backward'); return; }
-    if (map[k]) { e.preventDefault(); act(map[k]); }
+    // Ctrl+V is handled directly, rather than only through the browser's native paste event, so pasting a
+    // copied layer doesn't depend on that event firing reliably in every browser. An OS-clipboard image
+    // paste (when nothing has been copied inside the app) still goes through the native paste listener.
+    if (k === KEYS.paste && clip.length) { e.preventDefault(); pasteInternal(); return; }
+    if (k === KEYS.undo && !e.shiftKey) { e.preventDefault(); act('undo'); return; }
+    if (k === KEYS.redo && e.shiftKey) { e.preventDefault(); act('redo'); return; }
+    if (k === KEYS.group && !e.shiftKey) { e.preventDefault(); act('group'); return; }
+    if (k === KEYS.ungroup && e.shiftKey) { e.preventDefault(); act('ungroup'); return; }
+    if (k === KEYS.forward && !e.shiftKey) { e.preventDefault(); act('forward'); return; }
+    if (k === KEYS.front && e.shiftKey) { e.preventDefault(); act('front'); return; }
+    if (k === KEYS.backward && !e.shiftKey) { e.preventDefault(); act('backward'); return; }
+    if (k === KEYS.back && e.shiftKey) { e.preventDefault(); act('back'); return; }
+    if (!e.shiftKey) {
+      const simple = { [KEYS.duplicate]: 'duplicate', [KEYS.selectAll]: 'selectAll', [KEYS.copy]: 'copy', [KEYS.cut]: 'cut',
+        [KEYS.saveProject]: 'saveProject', [KEYS.open]: 'open', [KEYS.export]: 'export',
+        [KEYS.zoom100]: 'zoom100', [KEYS.zoomIn]: 'zoomIn', [KEYS.zoomOut]: 'zoomOut' };
+      if (simple[k]) { e.preventDefault(); act(simple[k]); return; }
+    }
+    if (k === '0') { e.preventDefault(); act('zoomFit'); }
     return;
   }
   if (e.altKey && k === 'n') { e.preventDefault(); act('new'); return; }
@@ -1947,12 +2193,12 @@ document.addEventListener('keydown', e => {
     for (const o of selObjs()) if (!o.locked) { o.x += dx; o.y += dy; }
     clearTimeout(nudgeT); nudgeT = setTimeout(commit, 350); syncPanel(); render(); return;
   }
-  if (k === 'p' && e.shiftKey) { act('place'); return; }
+  if (k === KEYS.placeImage && e.shiftKey) { act('place'); return; }
   if (k === '=' || k === '+') { act('zoomIn'); return; }
   if (k === '-') { act('zoomOut'); return; }
   if (e.shiftKey || e.altKey) return;
-  if (KINDKEYS[k]) { const [g, kind] = KINDKEYS[k]; S[GROUPS[g].key] = kind; syncGroupIcons(); setTool(g); return; }
-  if (TOOLKEYS[k]) setTool(TOOLKEYS[k]);
+  for (const id in KIND_FOR_KEY) if (KEYS[id] === k) { const [g, kind] = KIND_FOR_KEY[id]; S[GROUPS[g].key] = kind; syncGroupIcons(); setTool(g); return; }
+  for (const id in TOOL_FOR_KEY) if (KEYS[id] === k) { setTool(TOOL_FOR_KEY[id]); return; }
 });
 let nudgeT = 0;
 document.addEventListener('keyup', e => { if (e.key === ' ') { spaceDown = false; if (!drag) cv.style.cursor = cursorForTool(); } });
@@ -2175,11 +2421,13 @@ function flagsFor(sel) {
     if (!isLine(o)) f.add('hasH');
     if (isShape(o) || o.type === 'text') f.add('fillable');
     if (o.type !== 'image') f.add('strokeable');
+    if (isLine(o)) f.add('lineNodes');
   } else {
     f.add('multi');
     if (sel.every(o => isShape(o) || o.type === 'text')) f.add('fillable');
     if (sel.every(o => o.type !== 'image')) f.add('strokeable');
     if (sel.every(o => o.type === 'rect')) f.add('rect');
+    if (sel.every(isLine)) f.add('lineNodes');
   }
   return f;
 }
@@ -2205,9 +2453,11 @@ function syncPanel() {
     if (v === undefined) continue;
     if (el.type === 'checkbox') el.checked = !!v;
     else if (el.type === 'radio') el.checked = el.value === v;
-    else if (el.type === 'range') { el.value = v * (+el.dataset.scale || 1); }
+    else if (el.type === 'range' || el.classList.contains('svin')) {
+      const scaled = v * (+el.dataset.scale || 1);
+      el.value = el.classList.contains('svin') ? (Math.round(scaled * 100) / 100) : scaled;
+    }
     else el.value = fmt(prop, v);
-    if (el.type === 'range') outputFor(el);
   }
   // Colour chips
   $$('#props .cbtn[data-color]').forEach(btn => {
@@ -2217,18 +2467,13 @@ function syncPanel() {
     btn.querySelector('.chip').style.opacity = none ? 0.25 : 1;
   });
 }
-function outputFor(el) {
-  const out = el.nextElementSibling; if (!out || out.tagName !== 'OUTPUT') return;
-  const p = el.dataset.prop, v = +el.value;
-  out.textContent = ['opacity','shAlpha','adjB','adjC','adjS','adjG','adjSp'].includes(p) ? v + '%' : p === 'adjH' ? v + '°' : p === 'adjBlur' || p === 'shBlur' || p === 'radius' || p === 'shX' || p === 'shY' ? v + 'px' : v;
-}
 function readVal(el) {
   if (el.type === 'checkbox') return el.checked;
   if (el.type === 'radio') return el.checked ? el.value : undefined;
   if (el.type === 'number' || el.type === 'range') { const n = parseFloat(el.value); return isNaN(n) ? undefined : n / (+el.dataset.scale || 1); }
   return el.value;
 }
-const TEXTPROPS = ['text','font','fontSize','bold','italic','lineHeight','strokeWidth'];
+const TEXTPROPS = ['text','font','fontSize','bold','italic','underline','align','lineHeight','strokeWidth'];
 function setProp(o, prop, v) {
   if (prop === 'w' || prop === 'h') {
     v = Math.max(1, v);
@@ -2246,17 +2491,32 @@ function setProp(o, prop, v) {
 }
 $('#props').addEventListener('input', e => {
   const el = e.target.closest('[data-prop]'); if (!el) return;
-  const v = readVal(el); if (v === undefined) return;
+  let v = readVal(el); if (v === undefined) return;
   const prop = el.dataset.prop;
+  // A slider's range and its editable number box share a row and must stay in sync, each clamped to
+  // the same bounds — typing a number past the slider's limits clamps it the same way dragging would.
+  const row = el.closest('.slider');
+  let range, svin;
+  if (row) {
+    range = row.querySelector('input[type=range]'); svin = row.querySelector('.svin');
+    const scale = +el.dataset.scale || 1;
+    let scaled = v * scale;
+    if (range) {
+      if (range.min !== '') scaled = Math.max(+range.min, scaled);
+      if (range.max !== '') scaled = Math.min(+range.max, scaled);
+    }
+    v = scaled / scale;
+    if (range && range !== el) range.value = scaled;
+    if (svin && svin !== el) svin.value = Math.round(scaled * 100) / 100;
+  }
   for (const o of selObjs()) {
     if (o.locked && ['x','y','w','h','rot'].includes(prop)) continue;
     if (prop === 'fillOn' || prop === 'fill') { if (!(isShape(o) || o.type === 'text')) continue; }
     if (prop === 'radius' && o.type !== 'rect') continue;
-    if (TEXTPROPS.slice(0, 6).includes(prop) && o.type !== 'text') continue;
+    if (TEXTPROPS.slice(0, 8).includes(prop) && o.type !== 'text') continue;
     setProp(o, prop, v);
   }
   if (prop === 'fill') { selObjs().forEach(o => { if (isShape(o) || o.type === 'text') o.fillOn = true; }); }
-  if (el.type === 'range') outputFor(el);
   if (['fill','stroke','fillOn'].includes(prop)) syncSwatches();
   if (['w','h','fontSize','text','font','lineHeight','bold','italic','strokeWidth'].includes(prop)) syncPanel();
   render();
@@ -2327,13 +2587,24 @@ function layerRow(o, child) {
       <button class="ibtn eyeb${o.visible ? '' : ' off'}" title="${o.visible ? 'Hide' : 'Show'}" aria-label="${o.visible ? 'Hide' : 'Show'} layer"><svg class="i" viewBox="0 0 24 24">${o.visible ? EYE : EYE_OFF}</svg></button>
     </li>`;
 }
+function groupThumbURL(mem) {
+  const b = unionBox(mem), w = Math.max(1, b.x1 - b.x0), h = Math.max(1, b.y1 - b.y0);
+  const s = Math.min(60 / w, 48 / h);
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+  const x = c.getContext('2d');
+  x.translate(-b.x0 * s, -b.y0 * s); x.scale(s, s);
+  for (const o of mem) if (o.visible) drawObj(x, o, s, false);
+  return c.toDataURL();
+}
 function groupRow(g, mem) {
   const nOn = mem.filter(m => S.sel.includes(m.id)).length;
   const vis = mem.some(m => m.visible), locked = mem.every(m => m.locked);
   const cls = nOn === mem.length ? ' on' : nOn ? ' part' : '';
+  let thumb = `<svg class="i" viewBox="0 0 24 24">${FOLDER}</svg>`;
+  try { thumb = `<img src="${groupThumbURL(mem)}" alt="">`; } catch (e) { /* mixed-origin images etc: fall back to the folder icon */ }
   return `<li class="layer lgroup${cls}${vis ? '' : ' hidden-l'}" draggable="true" data-gid="${g.id}">
       <button class="ibtn caret${g.open ? ' open' : ''}" aria-expanded="${g.open}" aria-label="${g.open ? 'Collapse' : 'Expand'} group"><svg class="i" viewBox="0 0 24 24">${CHEVRON}</svg></button>
-      <span class="th"><svg class="i" viewBox="0 0 24 24">${FOLDER}</svg></span><span class="nm" title="Double-click to rename">${esc(g.name)}</span><span class="cnt">${mem.length}</span>
+      <span class="th">${thumb}</span><span class="nm" title="Double-click to rename">${esc(g.name)}</span><span class="cnt">${mem.length}</span>
       <button class="ibtn lockb${locked ? '' : ' off'}" title="${locked ? 'Unlock group' : 'Lock group'}" aria-label="${locked ? 'Unlock' : 'Lock'} group"><svg class="i" viewBox="0 0 24 24">${locked ? LOCK : UNLOCK}</svg></button>
       <button class="ibtn eyeb${vis ? '' : ' off'}" title="${vis ? 'Hide group' : 'Show group'}" aria-label="${vis ? 'Hide' : 'Show'} group"><svg class="i" viewBox="0 0 24 24">${vis ? EYE : EYE_OFF}</svg></button>
     </li>`;
@@ -2449,11 +2720,76 @@ ul.addEventListener('drop', e => {
 ul.addEventListener('dragend', () => { dragData = null; $$('.layer').forEach(l => l.classList.remove('drop-above', 'drop-below')); });
 
 /* ---------- status ---------- */
-function showPos(p) { $('#st-pos').textContent = `X ${Math.round(p.x)}  Y ${Math.round(p.y)}`; }
-function updateStatus() {
-  $('#st-doc').textContent = `${S.doc.w} × ${S.doc.h} px`;
+function editStatusField(elId, key, labels, getValues, onCommit) {
+  // Double-click a status bar field to edit it inline: swaps its text for small number inputs, keeping
+  // the other status updates from clobbering it mid-edit (guarded by the statusEditing flag above).
+  const el = $(elId);
+  el.addEventListener('dblclick', () => {
+    if (!selObjs().length || el.querySelector('input')) return;
+    statusEditing = key;
+    const vals = getValues();
+    el.innerHTML = labels.map((lbl, i) => `${lbl} <input type="number" class="stf" step="1" value="${vals[i]}">`).join(' ');
+    const inputs = [...el.querySelectorAll('input')];
+    let done = false;
+    const finish = apply => {
+      if (done) return; done = true;
+      if (apply) { const nums = inputs.map(i => +i.value); if (nums.every(n => !isNaN(n))) onCommit(...nums); }
+      statusEditing = null; updateStatus();
+    };
+    inputs.forEach(inp => {
+      inp.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+        if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+      });
+      inp.addEventListener('blur', () => setTimeout(() => { if (!inputs.includes(document.activeElement)) finish(true); }, 0));
+    });
+    inputs[0].focus(); inputs[0].select();
+  });
+}
+editStatusField('#st-pos', 'pos', ['X', 'Y'], () => {
+  const sel = selObjs(); const b = sel.length === 1 ? { x0: sel[0].x, y0: sel[0].y } : unionBox(sel);
+  return [Math.round(b.x0 * 10) / 10, Math.round(b.y0 * 10) / 10];
+}, (nx, ny) => {
+  const sel = selObjs().filter(o => !o.locked); if (!sel.length) return;
+  const b = sel.length === 1 ? { x0: sel[0].x, y0: sel[0].y } : unionBox(sel);
+  const dx = nx - b.x0, dy = ny - b.y0;
+  for (const o of sel) { o.x += dx; o.y += dy; }
+  commit();
+});
+editStatusField('#st-doc', 'doc', ['W', 'H'], () => {
   const sel = selObjs();
-  $('#st-sel').textContent = sel.length === 1 ? `${sel[0].name} · ${Math.round(sel[0].w)} × ${Math.round(sel[0].h)}${sel[0].rot ? ` · ${sel[0].rot}°` : ''}` : sel.length ? `${sel.length} layers selected` : '';
+  const b = sel.length === 1 ? { w: sel[0].w, h: sel[0].h } : (() => { const u = unionBox(sel); return { w: u.x1 - u.x0, h: u.y1 - u.y0 }; })();
+  return [Math.round(b.w * 10) / 10, Math.round(b.h * 10) / 10];
+}, (nw, nh) => {
+  const sel = selObjs().filter(o => !o.locked); if (!sel.length) return;
+  nw = Math.max(1, nw); nh = Math.max(1, nh);
+  if (sel.length === 1) { setProp(sel[0], 'w', nw); setProp(sel[0], 'h', nh); }
+  else { const orig = selBox(); applyGroupScale({ orig, o: { ...orig, w: nw, h: nh }, items: sel.map(o => ({ o, s: { ...o } })) }); }
+  commit();
+});
+let lastCursorDoc = null;
+let statusEditing = null; // 'pos' or 'doc' while one of the status bar fields is being typed into
+function showPos(p) {
+  lastCursorDoc = p;
+  const sel = selObjs();
+  if (!sel.length) { if (statusEditing !== 'pos') $('#st-pos').textContent = `X ${Math.round(p.x)}  Y ${Math.round(p.y)}`; return; }
+  const b = sel.length === 1 ? { x0: sel[0].x, y0: sel[0].y, x1: sel[0].x + sel[0].w, y1: sel[0].y + sel[0].h } : unionBox(sel);
+  if (statusEditing !== 'pos') $('#st-pos').textContent = `X ${Math.round(b.x0)}  Y ${Math.round(b.y0)}`;
+  if (statusEditing !== 'doc') $('#st-doc').textContent = `${Math.round(b.x1 - b.x0)} × ${Math.round(b.y1 - b.y0)} px`;
+}
+function updateStatus() {
+  const sel = selObjs();
+  if (!sel.length) {
+    if (statusEditing !== 'doc') $('#st-doc').textContent = `${S.doc.w} × ${S.doc.h} px`;
+    if (lastCursorDoc) showPos(lastCursorDoc);
+    $('#st-sel').textContent = '';
+    return;
+  }
+  // With something selected, this row shows the selection's own position and size instead of the canvas's.
+  const b = sel.length === 1 ? { x0: sel[0].x, y0: sel[0].y, x1: sel[0].x + sel[0].w, y1: sel[0].y + sel[0].h } : unionBox(sel);
+  if (statusEditing !== 'pos') $('#st-pos').textContent = `X ${Math.round(b.x0)}  Y ${Math.round(b.y0)}`;
+  if (statusEditing !== 'doc') $('#st-doc').textContent = `${Math.round(b.x1 - b.x0)} × ${Math.round(b.y1 - b.y0)} px`;
+  $('#st-sel').textContent = sel.length === 1 ? `${sel[0].name}${sel[0].rot ? ` · ${sel[0].rot}°` : ''}` : `${sel.length} layers selected`;
 }
 
 /* ---------- options bar & swatches ---------- */
@@ -2465,7 +2801,11 @@ $('#o-fs').addEventListener('change', e => S.style.fontSize = clamp(+e.target.va
 $('#o-sw').addEventListener('change', e => S.style.strokeWidth = Math.max(0, +e.target.value || 0));
 $('#o-rad').addEventListener('change', e => S.style.radius = Math.max(0, +e.target.value || 0));
 $('#o-lw').addEventListener('change', e => S.style.lineWidth = Math.max(1, +e.target.value || 1));
-$('#o-bs').addEventListener('input', e => { S.style.brush = +e.target.value; $('#o-bs-out').textContent = e.target.value; });
+$('#o-bs').addEventListener('input', e => { S.style.brush = +e.target.value; $('#o-bs-out').value = e.target.value; });
+$('#o-bs-out').addEventListener('input', e => {
+  const n = clamp(Math.round(+e.target.value || 1), 1, 200);
+  S.style.brush = n; $('#o-bs').value = n;
+});
 /* ---------- colour helpers ---------- */
 function parseColor(str) {
   // Returns {h,s,v,a} from a #rgb/#rrggbb/#rrggbbaa string. 'none'/'' -> null (no colour).
@@ -2652,24 +2992,37 @@ $('#f-open').addEventListener('change', e => { const f = e.target.files[0]; if (
 $('#f-place').addEventListener('change', async e => { for (const f of [...e.target.files]) await placeFile(f); e.target.value = ''; });
 $('#f-project').addEventListener('change', e => { const f = e.target.files[0]; if (f) openProjectFile(f); e.target.value = ''; });
 
-/* ---------- mobile panels ---------- */
+/* ---------- side panel: pushes the canvas over as it slides in and out ---------- */
 const panels = $('#panels');
-function togglePanels() {
-  if (innerWidth <= 820) panels.classList.toggle('open');
-  else { panels.classList.toggle('hidden-panel'); resize(); }
+let panelAnimT = 0;
+function drivePanelResize(rescale) {
+  // Keeps the canvas correctly sized and redrawn on every frame of the panel's width transition —
+  // relying on the ResizeObserver alone can lag behind a fast CSS transition and leave the canvas blank.
+  // Only rescale/recentre the camera when the panel opened from a direct, deliberate action (the toggle
+  // button, or dragging its resizer) — not as a side effect of merely selecting or placing something.
+  cancelAnimationFrame(panelAnimT);
+  const until = performance.now() + 260;
+  const step = () => {
+    resize();
+    if (performance.now() < until) panelAnimT = requestAnimationFrame(step);
+    else if (rescale) keepCanvasVisible();
+  };
+  panelAnimT = requestAnimationFrame(step);
 }
+function togglePanels() { panels.classList.toggle('hidden-panel'); drivePanelResize(true); }
 $('#b-panels').addEventListener('click', togglePanels);
 panels.classList.add('hidden-panel');
-function openPanelsMobile() { if (innerWidth <= 820) panels.classList.add('open'); panels.classList.remove('hidden-panel'); }
-function closePanelsMobile() { if (innerWidth <= 820) panels.classList.remove('open'); }
+function openPanelsMobile() { if (panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); drivePanelResize(false); } }
+function closePanelsMobile() { if (innerWidth <= 820 && !panels.classList.contains('hidden-panel')) { panels.classList.add('hidden-panel'); drivePanelResize(false); } }
 
 /* ---------- dialogs ---------- */
 function enterSetup(canCancel) {
   S.setup = true; S.setupCancel = !!canCancel; S.sel = []; drag = null;
   animStart = performance.now();
+  $('#setup-card').hidden = false;
   cv.style.cursor = 'crosshair'; syncAll();
 }
-function leaveSetup() { S.setup = false; cv.style.cursor = cursorForTool(); }
+function leaveSetup() { S.setup = false; $('#setup-card').hidden = true; cv.style.cursor = cursorForTool(); }
 function finishSetup(w, h, sx, sy) {
   welcomeGone = false; everHadContent = false;
   S.doc = { w: clamp(Math.round(w) || 1, 1, 10000), h: clamp(Math.round(h) || 1, 1, 10000), bg: '#ffffff', transparent: false, bgSrc: null, bgFit: 'cover' };
@@ -2687,6 +3040,49 @@ function focusCanvas() {
   else if (frac > 0.9) z = S.zoom * 0.84 / frac;
   animateView(z, (vw - D.w * z) / 2, (vh - D.h * z) / 2, 650);
 }
+// Print sizes at 300dpi, matching the project's other print-ready presets.
+const SIZE_PRESETS = { a4p: [2480, 3508], a4l: [3508, 2480], a5p: [1748, 2480], a5l: [2480, 1748] };
+const dSize = $('#dlg-size');
+$('#setup-choose').addEventListener('click', () => dSize.showModal());
+dSize.addEventListener('click', e => {
+  const b = e.target.closest('[data-preset]'); if (!b) return;
+  finishSetup(...SIZE_PRESETS[b.dataset.preset]); dSize.close();
+});
+$('#size-create').addEventListener('click', () => { finishSetup(+$('#size-w').value || 1200, +$('#size-h').value || 800); dSize.close(); });
+
+/* ---------- keyboard shortcuts dialog ---------- */
+const dShortcuts = $('#dlg-shortcuts');
+let recordingId = null;
+function renderShortcuts() {
+  let html = '', group = null;
+  for (const def of SHORTCUT_DEFS) {
+    if (def.group !== group) { group = def.group; html += `<div class="sc-group">${group}</div>`; }
+    const recording = recordingId === def.id;
+    const empty = !KEYS[def.id];
+    html += `<div class="sc-row"><span class="sc-label">${def.label}</span><button type="button" class="sc-key${recording ? ' recording' : ''}${empty && !recording ? ' empty' : ''}" data-id="${def.id}">${recording ? 'Press a key…' : (empty ? 'Unassigned' : chordLabel(def))}</button></div>`;
+  }
+  $('#sc-list').innerHTML = html;
+}
+$('#s-shortcuts').addEventListener('click', () => { hideMenus(); recordingId = null; renderShortcuts(); dShortcuts.showModal(); });
+$('#sc-list').addEventListener('click', e => {
+  const b = e.target.closest('.sc-key'); if (!b) return;
+  recordingId = b.dataset.id; renderShortcuts();
+});
+document.addEventListener('keydown', e => {
+  if (!recordingId) return;
+  e.preventDefault(); e.stopPropagation();
+  if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
+  if (e.key === 'Escape') { recordingId = null; renderShortcuts(); return; }
+  const def = SHORTCUT_DEFS.find(d => d.id === recordingId);
+  const k = e.key.toLowerCase();
+  // Only one action may own a given key within the same modifier combination — reassigning it here
+  // frees it from whichever other action was using it, rather than silently creating a conflict.
+  for (const other of SHORTCUT_DEFS) if (other.id !== def.id && other.mod === def.mod && KEYS[other.id] === k) KEYS[other.id] = null;
+  KEYS[def.id] = k; saveKeys();
+  recordingId = null; renderShortcuts(); toast(`${def.label} set to ${chordLabel(def)}`);
+}, true);
+dShortcuts.addEventListener('close', () => { recordingId = null; });
+$('#sc-reset').addEventListener('click', () => { KEYS = { ...DEFAULT_KEYS }; saveKeys(); recordingId = null; renderShortcuts(); });
 function animateView(z1, px1, py1, ms) {
   cancelAnimationFrame(viewAnim);
   const z0 = S.zoom, px0 = S.px, py0 = S.py, t0 = performance.now();
@@ -2834,7 +3230,6 @@ $('#s-grid').addEventListener('change', e => { SET.grid = e.target.checked; save
 $('#s-showgrid').addEventListener('change', e => { SET.showGrid = e.target.checked; saveSettings(); syncSettings(); render(); });
 $('#s-gridsize').addEventListener('input', e => { const n = Math.round(+e.target.value); if (n >= 2) { SET.gridSize = Math.min(2000, n); saveSettings(); render(); } });
 $('#s-gridsize').addEventListener('change', syncSettings);
-$('#s-align').addEventListener('change', e => { SET.align = e.target.checked; saveSettings(); syncSettings(); });
 $('#s-blend').addEventListener('change', e => { SET.blend = e.target.checked; saveSettings(); syncSettings(); });
 $('#s-ui').addEventListener('input', e => { SET.ui = +e.target.value; $('#s-ui-out').textContent = SET.ui + '%'; document.documentElement.style.setProperty('--ui', SET.ui / 100); resize(); });
 $('#s-ui').addEventListener('change', saveSettings);
@@ -2849,10 +3244,10 @@ syncSettings();
     el.addEventListener('pointerdown', e => {
       e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('on');
       const mv = ev => { const w = Math.round(clamp(calc(ev), min, max)); saved[key] = w; root.style.setProperty(prop, w + 'px'); };
-      const up = () => { el.classList.remove('on'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); save(); };
+      const up = () => { el.classList.remove('on'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); save(); keepCanvasVisible(); };
       el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
     });
-    el.addEventListener('dblclick', () => { delete saved[key]; root.style.removeProperty(prop); save(); });
+    el.addEventListener('dblclick', () => { delete saved[key]; root.style.removeProperty(prop); save(); setTimeout(keepCanvasVisible, 30); });
   };
   bind($('#rz-left'), 'tools', '--tools-w', 48, 164, 48, ev => ev.clientX - $('#tools').getBoundingClientRect().left);
   bind($('#rz-right'), 'panel', '--panel-w', 220, 560, 288, ev => document.querySelector('.main').getBoundingClientRect().right - ev.clientX);
