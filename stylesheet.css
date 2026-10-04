@@ -234,6 +234,56 @@ body.loaded .card-grid {
     transition-delay: 0s;
 }
 
+.tool-section {
+    width: min(1000px,96%);
+    margin: 0 auto 4rem;
+    padding: 0 1rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-fade);
+}
+
+body.loaded .tool-section {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 1.18s;
+}
+
+.tool-header h3 {
+    margin: 0 0 1rem;
+    color: var(--primary);
+    font-family: var(--font);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    text-align: center;
+}
+
+.tool-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--heading);
+    font-family: var(--font);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.42);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.15s ease;
+}
+
+.tool-link:hover,
+.tool-link:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 34px rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.15);
+    outline: none;
+}
+
 h4 {
     color: var(--heading);
     font-family: var(--font);
