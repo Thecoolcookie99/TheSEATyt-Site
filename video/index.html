@@ -187,8 +187,7 @@ dialog hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 .btn.small{padding:4px 9px;font-weight:500}
 
 /* panels */
-.panels{width:var(--panel-w,300px);flex:none;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;display:flex;flex-direction:column;transition:width .15s cubic-bezier(.25,.8,.25,1),border-color .15s ease}
-.panels.dragging,.tools.dragging{transition:none}
+.panels{width:var(--panel-w,300px);flex:none;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;display:flex;flex-direction:column;transition:width .22s ease,border-color .22s ease}
 .panels.hidden-panel{width:0;min-width:0;border-left-color:transparent;overflow:hidden}
 .panels.hidden-panel>*{min-width:var(--panel-w,300px)}
 .panels.hidden-panel+.resizer{display:none}
@@ -210,7 +209,6 @@ input[type=number],input[type=text],select,textarea{background:var(--field);bord
 .f input[type=number]{border:0}
 textarea{width:100%;resize:vertical;min-height:56px;font-size:13px;-webkit-user-select:text;user-select:text}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-input[type=number]:not(:focus){cursor:ew-resize}
 .cbtn{width:34px;height:26px;border:1px solid var(--line);border-radius:7px;flex:none;padding:2px;background:var(--field);cursor:pointer;position:relative;overflow:hidden}
 .cbtn .chip{position:absolute;inset:2px;border-radius:5px;background-image:var(--checker);background-size:10px 10px}
 .cbtn .chip::after{content:"";position:absolute;inset:0;border-radius:5px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
@@ -329,44 +327,6 @@ dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .tool .more{position:absolute;right:3px;bottom:3px;width:14px;height:14px}
 .tool .more::after{content:"";position:absolute;right:2px;bottom:3px;border-left:5px solid transparent;border-bottom:5px solid currentColor;opacity:.55}
 .tool .more:hover::after{opacity:1}
-/* no visible scrollbars on the side bars (they still scroll with the wheel / touch) */
-.tools,.panels{scrollbar-width:none;-ms-overflow-style:none}
-.tools::-webkit-scrollbar,.panels::-webkit-scrollbar{display:none}
-/* collapsible tool sections */
-.tgrp{display:contents}
-.tsec{grid-column:1/-1;position:relative;display:block;width:100%;height:13px;border:0;background:none;padding:0;margin:1px 0;border-radius:4px;cursor:pointer}
-.tsec::before{content:"";position:absolute;left:8px;right:8px;top:6px;height:1px;background:var(--line);transition:background .12s,height .12s,top .12s}
-.tsec:hover::before{background:var(--accent);height:2px;top:5.5px}
-.tsec[aria-expanded="false"]::before{background:repeating-linear-gradient(90deg,var(--muted) 0 3px,transparent 3px 6px);height:2px;top:5.5px}
-.tsec[aria-expanded="false"]:hover::before{background:repeating-linear-gradient(90deg,var(--accent) 0 3px,transparent 3px 6px)}
-.tgrp.collapsed>.tool:not(.on){display:none}
-/* quick-bar popups and the size chooser */
-.quickbar button.on{background:var(--accent);color:var(--accent-ink)}
-.quickbar button.on .ql{color:var(--accent-ink)}
-.quickbar .qcar{font-size:8px;margin-left:3px;opacity:.7}
-.qsw{width:20px;height:20px;border-radius:6px;position:relative;background:var(--checker);flex:none}
-.qsw::before{content:"";position:absolute;inset:0;border-radius:6px;background:var(--s)}
-.qsw::after{content:"";position:absolute;inset:5px;border-radius:2px;background:var(--f)}
-.qsw.nostroke::before{background:none;border:1.5px dashed var(--muted)}
-.qpop{position:fixed;z-index:160;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:0 14px 36px rgba(0,0,0,.35);min-width:190px;max-width:calc(100vw - 16px);color:var(--text)}
-.qpop[hidden]{display:none}
-.qpop .qp-head{font-size:12px;font-weight:700;margin:0 2px 8px;display:flex;justify-content:space-between;gap:10px}
-.qpop .qp-head small{font-weight:500;color:var(--muted)}
-.qpop .qp-list{display:flex;flex-direction:column;gap:1px;max-height:min(320px,50vh);overflow-y:auto}
-.qpop .qp-list button{display:flex;align-items:center;gap:10px;border:0;background:none;padding:7px 9px;border-radius:7px;text-align:left;color:var(--text)}
-.qpop .qp-list button:hover{background:var(--hover)}
-.qpop .qp-list button.on{background:var(--accent);color:var(--accent-ink)}
-.qpop .slider{margin-top:2px}
-.qp-dots{display:flex;gap:4px;margin-bottom:8px}
-.qp-dots button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;border:1px solid var(--line);background:var(--field);border-radius:8px;padding:6px 2px 4px;min-height:52px;color:var(--text)}
-.qp-dots button:hover{border-color:var(--muted)}
-.qp-dots button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--field))}
-.qp-dots i{display:block;border-radius:50%;background:currentColor}
-.qp-dots small{font-size:10px;color:var(--muted)}
-.qp-foot{display:flex;justify-content:flex-end;margin-top:10px}
-.flyout .fl-size{padding:6px 6px 4px;min-width:220px}
-.flyout .fl-size .qp-head{font-size:12px;font-weight:700;margin:0 0 6px}
-.flyout hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
 .flyout{position:fixed;z-index:100;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;box-shadow:0 12px 32px rgba(0,0,0,.35);display:none;min-width:170px}
 .flyout.open{display:block}
 .flyout button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:6px 10px;border-radius:5px;text-align:left}
@@ -393,7 +353,7 @@ body.ui-enter .tools{animation:ui-in-left .38s cubic-bezier(.2,.8,.2,1) .05s bac
 body.ui-enter .status{animation:ui-in-bottom .38s cubic-bezier(.2,.8,.2,1) .05s backwards}
 body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
 </style>
-</head> 
+</head>
 <body tabindex="-1">
 <header class="top">
   <div class="brand"><b></b><span>Plate</span></div>
@@ -439,7 +399,6 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
 <div class="menu" id="menu-settings" role="menu" style="min-width:250px">
   <label class="mrow"><input type="checkbox" id="s-guides"> Snap to canvas and layers</label>
   <label class="mrow"><input type="checkbox" id="s-grid"> Snap to grid</label>
-  <label class="mrow"><input type="checkbox" id="s-nodes"> Snap pen and lines to end points</label>
   <label class="mrow"><input type="checkbox" id="s-showgrid"> Show grid</label>
   <label class="mrow" id="s-size-row">Grid size <input type="number" id="s-gridsize" min="2" max="2000" step="1"> px</label>
   <hr>
@@ -472,7 +431,7 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
       <p class="pk-note" id="pd-note" hidden>Lines and brush strokes don't have an outline. Use Fill to change their colour.</p>
       <div class="pk-body">
         <div id="pd-stroke"></div>
-        <div class="slider pk-thick"><span class="lbl">Thickness</span><input type="range" id="pd-w" min="0" max="100" step="1" aria-label="Outline thickness"><span class="sval"><input type="number" id="pd-w-num" min="0" max="1000" step="1" aria-label="Outline thickness in pixels"><i>px</i></span></div>
+        <div class="slider pk-thick"><span class="lbl">Thickness</span><input type="range" id="pd-w" min="0" max="100" step="1" aria-label="Outline thickness"><span class="sval"><input type="number" id="pd-w-num" min="0" max="200" step="1" aria-label="Outline thickness in pixels"><i>px</i></span></div>
       </div>
     </section>
   </div>
@@ -480,26 +439,19 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
 
 <div class="main">
   <nav class="tools" id="tools" aria-label="Tools">
-    <button type="button" class="tsec" data-sec="select" aria-expanded="true" aria-label="Select tools: click to hide or show"></button>
-    <div class="tgrp" data-grp="select">
     <button class="tool" data-tool="select" title="Move (V)" aria-label="Move"><svg class="i" viewBox="0 0 24 24"><path d="M5 3l13 8.5-6 1.5-3 6z"/></svg><span class="tl">Move</span></button>
     <button class="tool" data-tool="hand" title="Grab (H)" aria-label="Grab"><svg class="i" viewBox="0 0 24 24"><path d="M8 12.5V6a1.5 1.5 0 013 0v5"/><path d="M11 10.5V4.5a1.5 1.5 0 013 0v6"/><path d="M14 10.5v-4a1.5 1.5 0 013 0V15a6.5 6.5 0 01-6.5 6.5h-.8a6 6 0 01-4.7-2.3l-2.6-3.4a1.6 1.6 0 012.4-2.1L8 15.5"/></svg><span class="tl">Grab</span></button>
-    <button class="tool" data-tool="lasso" aria-label="Lasso"><span class="ico"></span><span class="more" title="More selection shapes"></span><span class="tl">Lasso</span></button>
-    </div>
-    <button type="button" class="tsec" data-sec="add" aria-expanded="true" aria-label="Add tools: click to hide or show"></button>
-    <div class="tgrp" data-grp="add">
+    <button class="tool" data-tool="lasso" title="Lasso (Q)" aria-label="Lasso"><svg class="i" viewBox="0 0 24 24"><path d="M7.2 15.4C4.6 14.3 3 12.5 3 10.5 3 6.9 7 4 12 4s9 2.9 9 6.5S17 17 12 17c-.9 0-1.8-.1-2.6-.3" stroke-dasharray="3.2 2.4"/><path d="M8.4 14.2c-1.6.4-2.4 1.5-2.1 2.6.3 1.2 1.7 1.6 2.4 2.6.5.8.3 1.7-.4 2.1"/></svg><span class="tl">Lasso</span></button>
     <button class="tool" data-act="place" title="Add image (Ctrl+O)" aria-label="Add image"><svg class="i" viewBox="0 0 24 24"><path d="M13 18H5a2 2 0 01-2-2V6a2 2 0 012-2h11a2 2 0 012 2v6"/><circle cx="8" cy="9" r="1.5"/><path d="M3.5 15.5l4-4 4.5 4.5 2-2"/><path d="M18.5 14.5v7M15 18h7"/></svg><span class="tl">Image</span></button>
+    <div class="gap"></div>
     <button class="tool" data-tool="text" title="Text (T)" aria-label="Text"><svg class="i" viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg><span class="tl">Text</span></button>
     <button class="tool" data-tool="shape" aria-label="Shapes"><span class="ico"></span><span class="more" title="More shapes"></span><span class="tl">Shape</span></button>
     <button class="tool" data-tool="line" aria-label="Lines"><span class="ico"></span><span class="more" title="More lines"></span><span class="tl">Line</span></button>
-    </div>
-    <button type="button" class="tsec" data-sec="paint" aria-expanded="true" aria-label="Paint tools: click to hide or show"></button>
-    <div class="tgrp" data-grp="paint">
+    <div class="gap"></div>
     <button class="tool" data-tool="brush" aria-label="Draw"><span class="ico"></span><span class="more" title="More brushes"></span><span class="tl">Draw</span></button>
-    <button class="tool" data-tool="erase" title="Eraser (E)" aria-label="Eraser"><svg class="i" viewBox="0 0 24 24"><path d="M20 20H9.5"/><path d="M4.6 14.6l9.2-9.2a2 2 0 012.8 0l3 3a2 2 0 010 2.8L12 18.8a2 2 0 01-1.4.6H8.4a2 2 0 01-1.4-.6l-2.4-2.4a2 2 0 010-2.8z"/><path d="M9.2 10l5.8 5.8"/></svg><span class="more" title="Eraser size"></span><span class="tl">Erase</span></button>
+    <button class="tool" data-tool="erase" title="Eraser (E)" aria-label="Eraser"><svg class="i" viewBox="0 0 24 24"><path d="M20 20H9.5"/><path d="M4.6 14.6l9.2-9.2a2 2 0 012.8 0l3 3a2 2 0 010 2.8L12 18.8a2 2 0 01-1.4.6H8.4a2 2 0 01-1.4-.6l-2.4-2.4a2 2 0 010-2.8z"/><path d="M9.2 10l5.8 5.8"/></svg><span class="tl">Erase</span></button>
     <button class="tool" data-tool="fill" title="Fill (G)" aria-label="Fill"><svg class="i" viewBox="0 0 24 24"><path d="M4.4 11.6L11 5l7.6 7.6-6.6 6.6a2 2 0 01-2.8 0l-4.8-4.8a2 2 0 010-2.8z"/><path d="M8 3l3 2"/><path d="M4.5 12.5h13.6"/><path d="M20.5 15.5s1.6 2.1 1.6 3.2a1.6 1.6 0 01-3.2 0c0-1.1 1.6-3.2 1.6-3.2z"/></svg><span class="tl">Fill</span></button>
     <button class="tool" data-tool="eyedrop" title="Eyedropper (I)" aria-label="Eyedropper"><svg class="i" viewBox="0 0 24 24"><path d="M15.2 4.3a2.6 2.6 0 013.7 0l.8.8a2.6 2.6 0 010 3.7l-2.2 2.2.9.9-1.6 1.6-6.2-6.2 1.6-1.6.9.9z"/><path d="M10.2 8.7L4.6 14.3a2 2 0 00-.6 1.4v2.6l-1 1.7.9.9 1.7-1h2.6a2 2 0 001.4-.6l5.6-5.6"/><path d="M7 15.5h5" opacity=".55"/></svg><span class="tl">Pick</span></button>
-    </div>
     <div class="swatches">
       <button type="button" class="swatch" id="sw-fg" aria-haspopup="dialog" aria-expanded="false" title="Fill and outline" aria-label="Fill and outline colours"><span class="sw-ring"></span><span class="sw-fill"></span></button>
     </div>
@@ -510,7 +462,6 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
     <canvas id="view"></canvas>
     <textarea id="inline-edit" class="inline-edit" hidden spellcheck="false" wrap="off" aria-label="Edit text"></textarea>
     <div class="quickbar" id="quickbar" hidden aria-label="Quick actions"></div>
-    <div class="qpop" id="qpop" hidden role="dialog"></div>
     <div class="zoomdock" aria-label="Zoom">
       <button class="ibtn" data-act="zoomOut" title="Zoom out (−)" aria-label="Zoom out"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
       <div class="zoombox" title="Zoom">
@@ -541,13 +492,14 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
   <aside class="panels" id="panels" aria-label="Panels">
     <section class="sec" id="opts">
       <h2 id="opts-title">Tool options</h2>
+      <label class="orow" data-tools="shape" hidden><span class="lbl">Stroke</span><input type="number" id="o-sw" min="0" max="200" value="0"></label>
       <label class="orow" data-tools="shape" id="o-rad-wrap" hidden><span class="lbl">Corner radius</span><input type="number" id="o-rad" min="0" max="1000" value="0"></label>
       <label class="orow" data-tools="line" hidden><span class="lbl">Width</span><input type="number" id="o-lw" min="1" max="200" value="6"></label>
-      <label class="orow" data-tools="brush" hidden><span class="lbl">Size</span><input type="range" id="o-bs" min="1" max="100" value="24" data-size="brush"><span class="sval"><input type="number" id="o-bs-out" min="1" max="1000" value="24" data-size="brush" aria-label="Brush size"></span></label>
-      <label class="orow" data-tools="erase" hidden><span class="lbl">Size</span><input type="range" id="o-es" min="1" max="100" value="80" data-size="erase"><span class="sval"><input type="number" id="o-es-out" min="1" max="1000" value="80" data-size="erase" aria-label="Eraser size"></span></label>
+      <label class="orow" data-tools="brush" hidden><span class="lbl">Size</span><input type="range" id="o-bs" min="1" max="200" value="12"><span class="sval"><input type="number" id="o-bs-out" min="1" max="200" value="12" aria-label="Brush size"><i>px</i></span></label>
+      <label class="orow" data-tools="erase" hidden><span class="lbl">Size</span><input type="range" id="o-es" min="2" max="300" value="40"><span class="sval"><input type="number" id="o-es-out" min="2" max="300" value="40" aria-label="Eraser size"><i>px</i></span></label>
       <label class="orow" data-tools="erase" hidden><input type="checkbox" id="o-esel" style="accent-color:var(--accent);margin:0"> Only erase the selected layers</label>
       <label class="orow" data-tools="fill" hidden><span class="lbl">Tolerance</span><input type="range" id="o-ft" min="0" max="100" value="30"><span class="sval"><input type="number" id="o-ft-out" min="0" max="100" value="30" aria-label="Fill tolerance"><i>%</i></span></label>
-      <label class="orow" data-tools="lasso" hidden><span class="lbl">Mode</span><select id="o-lasso"><option value="cut">Move part out</option><option value="select">Select layers</option></select></label>
+      <label class="orow" data-tools="lasso" hidden><span class="lbl">Mode</span><select id="o-lasso"><option value="cut">Cut out to a new layer</option><option value="select">Select layers</option></select></label>
       <label class="orow" data-tools="text" hidden><span class="lbl">Font</span><select id="o-font"></select></label>
       <label class="orow" data-tools="text" hidden><span class="lbl">Size</span><input type="number" id="o-fs" min="4" max="1000" value="72"></label>
       <p class="empty" id="hint" style="margin-top:8px"></p>
@@ -625,16 +577,16 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
       </div>
       <label class="chk" data-show="lineNodes" title="Free: drag an end anywhere to reshape the line. Off: dragging an end only changes its length, keeping the current angle."><input type="checkbox" data-prop="freeNodes"> Free-moving nodes</label>
       <div class="grp slider" data-show="rect">
-        <span class="lbl">Corners</span><input type="range" min="0" max="300" data-prop="radius"><span class="sval"><input type="number" class="svin" data-over data-prop="radius" min="0" max="300" aria-label="radius value"><i>px</i></span>
+        <span class="lbl">Corners</span><input type="range" min="0" max="300" data-prop="radius"><span class="sval"><input type="number" class="svin" data-prop="radius" min="0" max="300" aria-label="radius value"><i>px</i></span>
       </div>
 
       <details data-show="sel" id="adj">
         <summary>Adjustments</summary>
-        <div class="slider"><span class="lbl">Brightness</span><input type="range" min="0" max="200" data-prop="adjB"><span class="sval"><input type="number" class="svin" data-over data-prop="adjB" min="0" max="200" aria-label="adjB value"><i>%</i></span></div>
-        <div class="slider"><span class="lbl">Contrast</span><input type="range" min="0" max="200" data-prop="adjC"><span class="sval"><input type="number" class="svin" data-over data-prop="adjC" min="0" max="200" aria-label="adjC value"><i>%</i></span></div>
-        <div class="slider"><span class="lbl">Saturation</span><input type="range" min="0" max="300" data-prop="adjS"><span class="sval"><input type="number" class="svin" data-over data-prop="adjS" min="0" max="300" aria-label="adjS value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Brightness</span><input type="range" min="0" max="200" data-prop="adjB"><span class="sval"><input type="number" class="svin" data-prop="adjB" min="0" max="200" aria-label="adjB value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Contrast</span><input type="range" min="0" max="200" data-prop="adjC"><span class="sval"><input type="number" class="svin" data-prop="adjC" min="0" max="200" aria-label="adjC value"><i>%</i></span></div>
+        <div class="slider"><span class="lbl">Saturation</span><input type="range" min="0" max="300" data-prop="adjS"><span class="sval"><input type="number" class="svin" data-prop="adjS" min="0" max="300" aria-label="adjS value"><i>%</i></span></div>
         <div class="slider"><span class="lbl">Hue</span><input type="range" min="-180" max="180" data-prop="adjH"><span class="sval"><input type="number" class="svin" data-prop="adjH" min="-180" max="180" aria-label="adjH value"><i>°</i></span></div>
-        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="40" step="0.5" data-prop="adjBlur"><span class="sval"><input type="number" class="svin" data-over data-prop="adjBlur" min="0" max="40" step="0.5" aria-label="adjBlur value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="40" step="0.5" data-prop="adjBlur"><span class="sval"><input type="number" class="svin" data-prop="adjBlur" min="0" max="40" step="0.5" aria-label="adjBlur value"><i>px</i></span></div>
         <div class="slider"><span class="lbl">Grayscale</span><input type="range" min="0" max="100" data-prop="adjG"><span class="sval"><input type="number" class="svin" data-prop="adjG" min="0" max="100" aria-label="adjG value"><i>%</i></span></div>
         <div class="slider"><span class="lbl">Sepia</span><input type="range" min="0" max="100" data-prop="adjSp"><span class="sval"><input type="number" class="svin" data-prop="adjSp" min="0" max="100" aria-label="adjSp value"><i>%</i></span></div>
         <div style="margin-top:8px"><button class="btn small" data-act="resetAdj">Reset adjustments</button></div>
@@ -644,9 +596,9 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
         <summary>Drop shadow</summary>
         <div class="row" style="margin-top:8px"><label class="chk"><input type="checkbox" data-prop="shOn"> Show shadow</label><span class="spacer"></span><button type="button" class="cbtn" data-color="shColor" aria-label="Shadow color"><span class="chip"></span></button></div>
         <div class="slider"><span class="lbl">Opacity</span><input type="range" min="0" max="100" data-prop="shAlpha" data-scale="100"><span class="sval"><input type="number" class="svin" data-prop="shAlpha" min="0" max="100" data-scale="100" aria-label="shAlpha value"><i>%</i></span></div>
-        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="120" data-prop="shBlur"><span class="sval"><input type="number" class="svin" data-over data-prop="shBlur" min="0" max="120" aria-label="shBlur value"><i>px</i></span></div>
-        <div class="slider"><span class="lbl">Offset X</span><input type="range" min="-100" max="100" data-prop="shX"><span class="sval"><input type="number" class="svin" data-over data-prop="shX" min="-100" max="100" aria-label="shX value"><i>px</i></span></div>
-        <div class="slider"><span class="lbl">Offset Y</span><input type="range" min="-100" max="100" data-prop="shY"><span class="sval"><input type="number" class="svin" data-over data-prop="shY" min="-100" max="100" aria-label="shY value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Blur</span><input type="range" min="0" max="120" data-prop="shBlur"><span class="sval"><input type="number" class="svin" data-prop="shBlur" min="0" max="120" aria-label="shBlur value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Offset X</span><input type="range" min="-100" max="100" data-prop="shX"><span class="sval"><input type="number" class="svin" data-prop="shX" min="-100" max="100" aria-label="shX value"><i>px</i></span></div>
+        <div class="slider"><span class="lbl">Offset Y</span><input type="range" min="-100" max="100" data-prop="shY"><span class="sval"><input type="number" class="svin" data-prop="shY" min="-100" max="100" aria-label="shY value"><i>px</i></span></div>
       </details>
     </section>
 
@@ -764,19 +716,17 @@ const S = {
   doc: { w: 1200, h: 800, bg: '#ffffff', transparent: false, bgSrc: null, bgFit: 'cover' },
   objects: [], sel: [], tool: 'select',
   zoom: 1, px: 0, py: 0,
-  style: { fill: '#ffd23f', stroke: '#1f232a', strokeWidth: 0, radius: 0, lineWidth: 6, brush: 12, eraser: 40, eraseOnlySel: false, lassoMode: 'cut', fillTol: 30, brushSizes: { pen: 12, marker: 30, highlighter: 26 }, font: 'Manrope', fontSize: 72, bold: true, italic: false, align: 'left' },
-  snap: true, anchor: [0.5, 0.5], setup: false, setupCancel: false, shapeKind: 'rect', lineKind: 'line', brushKind: 'pen', lassoKind: 'lfree', groups: []
+  style: { fill: '#ffd23f', stroke: '#1f232a', strokeWidth: 0, radius: 0, lineWidth: 6, brush: 12, eraser: 40, eraseOnlySel: false, lassoMode: 'cut', fillTol: 30, brushSizes: { pen: 12, marker: 30, highlighter: 26 }, font: 'Manrope', fontSize: 72 },
+  snap: true, anchor: [0.5, 0.5], setup: false, setupCancel: false, shapeKind: 'rect', lineKind: 'line', brushKind: 'pen', groups: []
 };
 let dpr = 1, vw = 0, vh = 0;
 let drag = null, hoverId = null, guides = [], spaceDown = false;
 const pointers = new Map();
 let clip = [], pasteN = 0;
 let downloads = null;
-// The save capability arrives asynchronously (or never, e.g. when the page is opened on its own or as a local file).
-const downloadsReady = (window.claude && typeof window.claude.use === 'function')
-  ? Promise.resolve().then(() => window.claude.use('downloads')).catch(() => null)
-  : Promise.resolve(null);
-downloadsReady.then(d => { downloads = d || null; });
+if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
+}
 
 let uid = 0;
 const nid = () => 'o' + Date.now().toString(36) + (uid++).toString(36);
@@ -876,12 +826,7 @@ function insideObj(o, p) {
   const l = toLocal(o, p);
   let tol = (OFF + 1) / S.zoom;
   if (isLine(o) || o.type === 'path') tol = Math.max(8 / S.zoom, (o.strokeWidth || 0) / 2);
-  if (Math.abs(l.x) <= o.w / 2 + tol && Math.abs(l.y) <= o.h / 2 + tol) return true;
-  if (o.erase) for (const m of o.erase) {
-    if (!m || m.t !== 'm' || !(m.dx || m.dy)) continue;
-    const q = docToMask(o, m, p); if (pointInPoly(q[0] - m.dx, q[1] - m.dy, m.pts)) return true;
-  }
-  return false;
+  return Math.abs(l.x) <= o.w / 2 + tol && Math.abs(l.y) <= o.h / 2 + tol;
 }
 const OFF = 4;
 function handlesFor(o) {
@@ -987,7 +932,6 @@ function drawObj(c, o, k, ghost) {
   const hw = o.w / 2, hh = o.h / 2;
   if (o.type === 'image') {
     const im = getImg(o.src);
-    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     if (im.complete && im.naturalWidth) {
       const cl = o.cL || 0, ct = o.cT || 0, cr = o.cR || 0, cb = o.cB || 0;
       if (cl || ct || cr || cb) {
@@ -1026,33 +970,7 @@ function drawObj(c, o, k, ghost) {
 // (unrotated, before flipping), so they move, rotate and scale with it. Masked layers are drawn
 // through a scratch canvas, where the masks are punched out before the layer is composited.
 function localPt(o, p) { const l = toLocal(o, p); return [o.flipX ? -l.x : l.x, o.flipY ? -l.y : l.y]; }
-let scratch = null, scratch2 = null;
-function scratch2Ctx(w, h) {
-  if (!scratch2) scratch2 = document.createElement('canvas');
-  if (scratch2.width !== w || scratch2.height !== h) { scratch2.width = w; scratch2.height = h; }
-  return scratch2.getContext('2d');
-}
-// Lasso moves keep their loop in the layer's own space; these convert between that space and the canvas.
-function maskToDoc(o, m, lx, ly) {
-  let x = lx * o.w / (m.w0 || o.w), y = ly * o.h / (m.h0 || o.h);
-  if (o.flipX) x = -x; if (o.flipY) y = -y;
-  return toWorld(o, { x, y });
-}
-function docToMask(o, m, p) { const l = localPt(o, p); return [l[0] * (m.w0 || o.w) / o.w, l[1] * (m.h0 || o.h) / o.h]; }
-function docDeltaToMask(o, m, dx, dy) {
-  const a = -rad(o.rot); let x = dx * Math.cos(a) - dy * Math.sin(a), y = dx * Math.sin(a) + dy * Math.cos(a);
-  if (o.flipX) x = -x; if (o.flipY) y = -y;
-  return { x: x * (m.w0 || o.w) / o.w, y: y * (m.h0 || o.h) / o.h };
-}
-function contentBox(o) {
-  // The layer's box, grown to take in any parts moved outside it with the lasso.
-  const a = aabb(o);
-  if (o.erase) for (const m of o.erase) {
-    if (!m || m.t !== 'm' || !(m.dx || m.dy)) continue;
-    for (const q of m.pts) { const d = maskToDoc(o, m, q[0] + m.dx, q[1] + m.dy); if (d.x < a.x0) a.x0 = d.x; if (d.x > a.x1) a.x1 = d.x; if (d.y < a.y0) a.y0 = d.y; if (d.y > a.y1) a.y1 = d.y; }
-  }
-  return a;
-}
+let scratch = null;
 function scratchCtx(w, h) {
   if (!scratch) scratch = document.createElement('canvas');
   if (scratch.width !== w || scratch.height !== h) { scratch.width = w; scratch.height = h; }
@@ -1061,11 +979,11 @@ function scratchCtx(w, h) {
 function maskPath(x, m) {
   const P = m.pts; x.beginPath(); x.moveTo(P[0][0], P[0][1]);
   for (let i = 1; i < P.length; i++) x.lineTo(P[i][0], P[i][1]);
-  if (m.t === 'p' || m.t === 'm') x.closePath(); else if (P.length === 1) x.lineTo(P[0][0] + 0.01, P[0][1]);
+  if (m.t === 'p') x.closePath(); else if (P.length === 1) x.lineTo(P[0][0] + 0.01, P[0][1]);
 }
 function drawMasked(c, o, k, ghost) {
   const W = c.canvas.width, H = c.canvas.height, T = c.getTransform();
-  const a = contentBox(o), pad = (o.strokeWidth || 0) + (o.adjBlur || 0) * 3 + 2;
+  const a = aabb(o), pad = (o.strokeWidth || 0) + (o.adjBlur || 0) * 3 + 2;
   let rx0 = Infinity, ry0 = Infinity, rx1 = -Infinity, ry1 = -Infinity;
   for (const [px, py] of [[a.x0 - pad, a.y0 - pad], [a.x1 + pad, a.y0 - pad], [a.x1 + pad, a.y1 + pad], [a.x0 - pad, a.y1 + pad]]) {
     const q = T.transformPoint(new DOMPoint(px, py));
@@ -1079,27 +997,14 @@ function drawMasked(c, o, k, ghost) {
   x.save(); x.beginPath(); x.rect(rx0, ry0, rw, rh); x.clip();
   x.setTransform(T);
   drawObj(x, { ...o, erase: null, opacity: 1, shOn: false }, k, true);
+  x.globalCompositeOperation = 'destination-out';
   x.translate(o.x + o.w / 2, o.y + o.h / 2); x.rotate(rad(o.rot));
   if (o.flipX || o.flipY) x.scale(o.flipX ? -1 : 1, o.flipY ? -1 : 1);
   x.fillStyle = '#000'; x.strokeStyle = '#000'; x.lineCap = 'round'; x.lineJoin = 'round';
-  // Edits apply in the order they were made: eraser strokes and old cut-outs punch holes;
-  // lasso moves lift the pixels inside their loop and put them back shifted.
   for (const m of o.erase) {
     if (!m || !m.pts || !m.pts.length) continue;
-    x.save(); x.scale(o.w / (m.w0 || o.w), o.h / (m.h0 || o.h));
-    if (m.t === 'm') {
-      if (m.dx || m.dy) {
-        const M = x.getTransform(), y = scratch2Ctx(W, H);
-        y.setTransform(1, 0, 0, 1, 0, 0); y.globalCompositeOperation = 'source-over'; y.clearRect(0, 0, W, H);
-        y.save(); y.setTransform(M); maskPath(y, m); y.clip(); y.setTransform(1, 0, 0, 1, 0, 0); y.drawImage(scratch, 0, 0); y.restore();
-        x.globalCompositeOperation = 'destination-out'; maskPath(x, m); x.fill();
-        const ddx = M.a * m.dx + M.c * m.dy, ddy = M.b * m.dx + M.d * m.dy;
-        x.save(); x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.drawImage(scratch2, ddx, ddy); x.restore();
-      }
-    } else {
-      x.globalCompositeOperation = 'destination-out'; maskPath(x, m);
-      if (m.t === 'p') x.fill(); else { x.lineWidth = m.lw; x.stroke(); }
-    }
+    x.save(); x.scale(o.w / (m.w0 || o.w), o.h / (m.h0 || o.h)); maskPath(x, m);
+    if (m.t === 'p') x.fill(); else { x.lineWidth = m.lw; x.stroke(); }
     x.restore();
   }
   x.restore();
@@ -1206,7 +1111,7 @@ function draw() {
   if (drag && drag.mode === 'brush') drawBrushPreview(ctx);
   ctx.restore();
   // Parts of layers hanging off the canvas still show, faded, over the workspace.
-  const off = S.objects.filter(o => { if (!o.visible) return false; const a = contentBox(o); return a.x0 < 0 || a.y0 < 0 || a.x1 > D.w || a.y1 > D.h; });
+  const off = S.objects.filter(o => { if (!o.visible) return false; const a = aabb(o); return a.x0 < 0 || a.y0 < 0 || a.x1 > D.w || a.y1 > D.h; });
   if (off.length) {
     ctx.save();
     ctx.beginPath(); ctx.rect(-1e6, -1e6, 2e6, 2e6); ctx.rect(0, 0, D.w, D.h); ctx.clip('evenodd');
@@ -1363,12 +1268,6 @@ function drawOverlay() {
     ctx.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y));
     ctx.strokeRect(Math.min(a.x, b.x) + .5, Math.min(a.y, b.y) + .5, Math.abs(b.x - a.x), Math.abs(b.y - a.y));
   }
-  if (lassoSel && !(drag && drag.mode === 'lasso')) {
-    ctx.save(); ctx.beginPath();
-    lassoSel.pts.forEach((q, i) => { const s2 = toScreen({ x: q[0] + lassoSel.dx, y: q[1] + lassoSel.dy }); i ? ctx.lineTo(s2.x, s2.y) : ctx.moveTo(s2.x, s2.y); });
-    ctx.closePath(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
-    ctx.lineDashOffset = 4.5; ctx.strokeStyle = '#1f232a'; ctx.stroke(); ctx.restore();
-  }
   if (drag && drag.mode === 'lasso' && drag.pts.length > 1) {
     ctx.save(); ctx.beginPath();
     drag.pts.forEach((q, i) => { const s2 = toScreen({ x: q[0], y: q[1] }); i ? ctx.lineTo(s2.x, s2.y) : ctx.moveTo(s2.x, s2.y); });
@@ -1387,7 +1286,7 @@ function drawOverlay() {
     }
     ctx.globalAlpha = 1;
   }
-  if (drag && ['create', 'resize', 'groupResize', 'createLine'].includes(drag.mode) && drag.o) { if (drag.mode !== 'createLine') drawCenterLines(drag.o); drawSizePill(drag.o); }
+  if (drag && ['create', 'resize', 'groupResize', 'createLine'].includes(drag.mode) && drag.o) { drawCenterLines(drag.o); drawSizePill(drag.o); }
   if (drag && drag.mode === 'groupRotate') drawAnglePill(drag);
   if (S.tool === 'eyedrop' && lastSP && !drag && !S.setup) drawLoupe();
   const ring = (S.tool === 'brush' && !drag) || (S.tool === 'erase' && (!drag || drag.mode === 'erase'));
@@ -1397,49 +1296,8 @@ function drawOverlay() {
     ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = .75; ctx.stroke();
   }
-  if (SET.nodeSnap && lastSP && (S.tool === 'brush' || S.tool === 'line') && (!drag || ['brush', 'createLine'].includes(drag.mode))) {
-    const n = nearestNode(toDoc(lastSP), drag && drag.o ? drag.o.id : null);
-    if (n) { const q = toScreen(n); ctx.save(); ctx.beginPath(); ctx.arc(q.x, q.y, 6, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = C.accent; ctx.stroke(); ctx.restore(); }
-  }
-  drawSizePreview();
 }
 let lastSP = null;
-/* Size preview: whenever a size setting changes, show it at real scale with its value for a moment. */
-let sizePrev = null;
-function showSizePreview(size, label, kind) {
-  sizePrev = { size: Math.max(0, +size || 0), label, kind: kind || 'dot', until: performance.now() + 1200 };
-  render();
-}
-function drawSizePreview() {
-  if (!sizePrev) return;
-  const left = sizePrev.until - performance.now();
-  if (left <= 0) { sizePrev = null; return; }
-  const z = S.zoom, d = sizePrev.size * z;
-  // At the pointer when it's on the canvas, otherwise in the middle of the view.
-  const c = lastSP ? { x: lastSP.x, y: lastSP.y } : { x: vw / 2, y: vh / 2 };
-  ctx.save(); ctx.globalAlpha = Math.min(1, left / 250);
-  if (sizePrev.kind === 'line') {
-    const len = Math.max(60, Math.min(220, vw / 3)), h = Math.max(1, d);
-    ctx.fillStyle = S.style.fill; ctx.fillRect(c.x - len / 2, c.y - h / 2, len, h);
-    ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 1; ctx.strokeRect(c.x - len / 2 - .5, c.y - h / 2 - .5, len + 1, h + 1);
-  } else {
-    const r = Math.max(1, d / 2);
-    ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
-    if (sizePrev.kind === 'brush') { ctx.fillStyle = S.style.fill; ctx.globalAlpha *= 0.55; ctx.fill(); ctx.globalAlpha = Math.min(1, left / 250); }
-    else if (sizePrev.kind === 'outline') { ctx.strokeStyle = S.style.stroke; ctx.lineWidth = Math.max(1, d); ctx.stroke(); }
-    ctx.beginPath(); ctx.arc(c.x, c.y, r + (sizePrev.kind === 'outline' ? d / 2 : 0), 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 1; ctx.stroke();
-  }
-  const t = sizePrev.label;
-  ctx.font = '700 13px Manrope, system-ui, sans-serif';
-  const tw = ctx.measureText(t).width + 18, below = sizePrev.kind === 'line' ? Math.max(1, d) / 2 : Math.max(1, d / 2);
-  const x = clamp(c.x - tw / 2, 6, vw - tw - 6), y = clamp(c.y + below + 12, 6, vh - 32);
-  ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, tw, 24, 7) : ctx.rect(x, y, tw, 24); ctx.fill();
-  ctx.fillStyle = '#22252b'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x + tw / 2, y + 12.5);
-  ctx.restore();
-  render();
-}
 function drawCenterLines(o) {
   // While a layer is being sized, show the canvas centre lines; they turn solid when the layer lines up with them.
   const D = S.doc, b = aabb(o), th = snapDist(), cx = D.w / 2, cy = D.h / 2;
@@ -1478,7 +1336,7 @@ function drawSizePill(o) {
 let lastMove = null, ptrSpeed = 0, ptrMoved = false;
 
 /* ---------- snapping ---------- */
-const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, blend: false, ui: 100, nodeSnap: true };
+const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, blend: false, ui: 100 };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('plate-editor:settings') || '{}')); } catch (e) {}
 function snapCandidate(d, ax, raw) {
   const b = d.box, vals = ax === 'x' ? [b.x0, (b.x0 + b.x1) / 2, b.x1] : [b.y0, (b.y0 + b.y1) / 2, b.y1];
@@ -1553,7 +1411,7 @@ function armDwell(d, sp) {
 }
 function saveSettings() { try { localStorage.setItem('plate-editor:settings', JSON.stringify(SET)); } catch (e) {} }
 function syncSettings() {
-  $('#s-guides').checked = SET.guides; $('#s-grid').checked = SET.grid; $('#s-nodes').checked = SET.nodeSnap; $('#s-showgrid').checked = SET.showGrid;
+  $('#s-guides').checked = SET.guides; $('#s-grid').checked = SET.grid; $('#s-showgrid').checked = SET.showGrid;
   if (document.activeElement !== $('#s-gridsize')) $('#s-gridsize').value = SET.gridSize;
   $('#s-size-row').classList.toggle('dim', !SET.grid && !SET.showGrid);
   $('#s-blend').checked = SET.blend;
@@ -1643,17 +1501,10 @@ function animZoom() {
   };
   zoomRAF = requestAnimationFrame(step);
 }
-function clampView() {
-  // Keep a good part of the canvas on screen: you can pan around it, but not lose it in the void.
-  if (!vw || S.setup) return;
-  const W = S.doc.w * S.zoom, H = S.doc.h * S.zoom;
-  const mx = Math.min(vw * 0.35, W), my = Math.min(vh * 0.35, H);
-  S.px = clamp(S.px, mx - W, vw - mx); S.py = clamp(S.py, my - H, vh - my);
-}
 function zoomAt(nz, sx, sy) {
   nz = clamp(nz, 0.02, 32);
   const d = toDoc({ x: sx, y: sy });
-  S.zoom = nz; S.px = sx - d.x * nz; S.py = sy - d.y * nz; clampView();
+  S.zoom = nz; S.px = sx - d.x * nz; S.py = sy - d.y * nz;
   zoomLabel(); render();
 }
 const STEPS = [0.05, 0.1, 0.15, 0.25, 0.33, 0.5, 0.67, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12, 16, 24, 32];
@@ -1711,15 +1562,8 @@ function commit() {
   hist.push(cur); if (hist.length > 100) hist.shift();
   cur = snapshot(); fut = []; after();
 }
-function settleBeforeHistory() {
-  // Finish anything half-done first, so undo steps back from a clean state.
-  clearTimeout(nudgeT);
-  if (drag) { try { endPointer({ pointerId: -1, type: 'pointercancel' }); } catch (e) { drag = null; } }
-  if (editingId) endTextEdit(true);
-  lassoSel = null;
-}
-function undo() { settleBeforeHistory(); if (!hist.length) return; fut.push(cur); cur = hist.pop(); restore(cur); after(); }
-function redo() { settleBeforeHistory(); if (!fut.length) return; hist.push(cur); cur = fut.pop(); restore(cur); after(); }
+function undo() { if (!hist.length) return; fut.push(cur); cur = hist.pop(); restore(cur); after(); }
+function redo() { if (!fut.length) return; hist.push(cur); cur = fut.pop(); restore(cur); after(); }
 function after() {
   eyeCache = null;
   $('#b-undo').disabled = !hist.length; $('#b-redo').disabled = !fut.length;
@@ -1776,29 +1620,10 @@ const HINTS = {
   fill: 'Click a shape or text to recolour it, or click an enclosed area to flood it with the fill colour.',
   eyedrop: 'Click the canvas to pick a color. It becomes the fill color, then you go back to your last tool.',
   erase: 'Drag over layers to erase them. Strokes stay editable: undo removes them.',
-  lasso: 'Draw a loop around part of a layer, then drag inside it. That part becomes its own layer and the original keeps a gap where it was. Esc to finish.',
+  lasso: 'Draw a loop around part of the picture. Whatever is inside is cut out onto its own layer, ready to move.',
   lassoSelect: 'Draw a loop around layers to select them.'
 };
 let eyeReturn = null;
-let lineRun = null;
-function runToSelection(run) {
-  const last = run && byId(run.last);
-  if (!last || S.sel.length) return false;
-  S.sel = last.group && groupById(last.group) ? membersOf(last.group).map(o => o.id) : [last.id];
-  return true;
-}
-function finalizeLineRun() { const run = lineRun; lineRun = null; return runToSelection(run); }
-function groupIntoRun(o, run, baseName) {
-  // Keep consecutive items drawn with the same tool together in one group.
-  const prev = run && byId(run.last);
-  if (!prev || prev === o) return;
-  let gid = run.gid && groupById(run.gid) && prev.group === run.gid ? run.gid : null;
-  if (!gid) {
-    const n = S.groups.filter(g => g.name.startsWith(baseName)).length + 1;
-    const g = { id: nid(), name: `${baseName} ${n}`, open: false }; S.groups.push(g); gid = g.id; prev.group = gid;
-  }
-  o.group = gid;
-}
 function finalizeBrushRun() {
   // Strokes aren't selected while drawing; leaving the brush selects the strokes just drawn.
   const run = brushRun; brushRun = null;
@@ -1807,22 +1632,13 @@ function finalizeBrushRun() {
   S.sel = last.group && groupById(last.group) ? membersOf(last.group).map(o => o.id) : [last.id];
   return true;
 }
-function setTool(t, opts) {
+function setTool(t) {
   let resync = false;
-  // Switching tools drops the current selection, except for Grab (just looking around) and the eyedropper,
-  // which hops back to the previous tool after picking a colour.
-  if (t !== S.tool && t !== 'hand' && t !== 'eyedrop' && S.tool !== 'eyedrop' && !(opts && opts.keepSel) && S.sel.length) { S.sel = []; resync = true; }
   if (t !== 'brush' && t !== 'eyedrop' && brushRun) resync = finalizeBrushRun();
-  if (t !== 'line' && t !== 'eyedrop' && lineRun) resync = finalizeLineRun() || resync;
-  if (t !== 'lasso' && lassoSel) clearLassoSel();
   if (t === 'eyedrop' && S.tool !== 'eyedrop') eyeReturn = S.tool;
-  if ((t === 'brush' || t === 'line') && S.sel.length && S.tool !== t) { S.sel = []; resync = true; }
-  if (t === 'brush') { S.style.brush = S.style.brushSizes[S.brushKind] || S.style.brush; syncSizeInputs('brush'); }
-  const prevTool = S.tool;
+  if (t === 'brush' && S.sel.length) { S.sel = []; resync = true; }
+  if (t === 'brush') { S.style.brush = S.style.brushSizes[S.brushKind] || S.style.brush; $('#o-bs').value = S.style.brush; $('#o-bs-out').value = S.style.brush; }
   S.tool = t; eyeCache = null;
-  // First time with the pen or eraser: ask for a size.
-  if ((t === 'brush' || t === 'erase') && prevTool !== t && !sizeSet[t]) setTimeout(() => { if (S.tool === t && !sizeSet[t]) openSizePop(t, true); }, 0);
-  if (t !== prevTool) closeQPop();
   $$('.tool[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   $$('#opts [data-tools]').forEach(el => { el.hidden = !el.dataset.tools.split(' ').includes(t); });
   $('#o-rad-wrap').hidden = !(t === 'shape' && ['rect', 'square'].includes(S.shapeKind));
@@ -1831,7 +1647,6 @@ function setTool(t, opts) {
   $('#opts-title').textContent = ({ shape: kindName('shape'), line: kindName('line'), brush: kindName('brush'), fill: 'Fill', erase: 'Eraser', lasso: 'Lasso', hand: 'Grab', text: 'Text', eyedrop: 'Eyedropper' }[t] || 'Tool') + ' options';
   $('#opts').hidden = !$('#hint').textContent && !$$('#opts [data-tools]').some(el => !el.hidden);
   cv.style.cursor = cursorForTool();
-  syncCanvasPanel(); updateQuickBar();
   if (resync) syncAll();
   render();
 }
@@ -1848,18 +1663,15 @@ function cursorForTool() {
 let stageRect = null;
 function pos(e) { const r = stageRect || (stageRect = stage.getBoundingClientRect()); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 
-function snapTargets(ex, box) {
-  // The canvas edges/centre, plus only the two layers closest to where the dragged selection is now.
+function snapTargets(ex) {
   const xs = [0, S.doc.w / 2, S.doc.w], ys = [0, S.doc.h / 2, S.doc.h];
-  const near = [];
-  for (const o of S.objects) {
+  let found = 0;
+  for (let i = S.objects.length - 1; i >= 0 && found < 3; i--) {
+    const o = S.objects[i];
     if (ex.includes(o.id) || !o.visible) continue;
-    const a = aabb(o);
-    const gx = box ? Math.max(0, a.x0 - box.x1, box.x0 - a.x1) : 0, gy = box ? Math.max(0, a.y0 - box.y1, box.y0 - a.y1) : 0;
-    near.push({ a, d: Math.hypot(gx, gy) });
+    const a = aabb(o); xs.push(a.x0, a.x1); ys.push(a.y0, a.y1);
+    found++;
   }
-  near.sort((p, q) => p.d - q.d);
-  for (const { a } of near.slice(0, 2)) { xs.push(a.x0, a.x1); ys.push(a.y0, a.y1); }
   return { xs, ys };
 }
 
@@ -1883,10 +1695,7 @@ function updateQuickBar() {
       <button data-act="cropCancel"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="ql">Cancel</span></button>`;
     bar.hidden = false; return;
   }
-  const tItems = !S.setup && typeof qbItems === 'function' ? qbItems() : null;
-  if (tItems) { qbCurrent = tItems; bar.innerHTML = tItems.map(qbButton).join(''); bar.hidden = false; return; }
   const sel = selObjs();
-  qbCurrent = S.tool === 'select' && sel.length ? selItems() : [];
   if (!sel.length) { bar.hidden = true; return; }
   const one = sel.length === 1 ? sel[0] : null, items = [];
   if (one && one.type === 'image') items.push(['crop', 'Crop', 'crop']);
@@ -1896,8 +1705,7 @@ function updateQuickBar() {
   if (sel.some(o => o.group)) items.push(['ungroup', 'Ungroup', 'ungroup']);
   if (items.length) items.push(null);
   items.push(['duplicate', 'Duplicate', 'dup'], ['flipH', 'Flip', 'flipH'], ['front', 'To front', 'front'], ['back', 'To back', 'back'], null, ['delete', 'Delete', 'del']);
-  bar.innerHTML = qbCurrent.map(qbButton).join('') + (qbCurrent.length ? '<span class="qsep"></span>' : '') +
-    items.map(it => it ? `<button data-act="${it[0]}" class="${it[0] === 'delete' ? 'danger' : ''}"><svg class="i" viewBox="0 0 24 24">${QI[it[2]]}</svg><span class="ql">${it[1]}</span></button>` : '<span class="qsep"></span>').join('');
+  bar.innerHTML = items.map(it => it ? `<button data-act="${it[0]}" class="${it[0] === 'delete' ? 'danger' : ''}"><svg class="i" viewBox="0 0 24 24">${QI[it[2]]}</svg><span class="ql">${it[1]}</span></button>` : '<span class="qsep"></span>').join('');
   bar.hidden = false;
 }
 function cloneObj(o, offset) {
@@ -1968,18 +1776,17 @@ cv.addEventListener('pointerdown', e => {
         }
       }
       const h = hit(p);
-      const additive = e.shiftKey || e.ctrlKey || e.metaKey;
-      if (h && additive && S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = S.sel.filter(id => !g.includes(id)); syncAll(); break; }
+      if (h && e.shiftKey && S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = S.sel.filter(id => !g.includes(id)); syncAll(); break; }
       if (h) {
-        if (!S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = additive ? [...new Set([...S.sel, ...g])] : g; }
+        if (!S.sel.includes(h.id)) { const g = expandSel([h.id]); S.sel = e.shiftKey ? [...new Set([...S.sel, ...g])] : g; }
         const movable = selObjs().filter(o => o.visible && !o.locked);
         let objs = movable;
         if (e.altKey) { objs = cloneSet(movable, 0); S.objects.push(...objs); S.sel = objs.map(o => o.id); }
         drag = { mode: 'move', start: p, origs: objs.map(o => ({ o, x: o.x, y: o.y })), moved: false, dup: e.altKey,
-                 box: unionBox(objs), T: snapTargets(objs.map(o => o.id), unionBox(objs)), sx: null, sy: null,
-                 clickPick: null, clickSingle: h.id, shift: additive };
+                 box: unionBox(objs), T: snapTargets(objs.map(o => o.id)), sx: null, sy: null,
+                 clickPick: null, clickSingle: h.id, shift: e.shiftKey };
       } else {
-        drag = { mode: 'pending', start: p, hitId: h ? h.id : null, shift: additive };
+        drag = { mode: 'pending', start: p, hitId: h ? h.id : null, shift: e.shiftKey };
       }
       syncAll();
       break;
@@ -2014,21 +1821,17 @@ function beginTool(p, sp) {
     case 'line': {
       if (!onCanvas) { offCanvasNote(); return; }
       const sw = Math.max(1, S.style.lineWidth);
-      if (SET.nodeSnap) { const n = nearestNode(p); if (n) p = { x: n.x, y: n.y }; }
       const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw, freeNodes: true });
-      S.objects.push(o);
+      S.objects.push(o); S.sel = [o.id];
       drag = { mode: 'createLine', o, start: p }; break;
     }
     case 'brush':
       if (!onCanvas) { offCanvasNote(); return; }
-      { const n = SET.nodeSnap ? nearestNode(p) : null; if (n) p = { x: n.x, y: n.y }; drag = { mode: 'brush', pts: [[p.x, p.y]], startNode: n }; } break;
+      drag = { mode: 'brush', pts: [[p.x, p.y]] }; break;
     case 'erase':
       if (!onCanvas) { offCanvasNote(); return; }
       startErase(p); break;
-    case 'lasso':
-      if (inLassoSel(p)) { startLassoMove(p); break; }
-      clearLassoSel();
-      drag = { mode: 'lasso', kind: S.lassoKind, start: p, pts: [[p.x, p.y]] }; break;
+    case 'lasso': drag = { mode: 'lasso', pts: [[p.x, p.y]] }; break;
     case 'fill': fillAt(p); break;
     case 'eyedrop': pickColor(p); break;
   }
@@ -2057,7 +1860,6 @@ cv.addEventListener('pointermove', e => {
     }
     if (hv !== hoverId) { hoverId = hv; render(); }
     if (DRAW_TOOLS.includes(S.tool) && !spaceDown && !insideDoc(p) && !overText) cur2 = 'not-allowed';
-    if (S.tool === 'lasso' && !spaceDown && inLassoSel(p)) cur2 = 'move';
     if (S.tool === 'brush' || S.tool === 'erase' || S.tool === 'eyedrop') render();
     cv.style.cursor = cur2;
     return;
@@ -2075,9 +1877,9 @@ cv.addEventListener('pointermove', e => {
       const dist = Math.hypot(a.x - b.x, a.y - b.y), m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
       const z = clamp(d.z0 * dist / d.d0, 0.02, 32);
       const dp = { x: (d.m0.x - d.px0) / d.z0, y: (d.m0.y - d.py0) / d.z0 };
-      S.zoom = z; S.px = m.x - dp.x * z; S.py = m.y - dp.y * z; clampView(); zoomLabel(); break;
+      S.zoom = z; S.px = m.x - dp.x * z; S.py = m.y - dp.y * z; zoomLabel(); break;
     }
-    case 'pan': S.px = d.px + sp.x - d.sx; S.py = d.py + sp.y - d.sy; clampView(); break;
+    case 'pan': S.px = d.px + sp.x - d.sx; S.py = d.py + sp.y - d.sy; break;
     case 'setupDraw': d.b = sp; d.shift = e.shiftKey; break;
     case 'pending':
       if (Math.hypot(p.x - d.start.x, p.y - d.start.y) * S.zoom > 4) {
@@ -2093,7 +1895,6 @@ cv.addEventListener('pointermove', e => {
       guides = [];
       d.fast = ptrSpeed > FAST_SPEED;
       let tx = 0, ty = 0;
-      if (SET.guides) d.T = snapTargets(d.origs.map(g => g.o.id), { x0: d.box.x0 + dx, y0: d.box.y0 + dy, x1: d.box.x1 + dx, y1: d.box.y1 + dy });
       if ((SET.guides || SET.grid) && !e.ctrlKey && !e.metaKey) {
         tx = snapAxisSmooth(d, 'X', snapCandidate(d, 'x', dx));
         ty = snapAxisSmooth(d, 'Y', snapCandidate(d, 'y', dy));
@@ -2143,11 +1944,8 @@ cv.addEventListener('pointermove', e => {
     }
     case 'createLine': {
       const o = d.o, s = d.start;
-      const nd = SET.nodeSnap && !e.shiftKey ? nearestNode(p, o.id) : null;
-      const tp = nd ? { x: nd.x, y: nd.y } : p;
-      let ang = Math.atan2(tp.y - s.y, tp.x - s.x), len = Math.hypot(tp.x - s.x, tp.y - s.y);
+      let ang = Math.atan2(p.y - s.y, p.x - s.x), len = Math.hypot(p.x - s.x, p.y - s.y);
       if (e.shiftKey) ang = Math.round(ang / rad(15)) * rad(15);
-      else if (!nd) ang = snapAngle(ang);
       const ex = s.x + Math.cos(ang) * len, ey = s.y + Math.sin(ang) * len;
       const cx = (s.x + ex) / 2, cy = (s.y + ey) / 2;
       o.w = Math.max(1, len); o.x = cx - o.w / 2; o.y = cy - o.h / 2; o.rot = Math.round(ang * 1800 / Math.PI) / 10;
@@ -2159,7 +1957,6 @@ cv.addEventListener('pointermove', e => {
       break;
     }
     case 'erase': moveErase(d, p); break;
-    case 'lassoMove': moveLasso(d, p, e); break;
     case 'groupRotate': {
       let a = (Math.atan2(p.y - d.c.y, p.x - d.c.x) - d.a0) * 180 / Math.PI;
       if (e.shiftKey) a = Math.round(a / 15) * 15;
@@ -2174,15 +1971,6 @@ cv.addEventListener('pointermove', e => {
       d.angle = a; d.o.rot = a; syncPanelSoon(); break;
     }
     case 'lasso': {
-      if (d.kind === 'lrect' || d.kind === 'lellipse') {
-        // Rectangle / ellipse selection: the loop is the shape dragged out from the start point (Shift keeps it even).
-        let dx = p.x - d.start.x, dy = p.y - d.start.y;
-        if (e.shiftKey) { const m = Math.max(Math.abs(dx), Math.abs(dy)); dx = Math.sign(dx || 1) * m; dy = Math.sign(dy || 1) * m; }
-        const x0 = Math.min(d.start.x, d.start.x + dx), y0 = Math.min(d.start.y, d.start.y + dy), w = Math.abs(dx), h = Math.abs(dy);
-        if (d.kind === 'lrect') d.pts = [[x0, y0], [x0 + w, y0], [x0 + w, y0 + h], [x0, y0 + h]];
-        else { d.pts = []; for (let i = 0; i < 64; i++) { const a = i / 64 * Math.PI * 2; d.pts.push([x0 + w / 2 + Math.cos(a) * w / 2, y0 + h / 2 + Math.sin(a) * h / 2]); } }
-        break;
-      }
       const l = d.pts[d.pts.length - 1];
       if (Math.hypot(p.x - l[0], p.y - l[1]) * S.zoom > 2) d.pts.push([p.x, p.y]);
       break;
@@ -2224,27 +2012,19 @@ function endPointer(e) {
     case 'resize': case 'rotate': case 'groupResize': case 'groupRotate': commit(); break;
     case 'create': {
       const o = d.o;
-      // A plain click drops a default-size shape and hands over to the Move tool with it selected;
-      // a shape drawn by dragging keeps the shape tool active.
-      const clicked = o.w < 3 && o.h < 3;
-      if (clicked) { o.w = o.h = 180; o.x = d.start.x - 90; o.y = d.start.y - 90; }
+      if (o.w < 3 && o.h < 3) { o.w = o.h = 180; o.x = d.start.x - 90; o.y = d.start.y - 90; }
       o.w = Math.max(1, o.w); o.h = Math.max(1, o.h);
-      S.sel = [o.id];
-      if (clicked) setTool('select', { keepSel: true });
       commit(); break;
     }
     case 'createLine': {
       const o = d.o;
       if (o.w < 3) { o.w = 220; o.rot = 0; o.x = d.start.x - 110; o.y = d.start.y - o.h / 2; }
-      groupIntoRun(o, lineRun, 'Lines');
-      lineRun = { last: o.id, gid: o.group || null };
       commit(); break;
     }
     case 'crop': case 'cropMove': render(); break;
-    case 'brush': finishBrush(d.pts, d.startNode); break;
+    case 'brush': finishBrush(d.pts); break;
     case 'erase': endErase(d); break;
     case 'lasso': endLasso(d); break;
-    case 'lassoMove': if (d.moved) commit(); else render(); break;
     case 'arm': break;
     case 'marquee': syncAll(); break;
   }
@@ -2298,11 +2078,8 @@ function doResize(d, p, e) {
     const fromC = e.altKey;
     const fixed = fromC ? center(O) : toWorld(O, { x: -hx * O.w / 2, y: 0 });
     let ex = p.x, ey = p.y;
-    const nd = SET.nodeSnap && !e.shiftKey && !fromC ? nearestNode(p, O.id) : null;
-    if (nd) { ex = nd.x; ey = nd.y; }
-    else {
-      let ang = Math.atan2(ey - fixed.y, ex - fixed.x);
-      ang = e.shiftKey ? Math.round(ang / rad(15)) * rad(15) : snapAngle(ang);
+    if (e.shiftKey) {
+      const ang = Math.round(Math.atan2(ey - fixed.y, ex - fixed.x) / rad(15)) * rad(15);
       const len = Math.hypot(ex - fixed.x, ey - fixed.y);
       ex = fixed.x + Math.cos(ang) * len; ey = fixed.y + Math.sin(ang) * len;
     }
@@ -2349,7 +2126,6 @@ function doResize(d, p, e) {
   const ra = rad(O.rot);
   const ncx = c.x + lcx * Math.cos(ra) - lcy * Math.sin(ra), ncy = c.y + lcx * Math.sin(ra) + lcy * Math.cos(ra);
   o.w = Math.abs(w); o.h = Math.abs(h); o.x = ncx - o.w / 2; o.y = ncy - o.h / 2;
-  if (O.type === 'path') o.strokeWidth = Math.max(0.5, O.strokeWidth * Math.sqrt((o.w / O.w) * (o.h / O.h)));
   o.flipX = w < 0 ? !O.flipX : O.flipX;
   o.flipY = h < 0 ? !O.flipY : O.flipY;
   const sx = w < 0 ? -1 : 1, sy = h < 0 ? -1 : 1;
@@ -2386,68 +2162,11 @@ function applyGroupScale(d) {
     if (sy < 0) { fy = !fy; rot = -rot; }
     o.w = Math.max(1, s.w * Math.hypot(ax * cs, ay * sn));
     o.h = isLine(s) ? s.h : Math.max(1, s.h * Math.hypot(ax * sn, ay * cs));
-    if (s.type === 'path') o.strokeWidth = Math.max(0.5, s.strokeWidth * Math.sqrt((o.w / s.w) * (o.h / s.h)));
     o.rot = Math.round(rot * 100) / 100; o.flipX = fx; o.flipY = fy;
     o.x = nc.x - o.w / 2; o.y = nc.y - o.h / 2;
   }
 }
-/* ---------- end-point (node) snapping ---------- */
-function pathPt(o, i) {
-  const q = o.points[i]; let x = -o.w / 2 + q[0] * o.w, y = -o.h / 2 + q[1] * o.h;
-  if (o.flipX) x = -x; if (o.flipY) y = -y;
-  const w = toWorld(o, { x, y }); return [w.x, w.y];
-}
-const pathDocPts = o => o.points.map((_, i) => pathPt(o, i));
-function nearestNode(p, excludeId) {
-  // End points of pen strokes and lines within ~12 screen px of p.
-  const r = 12 / S.zoom; let best = null, bd = r;
-  for (const o of S.objects) {
-    if (!o.visible || o.locked || o.id === excludeId) continue;
-    let ends = null;
-    if (o.type === 'path' && o.points && o.points.length) ends = [pathPt(o, 0), pathPt(o, o.points.length - 1)];
-    else if (isLine(o)) { const a = toWorld(o, { x: -o.w / 2, y: 0 }), b = toWorld(o, { x: o.w / 2, y: 0 }); ends = [[a.x, a.y], [b.x, b.y]]; }
-    if (!ends) continue;
-    ends.forEach((q, end) => { const d = Math.hypot(q[0] - p.x, q[1] - p.y); if (d < bd) { bd = d; best = { o, end, x: q[0], y: q[1] }; } });
-  }
-  return best;
-}
-function snapAngle(ang) {
-  // Lines settle onto 0°, 90°, 180° and 270° when within 1° of them.
-  const deg = ang * 180 / Math.PI;
-  for (const t of [-180, -90, 0, 90, 180]) if (Math.abs(deg - t) <= 1) return t * Math.PI / 180;
-  return ang;
-}
-function rebuildPath(o, seq) {
-  const pad = o.strokeWidth / 2;
-  const x0 = Math.min(...seq.map(q => q[0])) - pad, y0 = Math.min(...seq.map(q => q[1])) - pad;
-  const x1 = Math.max(...seq.map(q => q[0])) + pad, y1 = Math.max(...seq.map(q => q[1])) + pad;
-  const w = Math.max(1, x1 - x0), h = Math.max(1, y1 - y0);
-  Object.assign(o, { x: x0, y: y0, w, h, rot: 0, flipX: false, flipY: false, points: seq.map(([x, y]) => [(x - x0) / w, (y - y0) / h]) });
-}
-function finishBrush(pts, startNode) {
-  const K0 = BRUSH_KINDS[S.brushKind] || BRUSH_KINDS.pen;
-  if (SET.nodeSnap && pts.length > 1) {
-    // Joining onto an existing stroke's end makes that stroke longer (same layer) when it's the same pen.
-    let endNode = null;
-    const l = pts[pts.length - 1], en = nearestNode({ x: l[0], y: l[1] });
-    if (en) { pts[pts.length - 1] = [en.x, en.y]; endNode = en; }
-    const ok = n => n && n.o.type === 'path' && !(n.o.erase && n.o.erase.length) && n.o.stroke === S.style.fill && Math.abs(n.o.strokeWidth - S.style.brush) < 0.5 && (n.o.cap || 'round') === K0.cap;
-    const A = ok(startNode) ? startNode : null, B = ok(endNode) ? endNode : null;
-    if (A || B) {
-      let seq = pts.slice(), target = null;
-      if (A) { const ap = pathDocPts(A.o); seq = (A.end === 1 ? ap : ap.reverse()).concat(seq.slice(1)); target = A.o; }
-      if (B && (!A || B.o !== A.o)) {
-        const bp = pathDocPts(B.o); seq = seq.concat((B.end === 0 ? bp : bp.reverse()).slice(1));
-        if (target) S.objects = S.objects.filter(o => o !== B.o); else target = B.o;
-      }
-      rebuildPath(target, seq);
-      brushRun = { last: target.id, gid: target.group || null };
-      commit(); return;
-    }
-  }
-  finishBrushNew(pts);
-}
-function finishBrushNew(pts) {
+function finishBrush(pts) {
   if (pts.length === 1) pts.push([pts[0][0] + 0.01, pts[0][1] + 0.01]);
   const sw = S.style.brush, pad = sw / 2;
   let x0 = Math.min(...pts.map(q => q[0])) - pad, y0 = Math.min(...pts.map(q => q[1])) - pad;
@@ -2524,11 +2243,9 @@ function fillAt(p) {
 }
 function floodFill(p, color) {
   // Flood the area of matching colour around the click (as it looks on the canvas) and turn it into a layer.
-  // Work at screen resolution (at least 2x, capped for memory) so the fill's edges are smooth, not blocky.
-  const D = S.doc, sc = Math.max(1, Math.min(Math.max(2, S.zoom * dpr), 4, Math.sqrt(12e6 / (D.w * D.h))));
   let src;
-  try { src = renderDoc(sc); } catch (e) { toast('Could not read the canvas.'); return; }
-  const W = src.width, H = src.height, sx = clamp(Math.floor(p.x * sc), 0, W - 1), sy = clamp(Math.floor(p.y * sc), 0, H - 1);
+  try { src = renderDoc(1); } catch (e) { toast('Could not read the canvas.'); return; }
+  const W = src.width, H = src.height, sx = clamp(Math.floor(p.x), 0, W - 1), sy = clamp(Math.floor(p.y), 0, H - 1);
   let data; try { data = src.getContext('2d').getImageData(0, 0, W, H).data; } catch (e) { toast('Could not read the canvas.'); return; }
   const tol = S.style.fillTol * 2.55, i0 = (sy * W + sx) * 4;
   const r0 = data[i0], g0 = data[i0 + 1], b0 = data[i0 + 2], a0 = data[i0 + 3];
@@ -2568,13 +2285,13 @@ function floodFill(p, color) {
   }
   oc.putImageData(img, 0, 0);
   const n = S.objects.filter(o => /^Fill \d+/.test(o.name)).length + 1;
-  const o = base('image', { src: out.toDataURL('image/png'), x: bx0 / sc, y: by0 / sc, w: bw / sc, h: bh / sc, lockAspect: true, fillOn: false, strokeWidth: 0, name: `Fill ${n}` });
+  const o = base('image', { src: out.toDataURL('image/png'), x: bx0, y: by0, w: bw, h: bh, lockAspect: true, fillOn: false, strokeWidth: 0, name: `Fill ${n}` });
   getImg(o.src);
   // Tuck the fill just under the drawn outline it sits inside (brush strokes or lines); otherwise put it on top.
   let at = S.objects.length;
   for (let i = S.objects.length - 1; i >= 0; i--) {
     const t = S.objects[i]; if (!t.visible) continue;
-    const a = aabb(t); if (a.x1 < bx0 / sc || a.x0 > (bx1 + 1) / sc || a.y1 < by0 / sc || a.y0 > (by1 + 1) / sc) continue;
+    const a = aabb(t); if (a.x1 < bx0 || a.x0 > bx1 + 1 || a.y1 < by0 || a.y0 > by1 + 1) continue;
     if (lineish(t)) { at = i; if (t.group && groupById(t.group)) at = S.objects.findIndex(x => x.group === t.group); }
     break;
   }
@@ -2582,88 +2299,6 @@ function floodFill(p, color) {
 }
 
 /* ---------- lasso ---------- */
-// After a loop is drawn in "move part" mode, lassoSel holds it. Dragging inside moves the enclosed part of
-// every layer under it; the part stays inside its own layer (a "move" edit on that layer).
-let lassoSel = null;
-// After a loop is drawn in "move part" mode, lassoSel holds it. The first drag inside lifts that part out:
-// the layers underneath get a hole where it was, and the part becomes its own layer, which the drag then moves.
-function clearLassoSel() {
-  if (!lassoSel) return;
-  lassoSel = null; render();
-}
-function lassoPick(P, b) {
-  const targets = S.objects.filter(o => { if (!o.visible || o.locked) return false; const a = contentBox(o); return a.x1 >= b.x0 && a.x0 <= b.x1 && a.y1 >= b.y0 && a.y0 <= b.y1; });
-  // Keep only layers that actually have something inside the loop.
-  const hits = targets.filter(o => {
-    const X0 = Math.floor(b.x0), Y0 = Math.floor(b.y0), bw = Math.max(1, Math.ceil(b.x1) - X0), bh = Math.max(1, Math.ceil(b.y1) - Y0);
-    const sc = Math.min(1, Math.sqrt(1e6 / (bw * bh)));
-    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(bw * sc)); c.height = Math.max(1, Math.round(bh * sc));
-    const x = c.getContext('2d'); x.scale(sc, sc); x.translate(-X0, -Y0);
-    x.beginPath(); P.forEach(([px, py], i) => i ? x.lineTo(px, py) : x.moveTo(px, py)); x.closePath(); x.clip();
-    drawObj(x, o, sc, false);
-    try { const d = x.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 8) return true; return false; } catch (e) { return true; }
-  });
-  if (!hits.length) { toast('Nothing under the lasso.'); return; }
-  lassoSel = { pts: P, dx: 0, dy: 0, targets: hits, piece: null };
-  toast('Drag inside the loop to move that part out as its own layer. Esc to finish.');
-  render();
-}
-function startLassoMove(p) {
-  const pc = lassoSel.piece && byId(lassoSel.piece.id);
-  drag = { mode: 'lassoMove', start: p, d0: { dx: lassoSel.dx, dy: lassoSel.dy }, moved: false, p0: pc ? { x: pc.x, y: pc.y } : null };
-}
-function moveLasso(d, p, e) {
-  let Dx = p.x - d.start.x, Dy = p.y - d.start.y;
-  if (e && e.shiftKey) { if (Math.abs(Dx) > Math.abs(Dy)) Dy = 0; else Dx = 0; }
-  if (!d.moved && Math.hypot(Dx, Dy) * S.zoom < 3) return;
-  d.moved = true;
-  let pc = lassoSel.piece && byId(lassoSel.piece.id);
-  if (!pc) {
-    pc = cutPiece(lassoSel.pts, lassoSel.targets.filter(o => S.objects.includes(o)));
-    if (!pc) { drag = null; clearLassoSel(); return; }
-    lassoSel.piece = pc; d.p0 = { x: pc.x, y: pc.y };
-  }
-  lassoSel.dx = d.d0.dx + Dx; lassoSel.dy = d.d0.dy + Dy;
-  pc.x = d.p0.x + Dx; pc.y = d.p0.y + Dy;
-}
-function cutPiece(P, targets) {
-  // The part inside the loop, as it looks now, becomes a new layer trimmed to its pixels; the same loop is
-  // punched out of every layer it came from. Not committed here: the move that follows commits both together.
-  if (!targets.length) return null;
-  let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
-  for (const [x, y] of P) { bx0 = Math.min(bx0, x); by0 = Math.min(by0, y); bx1 = Math.max(bx1, x); by1 = Math.max(by1, y); }
-  const X0 = Math.floor(bx0), Y0 = Math.floor(by0), bw = Math.max(1, Math.ceil(bx1) - X0), bh = Math.max(1, Math.ceil(by1) - Y0);
-  const sc = Math.min(2, Math.sqrt(4e6 / (bw * bh)));
-  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(bw * sc)); c.height = Math.max(1, Math.round(bh * sc));
-  const x = c.getContext('2d');
-  x.scale(sc, sc); x.translate(-X0, -Y0);
-  x.beginPath(); P.forEach(([px, py], i) => i ? x.lineTo(px, py) : x.moveTo(px, py)); x.closePath(); x.clip();
-  for (const o of S.objects) if (targets.includes(o)) drawObj(x, o, sc, false);
-  let tx0 = c.width, ty0 = c.height, tx1 = -1, ty1 = -1;
-  try {
-    const data = x.getImageData(0, 0, c.width, c.height).data, cw = c.width;
-    for (let yy = 0; yy < c.height; yy++) for (let xx = 0, k = yy * cw * 4 + 3; xx < cw; xx++, k += 4)
-      if (data[k] > 2) { if (xx < tx0) tx0 = xx; if (xx > tx1) tx1 = xx; if (yy < ty0) ty0 = yy; if (yy > ty1) ty1 = yy; }
-  } catch (e) { tx0 = 0; ty0 = 0; tx1 = c.width - 1; ty1 = c.height - 1; }
-  if (tx1 < 0) return null;
-  const tw = tx1 - tx0 + 1, th = ty1 - ty0 + 1;
-  const trimmed = document.createElement('canvas'); trimmed.width = tw; trimmed.height = th;
-  trimmed.getContext('2d').drawImage(c, tx0, ty0, tw, th, 0, 0, tw, th);
-  const src = trimmed.toDataURL('image/png');
-  for (const o of targets) o.erase = [...(o.erase || []), { t: 'p', w0: o.w, h0: o.h, pts: P.map(([px, py]) => localPt(o, { x: px, y: py })) }];
-  const top = targets.reduce((m, o) => Math.max(m, S.objects.indexOf(o)), -1);
-  const topObj = S.objects[top];
-  const name = targets.length === 1 ? `${topObj.name} piece` : 'Piece';
-  const piece = base('image', { src, x: X0 + tx0 / sc, y: Y0 + ty0 / sc, w: tw / sc, h: th / sc, lockAspect: true, fillOn: false, strokeWidth: 0, name });
-  getImg(src);
-  // Sit the new piece just above the layer it came from (outside any group).
-  let at = top + 1;
-  if (topObj.group) { let k = at; while (k < S.objects.length && S.objects[k].group === topObj.group) k++; at = k; }
-  S.objects.splice(at, 0, piece);
-  return piece;
-}
-const inLassoSel = p => lassoSel && pointInPoly(p.x - lassoSel.dx, p.y - lassoSel.dy, lassoSel.pts);
-
 function pointInPoly(x, y, P) {
   let inside = false;
   for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
@@ -2683,7 +2318,7 @@ function endLasso(d) {
     if (!ids.length) toast('No layers inside the lasso.');
     return;
   }
-  lassoPick(P, { x0, y0, x1, y1 });
+  lassoCut(P, { x0, y0, x1, y1 });
 }
 function lassoCut(P, b) {
   // Render what's inside the loop onto a new image layer, then punch the same loop out of the layers it came from.
@@ -2696,31 +2331,21 @@ function lassoCut(P, b) {
   x.scale(sc, sc); x.translate(-X0, -Y0);
   x.beginPath(); P.forEach(([px, py], i) => i ? x.lineTo(px, py) : x.moveTo(px, py)); x.closePath(); x.clip();
   for (const o of targets) drawObj(x, o, sc, false);
-  // Trim the cut-out to its visible pixels, so blank space caught inside the loop doesn't pad the layer's box.
-  let tx0 = 0, ty0 = 0, tx1 = c.width - 1, ty1 = c.height - 1, any = false;
-  try {
-    const data = x.getImageData(0, 0, c.width, c.height).data, cw = c.width;
-    tx0 = cw; ty0 = c.height; tx1 = -1; ty1 = -1;
-    for (let yy = 0; yy < c.height; yy++) for (let xx = 0, k = yy * cw * 4 + 3; xx < cw; xx++, k += 4) {
-      if (data[k] > 2) { any = true; if (xx < tx0) tx0 = xx; if (xx > tx1) tx1 = xx; if (yy < ty0) ty0 = yy; if (yy > ty1) ty1 = yy; }
-    }
-  } catch (e) { any = true; tx0 = 0; ty0 = 0; tx1 = c.width - 1; ty1 = c.height - 1; }
+  let any = false;
+  try { const data = x.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < data.length; i += 16) if (data[i] > 8) { any = true; break; } } catch (e) { any = true; }
   if (!any) { toast('Nothing under the lasso to cut out.'); return; }
-  const tw = tx1 - tx0 + 1, th = ty1 - ty0 + 1;
-  const trimmed = document.createElement('canvas'); trimmed.width = tw; trimmed.height = th;
-  trimmed.getContext('2d').drawImage(c, tx0, ty0, tw, th, 0, 0, tw, th);
-  const src = trimmed.toDataURL('image/png');
+  const src = c.toDataURL('image/png');
   for (const o of targets) o.erase = [...(o.erase || []), { t: 'p', w0: o.w, h0: o.h, pts: P.map(([px, py]) => localPt(o, { x: px, y: py })) }];
   const n = S.objects.filter(o => /^Cut-out \d+/.test(o.name)).length + 1;
-  const piece = base('image', { src, x: X0 + tx0 / sc, y: Y0 + ty0 / sc, w: tw / sc, h: th / sc, lockAspect: true, fillOn: false, strokeWidth: 0, name: `Cut-out ${n}` });
+  const piece = base('image', { src, x: X0, y: Y0, w: bw, h: bh, lockAspect: true, fillOn: false, strokeWidth: 0, name: `Cut-out ${n}` });
   getImg(src);
-  S.objects.push(piece); S.sel = [piece.id]; setTool('select', { keepSel: true }); commit();
+  S.objects.push(piece); S.sel = [piece.id]; setTool('select'); commit();
   toast('Cut out onto its own layer. Drag it to move it.');
 }
 function createText(p) {
-  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: S.style.bold, italic: S.style.italic, underline: false, align: S.style.align, lineHeight: 1.2, strokeWidth: S.style.strokeWidth, fill: S.style.fill, stroke: S.style.stroke });
+  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: true, italic: false, underline: false, align: 'left', lineHeight: 1.2, strokeWidth: S.style.strokeWidth, fill: S.style.fill, stroke: S.style.stroke });
   const m = measureText(o); o.iw = m.iw; o.ih = m.ih; o.w = m.iw; o.h = m.ih; o.x = p.x; o.y = p.y - o.h / 2;
-  S.objects.push(o); S.sel = [o.id]; commit(); focusText(true);
+  S.objects.push(o); S.sel = [o.id]; commit(); focusText(true); revealObjects([o]);
   document.fonts && document.fonts.load(textFont(o)).then(() => { updateText(o); render(); }).catch(() => {});
 }
 let editingId = null;
@@ -2797,7 +2422,7 @@ stage.addEventListener('wheel', e => {
     const m = e.deltaMode === 1 ? 16 : 1;
     let dx = e.deltaX * m, dy = e.deltaY * m;
     if (e.shiftKey && !dx) { dx = dy; dy = 0; }
-    S.px -= dx * 0.6; S.py -= dy * 0.6; clampView(); render();
+    S.px -= dx * 0.6; S.py -= dy * 0.6; render();
   }
 }, { passive: false });
 
@@ -2931,11 +2556,8 @@ document.addEventListener('keydown', e => {
   if (e.key === ' ') { e.preventDefault(); if (!spaceDown) { spaceDown = true; if (!drag) cv.style.cursor = 'grab'; } return; }
   if (mod) {
     if (k === KEYS.paste && clip.length) { e.preventDefault(); pasteInternal(); return; }
-    // Match by physical key too (e.code), so undo works whatever the keyboard layout or Caps Lock state.
-    const isZ = k === KEYS.undo || (KEYS.undo === 'z' && e.code === 'KeyZ');
-    if (isZ && !e.shiftKey) { e.preventDefault(); act('undo'); return; }
-    if ((k === KEYS.redo || (KEYS.redo === 'z' && e.code === 'KeyZ')) && e.shiftKey) { e.preventDefault(); act('redo'); return; }
-    if (e.code === 'KeyY' && !e.shiftKey && KEYS.redo === 'z') { e.preventDefault(); act('redo'); return; }
+    if (k === KEYS.undo && !e.shiftKey) { e.preventDefault(); act('undo'); return; }
+    if (k === KEYS.redo && e.shiftKey) { e.preventDefault(); act('redo'); return; }
     if (k === KEYS.group && !e.shiftKey) { e.preventDefault(); act('group'); return; }
     if (k === KEYS.ungroup && e.shiftKey) { e.preventDefault(); act('ungroup'); return; }
     if (k === KEYS.forward && !e.shiftKey) { e.preventDefault(); act('forward'); return; }
@@ -2956,10 +2578,9 @@ document.addEventListener('keydown', e => {
   if (e.altKey && k === 'n') { e.preventDefault(); act('new'); return; }
   if (e.key === 'Delete' || e.key === 'Backspace') { if (S.sel.length) { e.preventDefault(); act('delete'); } return; }
   if (crop) { if (e.key === 'Enter') { e.preventDefault(); commitCrop(); return; } if (e.key === 'Escape') { cancelCrop(); return; } }
-  if (e.key === 'Escape' && lassoSel) { clearLassoSel(); toast(''); return; }
   if (e.key === 'Escape') {
-    const pickerOpen = $('#picker').classList.contains('open') || $('#picker-dual').classList.contains('open') || !$('#qpop').hidden;
-    closePicker(); closeDual(); closeQPop(); hideMenus();
+    const pickerOpen = $('#picker').classList.contains('open') || $('#picker-dual').classList.contains('open');
+    closePicker(); closeDual(); hideMenus();
     if (pickerOpen) return;
     if (S.sel.length) { S.sel = []; syncAll(); } else setTool('select');
     return;
@@ -2975,12 +2596,6 @@ document.addEventListener('keydown', e => {
   }
   if (k === '=' || k === '+') { act('zoomIn'); return; }
   if (k === '-') { act('zoomOut'); return; }
-  if ((e.key === '[' || e.key === ']') && (S.tool === 'brush' || S.tool === 'erase')) {
-    const cur = toDial(S.tool === 'brush' ? S.style.brush : S.style.eraser);
-    const step = cur < 10 ? 1 : cur < 40 ? 2 : 5, n = cur + (e.key === ']' ? step : -step);
-    if (S.tool === 'brush') setBrushSize(n); else setEraserSize(n);
-    return;
-  }
   if (e.shiftKey || e.altKey) return;
   for (const id in KIND_FOR_KEY) if (KEYS[id] === k) { const [g, kind] = KIND_FOR_KEY[id]; S[GROUPS[g].key] = kind; syncGroupIcons(); setTool(g); return; }
   for (const id in TOOL_FOR_KEY) if (KEYS[id] === k) { setTool(TOOL_FOR_KEY[id]); return; }
@@ -3045,7 +2660,7 @@ async function placeFile(file, at) {
     const s = Math.min(1, maxW / w, maxH / h); w *= s; h *= s;
     const c = { x: S.doc.w / 2, y: S.doc.h / 2 };
     const o = base('image', { src, x: c.x - w / 2, y: c.y - h / 2, w, h, lockAspect: true, fillOn: false, strokeWidth: 0, name: cleanName(file.name) || defaultName('image') });
-    S.objects.push(o); S.sel = [o.id]; setTool('select', { keepSel: true }); commit();
+    S.objects.push(o); S.sel = [o.id]; setTool('select'); commit(); revealObjects([o]);
   } catch (err) { toast('That file could not be read as an image.'); }
 }
 const cleanName = n => (n || '').replace(/\.[^.]+$/, '').slice(0, 40);
@@ -3065,49 +2680,28 @@ function projectBaseName() {
   const n = ($('#e-name').value || '').replace(/[\\/:*?"<>|]/g, '').trim();
   return !n || n === 'plate-image' ? 'plate-project' : n;
 }
-/* ---------- saving files ---------- */
-// One path for every save: Claude's save prompt when it's available, otherwise the browser's own
-// save dialog or a normal download. Returns { ok, how, msg, filename }.
-const SAVE_STOP = { declined: 'Save canceled.', rate_limited: 'A save prompt is already open. Finish it first.', too_large: 'That file is too large to save here. Try a smaller size or JPEG.' };
-async function saveBlob(filename, data, fallbackName) {
-  const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/octet-stream' });
-  const dl = downloads || await Promise.race([downloadsReady, new Promise(r => setTimeout(() => r(null), 3000))]);
-  if (dl && typeof dl.save === 'function') {
-    try { await dl.save({ filename, data: blob }); return { ok: true, how: 'claude', filename }; }
-    catch (err) {
-      const code = err && err.code;
-      if (SAVE_STOP[code]) return { ok: false, msg: SAVE_STOP[code] };
-      // Any other refusal (unavailable here, file type not allowed, …): fall back to the browser below.
-    }
-  }
-  const name = fallbackName || filename;
-  if (window.showSaveFilePicker && window.top === window) {
-    try {
-      const handle = await window.showSaveFilePicker({ suggestedName: name });
-      const w = await handle.createWritable(); await w.write(blob); await w.close();
-      return { ok: true, how: 'picker', filename: handle.name || name };
-    } catch (err) {
-      if (err && err.name === 'AbortError') return { ok: false, msg: 'Save canceled.' };
-    }
-  }
-  try {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = name; a.rel = 'noopener'; a.style.display = 'none';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-    return { ok: true, how: 'browser', filename: name };
-  } catch (err) {
-    return { ok: false, msg: 'This browser blocked the download.' };
-  }
-}
 async function saveProject() {
   const data = JSON.stringify({ app: 'plate', kind: 'project', version: 2, savedAt: new Date().toISOString(), doc: S.doc, objects: S.objects, groups: S.groups });
   const name = projectBaseName();
-  // Claude's save prompt only accepts known file types, so there the project goes out as .plate.json;
-  // a plain browser save uses .plate. Import reads both.
-  toast('Preparing project…');
-  const r = await saveBlob(name + '.plate.json', new Blob([data], { type: 'application/json' }), name + '.plate');
-  toast(r.ok ? `Exported ${r.filename}` : r.msg);
+  if (downloads) {
+    // Inside Claude, downloads only allow known file types, so the project is saved as .plate.json.
+    // Import reads .plate and .plate.json alike.
+    const filename = name + '.plate.json';
+    try { await downloads.save({ filename, data }); toast(`Exported ${filename}`); }
+    catch (err) {
+      const code = err && err.code;
+      toast(code === 'declined' ? 'Export canceled.' : code === 'rate_limited' ? 'A save prompt is already open.' : 'Saving files is not available in this view.');
+    }
+    return;
+  }
+  // Opened as a standalone file: a normal browser download with the .plate extension.
+  try {
+    const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = name + '.plate';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast(`Exported ${name}.plate`);
+  } catch (err) { toast('Saving files is not available in this view.'); }
 }
 async function openProjectFile(file) {
   try {
@@ -3126,18 +2720,6 @@ async function openProjectFile(file) {
 }
 
 /* ---------- arrange & edit ---------- */
-function flipSelection(list, horizontal) {
-  // Mirror the whole selection across its centre: positions mirror, each layer flips, and rotations reverse,
-  // so a group flips as one piece instead of every layer flipping in place.
-  const objs = list.filter(o => !o.locked); if (!objs.length) return;
-  const b = unionBox(objs), cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
-  for (const o of objs) {
-    const c = center(o);
-    if (horizontal) { o.x = 2 * cx - c.x - o.w / 2; o.flipX = !o.flipX; }
-    else { o.y = 2 * cy - c.y - o.h / 2; o.flipY = !o.flipY; }
-    o.rot = o.rot ? -o.rot : 0;
-  }
-}
 function reorder(kind, list) {
   const ids = new Set(list || S.sel); if (!ids.size) return;
   const arr = S.objects;
@@ -3164,7 +2746,7 @@ function align(dir) {
 function pasteInternal() {
   pasteN++;
   const copies = cloneSet(clip, 20 * pasteN, true).map((c, i) => ({ ...c, name: clip[i].name }));
-  S.objects.push(...copies); S.sel = copies.map(c => c.id); commit();
+  S.objects.push(...copies); S.sel = copies.map(c => c.id); commit(); revealObjects(copies);
 }
 function resizeCanvas(w, h, anchor) {
   w = clamp(Math.round(w) || 1, 1, 10000); h = clamp(Math.round(h) || 1, 1, 10000);
@@ -3198,10 +2780,11 @@ function act(a) {
     case 'paste': if (clip.length) pasteInternal(); else toast('Nothing copied yet. Use Ctrl+V to paste an image from your clipboard.'); break;
     case 'duplicate': if (sel.length) { const c = cloneSet(sel, 20); S.objects.push(...c); S.sel = c.map(o => o.id); commit(); } break;
     case 'delete': if (sel.length) { S.objects = S.objects.filter(o => !selIds.includes(o.id)); S.sel = S.sel.filter(id => !selIds.includes(id)); commit(); } break;
-    case 'selectAll': S.sel = S.objects.filter(o => o.visible && !o.locked).map(o => o.id); setTool('select', { keepSel: true }); syncAll(); break;
+    case 'selectAll': S.sel = S.objects.filter(o => o.visible && !o.locked).map(o => o.id); setTool('select'); syncAll(); break;
     case 'deselect': S.sel = []; syncAll(); break;
     case 'front': case 'forward': case 'backward': case 'back': reorder(a, selIds); break;
-    case 'flipH': case 'flipV': if (sel.length) { flipSelection(sel, a === 'flipH'); commit(); } break;
+    case 'flipH': if (sel.length) { sel.forEach(o => o.flipX = !o.flipX); commit(); } break;
+    case 'flipV': if (sel.length) { sel.forEach(o => o.flipY = !o.flipY); commit(); } break;
     case 'resetTransform': if (sel.length) { sel.forEach(o => { o.rot = 0; o.flipX = o.flipY = false; }); commit(); } break;
     case 'alignL': case 'alignR': case 'alignCH': case 'alignT': case 'alignB': case 'alignCV': align(a.slice(5)); break;
     case 'fitCanvasSel': if (sel.length) cropTo(unionBox(sel)); else toast('Select a layer first.'); break;
@@ -3337,7 +2920,6 @@ function readVal(el) {
 }
 const TEXTPROPS = ['text','font','fontSize','bold','italic','underline','align','lineHeight','strokeWidth'];
 function setProp(o, prop, v) {
-  const ow = o.w, oh = o.h;
   if (prop === 'w' || prop === 'h') {
     v = Math.max(1, v);
     if (o.lockAspect && !isLine(o)) { const r = o.w / o.h; if (prop === 'w') o.h = v / r; else o.w = v * r; }
@@ -3351,7 +2933,6 @@ function setProp(o, prop, v) {
     if (prop === 'font' && document.fonts) document.fonts.load(textFont(o)).then(() => { updateText(o); render(); }).catch(() => {});
   }
   if (isLine(o) && prop === 'strokeWidth') { const c = center(o); o.h = v; o.y = c.y - v / 2; }
-  if (o.type === 'path' && (prop === 'w' || prop === 'h') && ow && oh) o.strokeWidth = Math.max(0.5, o.strokeWidth * Math.sqrt((o.w / ow) * (o.h / oh)));
 }
 $('#props').addEventListener('input', e => {
   const el = e.target.closest('[data-prop]'); if (!el) return;
@@ -3365,7 +2946,7 @@ $('#props').addEventListener('input', e => {
     let scaled = v * scale;
     if (range) {
       if (range.min !== '') scaled = Math.max(+range.min, scaled);
-      if (range.max !== '' && !(el !== range && el.dataset.over !== undefined)) scaled = Math.min(+range.max, scaled);
+      if (range.max !== '') scaled = Math.min(+range.max, scaled);
     }
     v = scaled / scale;
     if (range && range !== el) range.value = scaled;
@@ -3380,8 +2961,6 @@ $('#props').addEventListener('input', e => {
   }
   if (prop === 'fill') { selObjs().forEach(o => { if (isShape(o) || o.type === 'text') o.fillOn = true; }); }
   if (['fill','stroke','fillOn','strokeWidth'].includes(prop)) syncSwatches();
-  if (prop === 'strokeWidth' && selObjs()[0] && lineish(selObjs()[0])) showSizePreview(v, `Line ${Math.round(v * 10) / 10} px`, 'line');
-  if (prop === 'radius') showSizePreview(v * 2, `Corners ${Math.round(v)} px`, 'dot');
   if (['w','h','fontSize','text','font','lineHeight','bold','italic','strokeWidth'].includes(prop)) syncPanel();
   render();
   if (prop === 'text') renderLayers();
@@ -3406,33 +2985,6 @@ $$('.scrub').forEach(lbl => {
   });
 });
 
-/* Drag a number field left/right to change it (Shift = ×10, Alt = fine); a plain click edits it. */
-document.addEventListener('pointerdown', e => {
-  const inp = e.target.closest && e.target.closest('input[type=number]');
-  if (!inp || inp.disabled || e.button !== 0 || document.activeElement === inp || inp.classList.contains('stf')) return;
-  e.preventDefault();
-  const sx = e.clientX, v0 = parseFloat(inp.value) || 0, step = parseFloat(inp.step) || 1;
-  let moved = false;
-  try { inp.setPointerCapture(e.pointerId); } catch (err) {}
-  const mv = ev => {
-    const dx = ev.clientX - sx;
-    if (!moved && Math.abs(dx) < 3) return;
-    moved = true; document.documentElement.style.cursor = 'ew-resize';
-    let v = v0 + Math.round(dx / 2) * step * (ev.shiftKey ? 10 : ev.altKey ? 0.1 : 1);
-    if (inp.min !== '') v = Math.max(+inp.min, v);
-    if (inp.max !== '') v = Math.min(+inp.max, v);
-    inp.value = Math.round(v * 100) / 100;
-    inp.dispatchEvent(new Event('input', { bubbles: true }));
-  };
-  const up = () => {
-    inp.removeEventListener('pointermove', mv); inp.removeEventListener('pointerup', up); inp.removeEventListener('pointercancel', up);
-    document.documentElement.style.cursor = '';
-    if (moved) inp.dispatchEvent(new Event('change', { bubbles: true }));
-    else { inp.focus(); inp.select(); }
-  };
-  inp.addEventListener('pointermove', mv); inp.addEventListener('pointerup', up); inp.addEventListener('pointercancel', up);
-}, true);
-
 /* ---------- canvas panel ---------- */
 function syncCanvasPanel() {
   if (document.activeElement !== $('#c-w')) $('#c-w').value = S.doc.w;
@@ -3441,7 +2993,7 @@ function syncCanvasPanel() {
   $('#c-bg-color').querySelector('.chip').style.opacity = S.doc.transparent ? 0.25 : 1;
   $('#c-transparent').checked = S.doc.transparent;
   $('#canvas-label').textContent = `${S.doc.w} × ${S.doc.h} px`;
-  $('#canvas-sec').hidden = S.sel.length > 0 || S.setup || !['select', 'hand'].includes(S.tool);
+  $('#canvas-sec').hidden = S.sel.length > 0 || S.setup;
   $('#c-bgimg-rm').hidden = $('#c-bgfit-row').hidden = !S.doc.bgSrc;
   $('#c-bgimg-btn').textContent = S.doc.bgSrc ? 'Replace image…' : 'Choose image…';
   $('#c-bgfit').value = S.doc.bgFit || 'cover';
@@ -3470,36 +3022,12 @@ const CHEVRON = '<path d="M9 6l6 6-6 6"/>';
 function layerRow(o, child) {
   const on = S.sel.includes(o.id);
   const color = isLine(o) || o.type === 'path' ? o.stroke : o.fill;
-  let th = o.type === 'image' ? `<img src="${o.src}" alt="">` : `<svg class="i" viewBox="0 0 24 24" style="color:${esc(color)}">${TYPE_ICON[o.type] || ''}</svg>`;
-  if (o.type !== 'image') { const u = layerThumb(o); if (u) th = `<img src="${u}" alt="" style="object-fit:contain">`; }
+  const th = o.type === 'image' ? `<img src="${o.src}" alt="">` : `<svg class="i" viewBox="0 0 24 24" style="color:${esc(color)}">${TYPE_ICON[o.type] || ''}</svg>`;
   return `<li class="layer${child ? ' child' : ''}${on ? ' on' : ''}${o.visible ? '' : ' hidden-l'}" draggable="true" data-id="${o.id}">
       <span class="th">${th}</span><span class="nm" title="Double-click to rename">${esc(o.name)}</span>
       <button class="ibtn lockb${o.locked ? '' : ' off'}" title="${o.locked ? 'Unlock' : 'Lock'}" aria-label="${o.locked ? 'Unlock' : 'Lock'} layer"><svg class="i" viewBox="0 0 24 24">${o.locked ? LOCK : UNLOCK}</svg></button>
       <button class="ibtn eyeb${o.visible ? '' : ' off'}" title="${o.visible ? 'Hide' : 'Show'}" aria-label="${o.visible ? 'Hide' : 'Show'} layer"><svg class="i" viewBox="0 0 24 24">${o.visible ? EYE : EYE_OFF}</svg></button>
     </li>`;
-}
-// Layer thumbnails show the layer itself (its real shape, colour and proportions), cached until it changes.
-const thumbCache = new Map();
-function layerThumb(o) {
-  const sig = [o.type, o.w, o.h, o.rot, o.flipX, o.flipY, o.fill, o.fillOn, o.stroke, o.strokeWidth, o.radius, o.opacity, o.visible,
-    o.text, o.font, o.fontSize, o.bold, o.italic, o.align, o.points ? o.points.length : 0, o.erase ? o.erase.length : 0, o.cap].join('|');
-  const hit = thumbCache.get(o.id);
-  if (hit && hit.sig === sig) return hit.url;
-  let url = null;
-  try {
-    // Fit the layer (plus its outline) into a 60×48 tile with a small margin, keeping its proportions.
-    const b = aabb(o), pad = isShape(o) || o.type === 'text' ? (o.strokeWidth || 0) / 2 : 0;
-    const w = Math.max(1, b.x1 - b.x0 + pad * 2), h = Math.max(1, b.y1 - b.y0 + pad * 2);
-    const sc = Math.min(52 / w, 40 / h);
-    const c = document.createElement('canvas'); c.width = 60; c.height = 48;
-    const x = c.getContext('2d');
-    x.translate(30 - (b.x0 - pad + w / 2) * sc, 24 - (b.y0 - pad + h / 2) * sc); x.scale(sc, sc);
-    drawObj(x, { ...o, visible: true, shOn: false }, sc, false);
-    url = c.toDataURL();
-  } catch (e) { url = null; }
-  thumbCache.set(o.id, { sig, url });
-  if (thumbCache.size > 600) thumbCache.delete(thumbCache.keys().next().value);
-  return url;
 }
 function groupThumbURL(mem) {
   const b = unionBox(mem), w = Math.max(1, b.x1 - b.x0), h = Math.max(1, b.y1 - b.y0);
@@ -3539,39 +3067,24 @@ function renderLayers() {
   $('#layer-count').textContent = S.objects.length ? S.objects.length : '';
   $('#lbl-front').hidden = $('#lbl-back').hidden = S.objects.length < 1;
 }
-let layerAnchor = null;   // the row a Shift-click range starts from
-const rowKey = li => li.dataset.gid ? 'g:' + li.dataset.gid : 'o:' + li.dataset.id;
-const rowIds = li => li.dataset.gid ? membersOf(li.dataset.gid).map(m => m.id) : [li.dataset.id];
 ul.addEventListener('click', e => {
   const li = e.target.closest('.layer'); if (!li) return;
   if (e.target.closest('[contenteditable="true"]')) return;
+  const additive = e.shiftKey || e.metaKey || e.ctrlKey;
   if (li.dataset.gid) {
     const g = groupById(li.dataset.gid); if (!g) return;
     const mem = membersOf(g.id), ids = mem.map(m => m.id);
     if (e.target.closest('.caret')) { g.open = !g.open; renderLayers(); scheduleSave(); return; }
     if (e.target.closest('.eyeb')) { const v = !mem.some(m => m.visible); mem.forEach(m => m.visible = v); if (!v) S.sel = S.sel.filter(id => !ids.includes(id)); commit(); return; }
     if (e.target.closest('.lockb')) { const v = !mem.every(m => m.locked); mem.forEach(m => m.locked = v); commit(); return; }
-  } else {
-    const o = byId(li.dataset.id); if (!o) return;
-    if (e.target.closest('.eyeb')) { o.visible = !o.visible; if (!o.visible) S.sel = S.sel.filter(id => id !== o.id); commit(); return; }
-    if (e.target.closest('.lockb')) { o.locked = !o.locked; commit(); return; }
-  }
-  const ids = rowIds(li), toggle = e.ctrlKey || e.metaKey;
-  const rows = [...ul.querySelectorAll('.layer')];
-  const anchor = layerAnchor && rows.find(r => rowKey(r) === layerAnchor);
-  if (e.shiftKey && anchor) {
-    // Shift: everything from the anchor row to this one (added to the selection if Ctrl is held too).
-    const a = rows.indexOf(anchor), b = rows.indexOf(li);
-    const range = rows.slice(Math.min(a, b), Math.max(a, b) + 1).flatMap(rowIds);
-    S.sel = [...new Set([...(toggle ? S.sel : []), ...range])];
-  } else if (toggle || e.shiftKey) {
-    // Ctrl: add or remove just this row.
     const all = ids.every(id => S.sel.includes(id));
-    S.sel = all ? S.sel.filter(id => !ids.includes(id)) : [...new Set([...S.sel, ...ids])];
-    layerAnchor = rowKey(li);
-  } else {
-    S.sel = ids; layerAnchor = rowKey(li);
+    S.sel = additive ? (all ? S.sel.filter(id => !ids.includes(id)) : [...new Set([...S.sel, ...ids])]) : ids;
+    syncAll(); return;
   }
+  const o = byId(li.dataset.id); if (!o) return;
+  if (e.target.closest('.eyeb')) { o.visible = !o.visible; if (!o.visible) S.sel = S.sel.filter(id => id !== o.id); commit(); return; }
+  if (e.target.closest('.lockb')) { o.locked = !o.locked; commit(); return; }
+  S.sel = additive ? (S.sel.includes(o.id) ? S.sel.filter(id => id !== o.id) : [...S.sel, o.id]) : [o.id];
   syncAll();
 });
 ul.addEventListener('dblclick', e => {
@@ -3724,60 +3237,20 @@ $('#o-font').innerHTML = fontOpts; $('#p-font').innerHTML = fontOpts;
 $('#o-font').value = S.style.font;
 $('#o-font').addEventListener('change', e => S.style.font = e.target.value);
 $('#o-fs').addEventListener('change', e => S.style.fontSize = clamp(+e.target.value || 72, 4, 1000));
+$('#o-sw').addEventListener('change', e => { S.style.strokeWidth = Math.max(0, +e.target.value || 0); syncSwatches(); });
 $('#o-rad').addEventListener('change', e => S.style.radius = Math.max(0, +e.target.value || 0));
-$('#o-lw').addEventListener('input', e => { if (e.target.value === '') return; S.style.lineWidth = Math.max(1, +e.target.value || 1); showSizePreview(S.style.lineWidth, `Line ${S.style.lineWidth} px`, 'line'); });
-function brushLabel() { const G = GROUPS.brush.items.find(i => i[0] === S.brushKind); return G ? G[1] : 'Brush'; }
-// The pen and eraser sliders read 1–100 (real width = half that, in px). Typing a bigger number is allowed.
-const toDial = px => clamp(Math.round(px * 2), 1, 1000);
-const SIZE_KEY = 'plate-editor:sizes';
-let sizeSet = { brush: false, erase: false };
-try {
-  const v = JSON.parse(localStorage.getItem(SIZE_KEY) || 'null');
-  if (v) { if (v.brushSizes) Object.assign(S.style.brushSizes, v.brushSizes); if (v.eraser) S.style.eraser = v.eraser; if (v.set) Object.assign(sizeSet, v.set); }
-} catch (e) {}
-setTimeout(() => syncSizeInputs('erase'), 0);
-function saveSizes() { try { localStorage.setItem(SIZE_KEY, JSON.stringify({ brushSizes: S.style.brushSizes, eraser: S.style.eraser, set: sizeSet })); } catch (e) {} }
-function syncSizeInputs(kind, src) {
-  const d = toDial(kind === 'brush' ? S.style.brush : S.style.eraser);
-  $$(`[data-size="${kind}"]`).forEach(el => { if (el !== src) el.value = el.type === 'range' ? Math.min(d, +el.max || 100) : d; });
-  $$(`[data-size-set="${kind}"]`).forEach(b => b.classList.toggle('on', +b.dataset.v === d));
-}
-function setToolSize(kind, n, src) {
-  const d = clamp(Math.round(+n || 1), 1, 1000), px = d / 2;
-  if (kind === 'brush') { S.style.brush = px; S.style.brushSizes[S.brushKind] = px; } else S.style.eraser = px;
-  sizeSet[kind] = true; saveSizes();
-  syncSizeInputs(kind, src);
-  showSizePreview(px, `${kind === 'brush' ? brushLabel() : 'Eraser'} ${d}`, kind === 'brush' ? 'brush' : 'erase');
-  if (!$('#quickbar').hidden) updateQuickBar();
-}
-const setBrushSize = n => setToolSize('brush', n);
-const setEraserSize = n => setToolSize('erase', n);
-document.addEventListener('input', e => {
-  const el = e.target.closest && e.target.closest('[data-size]');
-  if (el && el.value !== '') setToolSize(el.dataset.size, el.value, el);
-});
-document.addEventListener('click', e => {
-  const b = e.target.closest && e.target.closest('[data-size-set]');
-  if (b) setToolSize(b.dataset.sizeSet, +b.dataset.v, null);
-});
-function sizeUI(kind, prompt) {
-  const d = toDial(kind === 'brush' ? S.style.brush : S.style.eraser);
-  const name = kind === 'brush' ? brushLabel() : 'Eraser';
-  const dots = [4, 10, 20, 40, 80].map(v => {
-    const px = Math.round(clamp(v * 0.3 + 2, 3, 26));
-    return `<button type="button" data-size-set="${kind}" data-v="${v}" class="${v === d ? 'on' : ''}" title="${v}"><i style="width:${px}px;height:${px}px"></i><small>${v}</small></button>`;
-  }).join('');
-  return `<div class="qp-head"><span>${prompt ? `Choose a ${name.toLowerCase()} size` : `${name} size`}</span><small>1–100, or type more</small></div>
-    <div class="qp-dots">${dots}</div>
-    <div class="slider"><input type="range" min="1" max="100" value="${Math.min(100, d)}" data-size="${kind}" aria-label="${name} size"><span class="sval"><input type="number" min="1" max="1000" value="${d}" data-size="${kind}" aria-label="${name} size"></span></div>
-    ${prompt ? '<div class="qp-foot"><button type="button" class="btn primary small" data-qp-close>Done</button></div>' : ''}`;
-}
+$('#o-lw').addEventListener('change', e => S.style.lineWidth = Math.max(1, +e.target.value || 1));
+$('#o-bs').addEventListener('input', e => { S.style.brush = +e.target.value; S.style.brushSizes[S.brushKind] = S.style.brush; $('#o-bs-out').value = e.target.value; });
 $('#o-ft').addEventListener('input', e => { S.style.fillTol = +e.target.value; $('#o-ft-out').value = e.target.value; });
 $('#o-ft-out').addEventListener('input', e => { const n = clamp(Math.round(+e.target.value || 0), 0, 100); S.style.fillTol = n; $('#o-ft').value = n; });
-$('#o-es').addEventListener('input', e => setEraserSize(e.target.value, 'range'));
-$('#o-es-out').addEventListener('input', e => { if (e.target.value !== '') setEraserSize(e.target.value, 'num'); });
+$('#o-es').addEventListener('input', e => { S.style.eraser = +e.target.value; $('#o-es-out').value = e.target.value; render(); });
+$('#o-es-out').addEventListener('input', e => { const n = clamp(Math.round(+e.target.value || 2), 2, 300); S.style.eraser = n; $('#o-es').value = n; render(); });
 $('#o-esel').addEventListener('change', e => { S.style.eraseOnlySel = e.target.checked; });
-$('#o-lasso').addEventListener('change', e => { S.style.lassoMode = e.target.value; clearLassoSel(); setTool('lasso'); });
+$('#o-lasso').addEventListener('change', e => { S.style.lassoMode = e.target.value; setTool('lasso'); });
+$('#o-bs-out').addEventListener('input', e => {
+  const n = clamp(Math.round(+e.target.value || 1), 1, 200);
+  S.style.brush = n; S.style.brushSizes[S.brushKind] = n; $('#o-bs').value = n;
+});
 
 /* ---------- colour helpers ---------- */
 function parseColor(str) {
@@ -3908,12 +3381,12 @@ function showDualWidth() {
   if (document.activeElement !== $('#pd-w-num')) $('#pd-w-num').value = dualW;
 }
 function setDualW(n) {
-  dualW = clamp(Math.round(+n) || 0, 0, 1000);
-  S.style.strokeWidth = dualW;
+  dualW = clamp(Math.round(+n) || 0, 0, 200);
+  S.style.strokeWidth = dualW; $('#o-sw').value = dualW;
   for (const o of outlineTargets()) setProp(o, 'strokeWidth', dualW);
   showDualWidth();
 }
-const afterDual = () => { syncSwatches(); syncPanel(); render(); if (qbCurrent.some(x => x.type === 'colour')) updateQuickBar(); };
+const afterDual = () => { syncSwatches(); syncPanel(); render(); };
 PF.onChange = v => {
   const none = isNone(v);
   if (!none) S.style.fill = v;
@@ -3935,8 +3408,8 @@ PS.onCommit = () => { if (outlineTargets().length) commit(); };
 $('#pd-w').addEventListener('input', e => { setDualW(e.target.value); afterDual(); });
 $('#pd-w-num').addEventListener('input', e => { if (e.target.value === '') return; setDualW(e.target.value); afterDual(); });
 ['#pd-w', '#pd-w-num'].forEach(s => $(s).addEventListener('change', () => { showDualWidth(); if (outlineTargets().length) commit(); }));
-function openDual(anchor) {
-  closePicker(); hideMenus(); closeQPop();
+function openDual() {
+  closePicker(); hideMenus();
   const L = currentLook(), t = dualTargets();
   PF.set(L.fillOn ? L.fill : 'none', t.length > 0 && t.every(o => !lineish(o)));
   PS.set(L.stroke, false);
@@ -3946,11 +3419,6 @@ function openDual(anchor) {
   $('#pd-fill-sub').textContent = L.onlyLines ? 'Line colour' : 'Inside colour';
   const pk = $('#picker-dual'); pk.classList.add('open');
   $('#sw-fg').setAttribute('aria-expanded', 'true');
-  if (anchor) {
-    const r = anchor.getBoundingClientRect();
-    placePopup(pk, r.left + r.width / 2 - pk.offsetWidth / 2, r.top - pk.offsetHeight - 10);
-    return;
-  }
   const r = $('#sw-fg').getBoundingClientRect();
   let x = r.right + 10;
   if (x + pk.offsetWidth > innerWidth - 8) x = innerWidth - pk.offsetWidth - 8;
@@ -3958,13 +3426,11 @@ function openDual(anchor) {
 }
 function closeDual() { $('#picker-dual').classList.remove('open'); $('#sw-fg').setAttribute('aria-expanded', 'false'); }
 $('#sw-fg').addEventListener('click', () => { if ($('#picker-dual').classList.contains('open')) closeDual(); else openDual(); });
-
 let pickerDismissed = false;
 document.addEventListener('pointerdown', e => {
   pickerDismissed = false;
   if ($('#picker').classList.contains('open') && !e.target.closest('#picker') && !e.target.closest('.cbtn')) { closePicker(); pickerDismissed = true; }
-  if ($('#picker-dual').classList.contains('open') && !e.target.closest('#picker-dual') && !e.target.closest('#sw-fg') && !e.target.closest('[data-qb="colour"]')) { closeDual(); pickerDismissed = true; }
-  if (!$('#qpop').hidden && !e.target.closest('#qpop') && !e.target.closest('#quickbar') && !e.target.closest('.tool')) { closeQPop(); pickerDismissed = true; }
+  if ($('#picker-dual').classList.contains('open') && !e.target.closest('#picker-dual') && !e.target.closest('#sw-fg')) { closeDual(); pickerDismissed = true; }
 }, true);
 
 // panel colour buttons
@@ -4003,16 +3469,12 @@ const ICONS = {
   line: '<path d="M5 19L19 5"/>', arrow: '<path d="M5 19L19 5M11 5h8v8"/>',
   pen: '<path d="M4 20l1.4-5.2L15.6 4.6a2.1 2.1 0 013 3L8.4 17.8z"/><path d="M13.8 6.4l3 3"/>',
   marker: '<path d="M19.5 3.5l1 1-8.6 9.6-2-2z"/><path d="M9.6 12.4c-2.4-.3-4 1-4.3 3.3-.2 1.6-1 2.6-2.3 2.8 2.6 2.2 8.3 1.9 8.6-3.8"/>',
-  highlighter: '<path d="M9 13l-3.5 3.5V19H8l3.5-3.5"/><path d="M9 13l7.5-7.5 3 3L12 16z"/><path d="M3 21h9" stroke-width="3" opacity=".45"/>',
-  lfree: '<path d="M7.2 15.4C4.6 14.3 3 12.5 3 10.5 3 6.9 7 4 12 4s9 2.9 9 6.5S17 17 12 17c-.9 0-1.8-.1-2.6-.3" stroke-dasharray="3.2 2.4"/><path d="M8.4 14.2c-1.6.4-2.4 1.5-2.1 2.6.3 1.2 1.7 1.6 2.4 2.6.5.8.3 1.7-.4 2.1"/>',
-  lrect: '<rect x="4" y="5" width="16" height="14" rx="1" stroke-dasharray="3 2.4"/>',
-  lellipse: '<ellipse cx="12" cy="12" rx="8.5" ry="7" stroke-dasharray="3 2.4"/>'
+  highlighter: '<path d="M9 13l-3.5 3.5V19H8l3.5-3.5"/><path d="M9 13l7.5-7.5 3 3L12 16z"/><path d="M3 21h9" stroke-width="3" opacity=".45"/>'
 };
 const GROUPS = {
   shape: { key: 'shapeKind', items: [['rect','Rectangle','R'],['square','Square',''],['ellipse','Ellipse','O'],['circle','Circle',''],['triangle','Triangle',''],['star','Star','']] },
   line: { key: 'lineKind', items: [['line','Line','L'],['arrow','Arrow','A']] },
-  brush: { key: 'brushKind', items: [['pen','Pen','B'],['marker','Marker',''],['highlighter','Highlighter','']] },
-  lasso: { key: 'lassoKind', items: [['lfree','Lasso','Q'],['lrect','Rectangle select',''],['lellipse','Ellipse select','']] }
+  brush: { key: 'brushKind', items: [['pen','Pen','B'],['marker','Marker',''],['highlighter','Highlighter','']] }
 };
 function syncGroupIcons() {
   for (const g in GROUPS) {
@@ -4023,8 +3485,8 @@ function syncGroupIcons() {
   }
 }
 function openFlyout(g, btn) {
-  const fl = $('#flyout'); hideMenus(); closeQPop();
-  fl.innerHTML = (g === 'brush' ? `<div class="fl-size">${sizeUI('brush')}</div><hr>` : '') + GROUPS[g].items.map(([k, l, key]) => `<button data-kind="${k}" class="${S[GROUPS[g].key] === k ? 'on' : ''}"><svg class="i" viewBox="0 0 24 24">${ICONS[k]}</svg>${l}${key ? `<kbd>${key}</kbd>` : ''}</button>`).join('');
+  const fl = $('#flyout'); hideMenus();
+  fl.innerHTML = GROUPS[g].items.map(([k, l, key]) => `<button data-kind="${k}" class="${S[GROUPS[g].key] === k ? 'on' : ''}"><svg class="i" viewBox="0 0 24 24">${ICONS[k]}</svg>${l}${key ? `<kbd>${key}</kbd>` : ''}</button>`).join('');
   fl.dataset.group = g; fl.classList.add('open');
   const r = btn.getBoundingClientRect();
   fl.style.left = (r.right + 6) + 'px';
@@ -4043,11 +3505,6 @@ $$('.tool[data-tool]').forEach(b => {
     if (longPressed) { longPressed = false; return; }
     if (g && wasOpen) { wasOpen = false; hideMenus(); return; }
     if (g && (e.target.closest('.more') || S.tool === b.dataset.tool)) { openFlyout(b.dataset.tool, b); return; }
-    if (b.dataset.tool === 'erase' && (e.target.closest('.more') || S.tool === 'erase')) {
-      if (S.tool !== 'erase') setTool('erase');
-      if (!$('#qpop').hidden && $('#qpop').dataset.for === 'erase-size') closeQPop(); else openSizePop('erase', false);
-      return;
-    }
     setTool(b.dataset.tool);
   });
   if (!g) return;
@@ -4060,193 +3517,6 @@ $$('.tool[data-tool]').forEach(b => {
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, () => clearTimeout(press)));
 });
 
-/* ---------- collapsible tool sections ---------- */
-(function toolSections() {
-  let closed = {};
-  try { closed = JSON.parse(localStorage.getItem('plate-editor:toolsecs') || '{}'); } catch (e) {}
-  const apply = () => $$('.tsec').forEach(h => {
-    const k = h.dataset.sec, open = !closed[k];
-    h.setAttribute('aria-expanded', String(open)); h.title = open ? 'Hide these tools' : 'Show hidden tools';
-    $(`.tgrp[data-grp="${k}"]`).classList.toggle('collapsed', !open);
-  });
-  $$('.tsec').forEach(h => h.addEventListener('click', () => {
-    closed[h.dataset.sec] = !closed[h.dataset.sec];
-    try { localStorage.setItem('plate-editor:toolsecs', JSON.stringify(closed)); } catch (e) {}
-    apply();
-  }));
-  apply();
-})();
-
-/* ---------- quick bar for the active tool ---------- */
-// Each tool gets a small set of controls at the bottom. Items: menu (pick one), slider, size, toggle or colour.
-const QB_ICON = {
-  dot: '<circle cx="12" cy="12" r="5.5" fill="currentColor" stroke="none"/>',
-  tol: '<path d="M12 3.5c3 4 5.5 7 5.5 10a5.5 5.5 0 01-11 0c0-3 2.5-6 5.5-10z"/>',
-  outline: '<rect x="4.5" y="4.5" width="15" height="15" rx="3" stroke-width="3"/>',
-  corners: '<path d="M5 20V11a6 6 0 016-6h9"/>',
-  width: '<path d="M4 7h16" stroke-width="1"/><path d="M4 12h16" stroke-width="2.2"/><path d="M4 17.5h16" stroke-width="3.6"/>',
-  font: '<path d="M5 7V5h14v2M12 5v14M9 19h6"/>',
-  fsize: '<path d="M3 7V5h9v2M7.5 5v14M5.5 19h4"/><path d="M14 11v-1.5h7V11M17.5 9.5V19M16 19h3"/>',
-  bold: '<path d="M7 5h6a3.5 3.5 0 010 7H7zM7 12h7a3.5 3.5 0 010 7H7z"/>',
-  italic: '<path d="M10 5h8M6 19h8M14 5l-4 14"/>',
-  left: '<path d="M4 6h16M4 10h10M4 14h16M4 18h10"/>', center: '<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>', right: '<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
-  only: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 2.5"/><path d="M9 12l2 2 4-4"/>',
-  move: '<path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/>',
-  selectL: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 2.5"/>'
-};
-function applyToSelected(test, fn) {
-  const t = selObjs().filter(o => !o.locked && test(o));
-  t.forEach(fn); if (t.length) { render(); syncPanel(); }
-  return t.length;
-}
-function qbItems() {
-  const colour = { id: 'colour', type: 'colour', label: 'Colour' };
-  const kindMenu = (g, label) => ({ id: 'kind', type: 'menu', label, title: 'Type', icon: ICONS[S[GROUPS[g].key]],
-    options: GROUPS[g].items.map(([v, l]) => ({ v, l, icon: ICONS[v] })), cur: S[GROUPS[g].key],
-    pick: v => { S[GROUPS[g].key] = v; syncGroupIcons(); setTool(g); } });
-  const isText = o => o.type === 'text';
-  switch (S.tool) {
-    case 'brush': return [kindMenu('brush', brushLabel()), { id: 'size', type: 'size', size: 'brush', label: `Size ${toDial(S.style.brush)}`, icon: QB_ICON.dot }, colour];
-    case 'erase': return [
-      { id: 'size', type: 'size', size: 'erase', label: `Size ${toDial(S.style.eraser)}`, icon: QB_ICON.dot },
-      { id: 'only', type: 'toggle', label: 'Selected only', icon: QB_ICON.only, on: S.style.eraseOnlySel,
-        toggle: () => { S.style.eraseOnlySel = !S.style.eraseOnlySel; $('#o-esel').checked = S.style.eraseOnlySel; } }];
-    case 'fill': return [
-      { id: 'tol', type: 'slider', label: `Tolerance ${S.style.fillTol}%`, title: 'Tolerance', icon: QB_ICON.tol, min: 0, max: 100, unit: '%',
-        get: () => S.style.fillTol, set: v => { S.style.fillTol = clamp(Math.round(v), 0, 100); $('#o-ft').value = $('#o-ft-out').value = S.style.fillTol; } },
-      colour];
-    case 'shape': {
-      const items = [kindMenu('shape', GROUPS.shape.items.find(i => i[0] === S.shapeKind)[1]), colour];
-      if (['rect', 'square'].includes(S.shapeKind)) items.push({ id: 'radius', type: 'slider', label: `Corners ${S.style.radius}`, title: 'Corner radius', icon: QB_ICON.corners, min: 0, max: 300, over: true, unit: 'px',
-        get: () => S.style.radius, set: v => { S.style.radius = Math.max(0, Math.round(v)); $('#o-rad').value = S.style.radius; applyToSelected(o => o.type === 'rect', o => o.radius = S.style.radius); },
-        commit: () => { if (selObjs().some(o => o.type === 'rect')) commit(); } });
-      return items;
-    }
-    case 'line': return [kindMenu('line', GROUPS.line.items.find(i => i[0] === S.lineKind)[1]),
-      { id: 'width', type: 'slider', label: `Width ${S.style.lineWidth}`, title: 'Line width', icon: QB_ICON.width, min: 1, max: 100, over: true, unit: 'px',
-        get: () => S.style.lineWidth, set: v => { S.style.lineWidth = Math.max(1, Math.round(v)); $('#o-lw').value = S.style.lineWidth; applyToSelected(isLine, o => setProp(o, 'strokeWidth', S.style.lineWidth)); showSizePreview(S.style.lineWidth, `Line ${S.style.lineWidth} px`, 'line'); },
-        commit: () => { if (selObjs().some(isLine)) commit(); } },
-      colour];
-    case 'text': return [
-      { id: 'font', type: 'menu', label: S.style.font, title: 'Font', icon: QB_ICON.font, options: FONTS.map(f => ({ v: f, l: f, font: f })), cur: S.style.font,
-        pick: v => { S.style.font = v; $('#o-font').value = v; if (applyToSelected(isText, o => setProp(o, 'font', v))) commit(); } },
-      { id: 'fsize', type: 'slider', label: `Size ${S.style.fontSize}`, title: 'Text size', icon: QB_ICON.fsize, min: 8, max: 300, over: true, unit: 'px',
-        get: () => S.style.fontSize, set: v => { S.style.fontSize = clamp(Math.round(v), 4, 2000); $('#o-fs').value = S.style.fontSize; applyToSelected(isText, o => setProp(o, 'fontSize', S.style.fontSize)); },
-        commit: () => { if (selObjs().some(isText)) commit(); } },
-      { id: 'bold', type: 'toggle', label: 'Bold', icon: QB_ICON.bold, on: S.style.bold, toggle: () => { S.style.bold = !S.style.bold; if (applyToSelected(isText, o => setProp(o, 'bold', S.style.bold))) commit(); } },
-      { id: 'italic', type: 'toggle', label: 'Italic', icon: QB_ICON.italic, on: S.style.italic, toggle: () => { S.style.italic = !S.style.italic; if (applyToSelected(isText, o => setProp(o, 'italic', S.style.italic))) commit(); } },
-      { id: 'align', type: 'menu', label: 'Align', title: 'Alignment', icon: QB_ICON[S.style.align], options: [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']].map(([v, l]) => ({ v, l, icon: QB_ICON[v] })), cur: S.style.align,
-        pick: v => { S.style.align = v; if (applyToSelected(isText, o => setProp(o, 'align', v))) commit(); } },
-      colour];
-    case 'lasso': return [
-      { id: 'kind', type: 'menu', label: GROUPS.lasso.items.find(i => i[0] === S.lassoKind)[1], title: 'Selection shape', icon: ICONS[S.lassoKind],
-        options: GROUPS.lasso.items.map(([v, l]) => ({ v, l, icon: ICONS[v] })), cur: S.lassoKind, pick: v => { S.lassoKind = v; syncGroupIcons(); setTool('lasso'); } },
-      { id: 'mode', type: 'menu', label: S.style.lassoMode === 'select' ? 'Select layers' : 'Move part', title: 'Lasso mode', icon: S.style.lassoMode === 'select' ? QB_ICON.selectL : QB_ICON.move,
-        options: [{ v: 'cut', l: 'Move part out', icon: QB_ICON.move }, { v: 'select', l: 'Select layers', icon: QB_ICON.selectL }], cur: S.style.lassoMode,
-        pick: v => { S.style.lassoMode = v; $('#o-lasso').value = v; clearLassoSel(); setTool('lasso'); } }];
-  }
-  return null;
-}
-function selItems() {
-  const sel = selObjs().filter(o => !o.locked); if (!sel.length) return [];
-  const all = f => sel.every(f), first = sel[0], isText = o => o.type === 'text';
-  const colour = { id: 'colour', type: 'colour', label: 'Colour' };
-  const sl = (id, label, title, icon, min, max, get, apply) => ({ id, type: 'slider', label, title, icon, min, max, over: true, unit: 'px', get,
-    set: v => applyToSelected(() => true, o => apply(o, v)), commit: () => commit() });
-  if (all(isLine)) return [
-    { id: 'kind', type: 'menu', label: first.type === 'arrow' ? 'Arrow' : 'Line', title: 'Type', icon: ICONS[first.type],
-      options: [['line', 'Line'], ['arrow', 'Arrow']].map(([v, l]) => ({ v, l, icon: ICONS[v] })), cur: first.type,
-      pick: v => { applyToSelected(isLine, o => { o.type = v; }); commit(); } },
-    sl('width', `Width ${Math.round(first.strokeWidth)}`, 'Line width', QB_ICON.width, 1, 100, () => Math.round(first.strokeWidth), (o, v) => setProp(o, 'strokeWidth', Math.max(1, v))),
-    colour];
-  if (all(isShape)) {
-    const items = [
-      { id: 'kind', type: 'menu', label: LABEL[first.type], title: 'Shape', icon: ICONS[first.type],
-        options: ['rect', 'ellipse', 'triangle', 'star'].map(v => ({ v, l: LABEL[v], icon: ICONS[v] })), cur: first.type,
-        pick: v => { applyToSelected(isShape, o => { o.type = v; }); commit(); } },
-      colour];
-    if (all(o => o.type === 'rect')) items.push(sl('radius', `Corners ${Math.round(first.radius || 0)}`, 'Corner radius', QB_ICON.corners, 0, 300, () => Math.round(first.radius || 0), (o, v) => { o.radius = Math.max(0, v); }));
-    return items;
-  }
-  if (all(isText)) return [
-    { id: 'font', type: 'menu', label: first.font, title: 'Font', icon: QB_ICON.font, options: FONTS.map(f => ({ v: f, l: f, font: f })), cur: first.font,
-      pick: v => { applyToSelected(isText, o => setProp(o, 'font', v)); commit(); } },
-    sl('fsize', `Size ${Math.round(first.fontSize)}`, 'Text size', QB_ICON.fsize, 8, 300, () => Math.round(first.fontSize), (o, v) => setProp(o, 'fontSize', Math.max(1, v))),
-    { id: 'bold', type: 'toggle', label: 'Bold', icon: QB_ICON.bold, on: !!first.bold, toggle: () => { const v = !first.bold; applyToSelected(isText, o => setProp(o, 'bold', v)); commit(); } },
-    { id: 'italic', type: 'toggle', label: 'Italic', icon: QB_ICON.italic, on: !!first.italic, toggle: () => { const v = !first.italic; applyToSelected(isText, o => setProp(o, 'italic', v)); commit(); } },
-    { id: 'align', type: 'menu', label: 'Align', title: 'Alignment', icon: QB_ICON[first.align || 'left'], options: [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']].map(([v, l]) => ({ v, l, icon: QB_ICON[v] })), cur: first.align,
-      pick: v => { applyToSelected(isText, o => setProp(o, 'align', v)); commit(); } },
-    colour];
-  if (all(o => o.type === 'path')) return [
-    sl('width', `Width ${toDial(first.strokeWidth)}`, 'Stroke width (1–100)', QB_ICON.dot, 1, 100, () => toDial(first.strokeWidth), (o, v) => { o.strokeWidth = Math.max(0.5, v / 2); }),
-    colour];
-  if (sel.some(o => o.type !== 'image')) return [colour];
-  return [];
-}
-function qbButton(it) {
-  let ico;
-  if (it.type === 'colour') {
-    const L = currentLook(), none = !L.outline || !L.width;
-    ico = `<span class="qsw${none ? ' nostroke' : ''}" style="--f:${L.fillOn ? L.fill : 'transparent'};--s:${L.stroke}"></span>`;
-  } else ico = `<svg class="i" viewBox="0 0 24 24">${it.icon || ''}</svg>`;
-  const caret = ['menu', 'slider', 'size'].includes(it.type) ? '<span class="qcar">▲</span>' : '';
-  return `<button type="button" data-qb="${it.id}" class="${it.on ? 'on' : ''}" title="${esc(it.title || it.label)}">${ico}<span class="ql">${esc(it.label)}${caret}</span></button>`;
-}
-function closeQPop() { const q = $('#qpop'); if (q && !q.hidden) { q.hidden = true; q.dataset.for = ''; } }
-function placeQPop(anchor, side) {
-  const q = $('#qpop'), r = anchor.getBoundingClientRect(), w = q.offsetWidth, h = q.offsetHeight;
-  let x, y;
-  if (side === 'right') { x = r.right + 8; y = r.top - 8; }
-  else { x = r.left + r.width / 2 - w / 2; y = r.top - h - 8; }
-  q.style.left = clamp(x, 8, Math.max(8, innerWidth - w - 8)) + 'px';
-  q.style.top = clamp(y, 8, Math.max(8, innerHeight - h - 8)) + 'px';
-}
-function openSizePop(kind, prompt) {
-  const q = $('#qpop'); hideMenus();
-  q.innerHTML = sizeUI(kind, prompt); q.dataset.for = kind + '-size'; q.hidden = false;
-  const btn = $(`.tool[data-tool="${kind}"]`);
-  placeQPop(btn && btn.offsetParent ? btn : $('#quickbar'), btn && btn.offsetParent ? 'right' : 'above');
-}
-let qbCurrent = [];
-$('#quickbar').addEventListener('click', e => {
-  const b = e.target.closest('[data-qb]'); if (!b) return;
-  const it = qbCurrent.find(x => x.id === b.dataset.qb); if (!it) return;
-  const q = $('#qpop');
-  if (!q.hidden && q.dataset.for === 'qb-' + it.id) { closeQPop(); return; }
-  if (it.type === 'toggle') { closeQPop(); it.toggle(); updateQuickBar(); return; }
-  if (it.type === 'colour') { closeQPop(); if ($('#picker-dual').classList.contains('open')) closeDual(); else openDual(b); return; }
-  closeDual(); closePicker();
-  if (it.type === 'size') q.innerHTML = sizeUI(it.size, false);
-  else if (it.type === 'menu') {
-    q.innerHTML = `<div class="qp-head"><span>${esc(it.title || it.label)}</span></div><div class="qp-list">${it.options.map(o =>
-      `<button type="button" data-qv="${esc(o.v)}" class="${o.v === it.cur ? 'on' : ''}"${o.font ? ` style="font-family:${fontStack(o.font).replace(/"/g, "'")}"` : ''}>${o.icon ? `<svg class="i" viewBox="0 0 24 24">${o.icon}</svg>` : ''}${esc(o.l)}</button>`).join('')}</div>`;
-  } else if (it.type === 'slider') {
-    const v = it.get();
-    q.innerHTML = `<div class="qp-head"><span>${esc(it.title || it.label)}</span><small>${it.over ? `${it.min}–${it.max}, or type more` : `${it.min}–${it.max}`}</small></div>
-      <div class="slider"><input type="range" data-qs min="${it.min}" max="${it.max}" value="${Math.min(it.max, v)}"><span class="sval"><input type="number" data-qs min="${it.min}" ${it.over ? '' : `max="${it.max}"`} value="${v}"><i>${it.unit || ''}</i></span></div>`;
-  }
-  q.dataset.for = 'qb-' + it.id; q.hidden = false; placeQPop(b, 'above');
-});
-$('#qpop').addEventListener('click', e => {
-  if (e.target.closest('[data-qp-close]')) { closeQPop(); return; }
-  const o = e.target.closest('[data-qv]'); if (!o) return;
-  const it = qbCurrent.find(x => 'qb-' + x.id === $('#qpop').dataset.for); if (!it) return;
-  closeQPop(); it.pick(o.dataset.qv); updateQuickBar();
-});
-$('#qpop').addEventListener('input', e => {
-  const el = e.target.closest('[data-qs]'); if (!el || el.value === '') return;
-  const it = qbCurrent.find(x => 'qb-' + x.id === $('#qpop').dataset.for); if (!it) return;
-  let v = +el.value; if (isNaN(v)) return;
-  v = Math.max(it.min, it.over && el.type === 'number' ? v : Math.min(it.max, v));
-  it.set(v);
-  $$('#qpop [data-qs]').forEach(x => { if (x !== el) x.value = x.type === 'range' ? Math.min(it.max, v) : v; });
-  updateQuickBar();
-});
-$('#qpop').addEventListener('change', e => {
-  if (!e.target.closest('[data-qs]')) return;
-  const it = qbCurrent.find(x => 'qb-' + x.id === $('#qpop').dataset.for); if (it && it.commit) it.commit();
-});
-
 $('#f-place').addEventListener('change', async e => { for (const f of [...e.target.files]) await placeFile(f); e.target.value = ''; });
 $('#f-project').addEventListener('change', e => { const f = e.target.files[0]; if (f) openProjectFile(f); e.target.value = ''; });
 
@@ -4255,7 +3525,7 @@ const panels = $('#panels');
 let panelAnimT = 0;
 function drivePanelResize(rescale) {
   cancelAnimationFrame(panelAnimT);
-  const until = performance.now() + 190;
+  const until = performance.now() + 260;
   const step = () => {
     resize();
     if (performance.now() < until) panelAnimT = requestAnimationFrame(step);
@@ -4455,17 +3725,15 @@ $('#e-go').addEventListener('click', async () => {
   else { try { r = await computeExport(P); } catch (err) { r = null; } }
   if (!r || !r.blob) { msg.className = 'msg err'; msg.textContent = 'This browser could not create that image. Try PNG or a smaller canvas.'; return; }
   const name = (($('#e-name').value || 'plate-image').replace(/[\\/:*?"<>|]/g, '').trim() || 'plate-image') + '.' + (P.fmt === 'jpeg' ? 'jpg' : P.fmt);
-  msg.textContent = 'Saving…';
-  const res = await saveBlob(name, r.blob);
-  if (res.ok) {
-    msg.className = 'msg';
-    msg.textContent = `${res.how === 'browser' ? 'Downloading' : 'Exported'} ${res.filename}: ${fmtSize(r.blob.size)}, ${describe(r)}.`;
-  } else {
-    msg.className = res.msg === 'Save canceled.' ? 'msg' : 'msg err';
-    msg.textContent = res.msg;
+  if (!downloads) { msg.textContent = 'Saving files is not available in this view. Right-click or long-press the preview to save it.'; try { $('#e-prev').src = await readFile(r.blob); } catch (e) {} return; }
+  try {
+    await downloads.save({ filename: name, data: r.blob });
+    msg.textContent = `Exported ${name}: ${fmtSize(r.blob.size)}, ${describe(r)}.`;
+  } catch (err) {
+    const code = err && err.code;
+    msg.className = code === 'declined' ? 'msg' : 'msg err';
+    msg.textContent = code === 'declined' ? 'Export canceled.' : code === 'rate_limited' ? 'A save prompt is already open.' : code === 'too_large' ? 'That file is too large. Try a smaller target size or JPEG.' : 'Saving files is not available here. Right-click or long-press the preview to save it.';
   }
-  // The full-size image also goes in the preview, so it can be right-clicked and saved by hand if needed.
-  try { $('#e-prev').src = await readFile(r.blob); } catch (e) {}
 });
 
 /* ---------- start ---------- */
@@ -4487,7 +3755,6 @@ try {
 cur = snapshot();
 new ResizeObserver(() => { const first = !vw; resize(); if (first) fit(); }).observe(stage);
 $('#s-guides').addEventListener('change', e => { SET.guides = e.target.checked; saveSettings(); syncSettings(); });
-$('#s-nodes').addEventListener('change', e => { SET.nodeSnap = e.target.checked; saveSettings(); syncSettings(); render(); });
 $('#s-grid').addEventListener('change', e => { SET.grid = e.target.checked; saveSettings(); syncSettings(); });
 $('#s-showgrid').addEventListener('change', e => { SET.showGrid = e.target.checked; saveSettings(); syncSettings(); render(); });
 $('#s-gridsize').addEventListener('input', e => { const n = Math.round(+e.target.value); if (n >= 2) { SET.gridSize = Math.min(2000, n); saveSettings(); render(); } });
@@ -4505,10 +3772,8 @@ syncSettings();
   const bind = (el, key, prop, min, max, def, calc) => {
     el.addEventListener('pointerdown', e => {
       e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('on');
-      panels.classList.add('dragging'); $('#tools').classList.add('dragging');
-      // Apply the new width and redraw the canvas in the same frame, so the bar follows the pointer exactly.
-      const mv = ev => { const w = Math.round(clamp(calc(ev), min, max)); saved[key] = w; root.style.setProperty(prop, w + 'px'); resize(); };
-      const up = () => { el.classList.remove('on'); panels.classList.remove('dragging'); $('#tools').classList.remove('dragging'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); save(); keepCanvasVisible(); };
+      const mv = ev => { const w = Math.round(clamp(calc(ev), min, max)); saved[key] = w; root.style.setProperty(prop, w + 'px'); };
+      const up = () => { el.classList.remove('on'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); save(); keepCanvasVisible(); };
       el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
     });
     el.addEventListener('dblclick', () => { delete saved[key]; root.style.removeProperty(prop); save(); setTimeout(keepCanvasVisible, 30); });
