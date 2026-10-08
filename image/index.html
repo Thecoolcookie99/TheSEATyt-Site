@@ -392,7 +392,27 @@ body.ui-enter .top{animation:ui-in-top .38s cubic-bezier(.2,.8,.2,1)}
 body.ui-enter .tools{animation:ui-in-left .38s cubic-bezier(.2,.8,.2,1) .05s backwards}
 body.ui-enter .status{animation:ui-in-bottom .38s cubic-bezier(.2,.8,.2,1) .05s backwards}
 body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
+
+.pk-close{margin-left:auto;padding:4px}
+.picker.dual .pk-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px 8px 12px;background:var(--panel);border-bottom:1px solid var(--line);font-size:13px}
+.picker .pre::after{box-shadow:inset 0 0 0 1px rgba(128,128,128,.5)}
+.picker .sv{box-shadow:0 0 0 1px rgba(128,128,128,.5)}
+@media (max-width:820px){
+  .panels{position:fixed;left:0;right:0;bottom:0;width:auto;height:min(50vh,460px);border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -12px 32px rgba(0,0,0,.35);z-index:50;padding-bottom:env(safe-area-inset-bottom,0px);transition:transform .22s cubic-bezier(.25,.8,.25,1)}
+  .panels.hidden-panel{width:auto;min-width:0;transform:translateY(105%);visibility:hidden;transition:transform .22s cubic-bezier(.25,.8,.25,1),visibility 0s .22s}
+  .panels.hidden-panel>*{min-width:0}
+  body.panel-open .quickbar{bottom:calc(min(50vh,460px) + 12px)}
+  body.panel-open .zoomdock{display:none}
+  .zoomdock{bottom:auto;top:10px}
+  .ibtn{padding:9px}
+  .layer{padding:8px 6px}
+  .picker .pre{height:26px}
+  .sv{height:150px}
+  input[type=text],input[type=number],select,textarea{font-size:16px}
+  .top{overflow-x:auto;scrollbar-width:none}
+}
 </style>
+
 </head>
 <body tabindex="-1">
 <header class="top">
@@ -439,7 +459,9 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
 <div class="menu" id="menu-settings" role="menu" style="min-width:250px">
   <label class="mrow"><input type="checkbox" id="s-guides"> Snap to canvas and layers</label>
   <label class="mrow"><input type="checkbox" id="s-grid"> Snap to grid</label>
-  <label class="mrow"><input type="checkbox" id="s-nodes"> Snap pen and lines to end points</label>
+  <label class="mrow"><input type="checkbox" id="s-nodes"> Snap pen to end points</label>
+  <label class="mrow"><input type="checkbox" id="s-lines"> Snap lines to end points</label>
+  <label class="mrow">Drawn lines <select id="s-linemode" style="margin-left:auto"><option value="single">One layer</option><option value="group">Separate, grouped</option></select></label>
   <label class="mrow"><input type="checkbox" id="s-showgrid"> Show grid</label>
   <label class="mrow" id="s-size-row">Grid size <input type="number" id="s-gridsize" min="2" max="2000" step="1"> px</label>
   <hr>
@@ -457,11 +479,12 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
 <div class="flyout" id="flyout" role="menu"></div>
 
 <div class="picker" id="picker" role="dialog" aria-label="Choose a colour">
-  <h4><span class="dot"></span><span id="pk-title">Colour</span></h4>
+  <h4><span class="dot"></span><span id="pk-title">Colour</span><button type="button" class="ibtn pk-close" data-pk-close aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h4>
   <div id="pk-single"></div>
 </div>
 
 <div class="picker dual" id="picker-dual" role="dialog" aria-label="Fill and outline">
+  <div class="pk-top"><strong>Fill and outline</strong><button type="button" class="ibtn pk-close" data-pk-close aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="dual-cols">
     <section class="pk-col" id="pd-fill-col" aria-label="Fill colour">
       <div class="pk-head"><span class="ic fill"></span><strong>Fill</strong><small id="pd-fill-sub">Inside colour</small></div>
@@ -834,7 +857,9 @@ function measureText(o) {
   return { iw: iw + sw, ih: Math.max(lh, lines.length * lh) + sw, lines, lh, sw };
 }
 function updateText(o) {
-  const sx = o.iw ? o.w / o.iw : 1, sy = o.ih ? o.h / o.ih : 1;
+  const sy = o.ih ? o.h / o.ih : 1; let sx = o.iw ? o.w / o.iw : 1;
+  // Text scales uniformly. An emptied box collapses its width (clamped to 1px), so trust the height's scale instead.
+  if (o.lockAspect || !o.iw || o.iw <= (o.strokeWidth || 0) + 1.5) sx = sy;
   const m = measureText(o);
   o.w = Math.max(1, m.iw * sx); o.h = Math.max(1, m.ih * sy); o.iw = m.iw; o.ih = m.ih;
 }
@@ -873,6 +898,7 @@ function hit(p) {
   return null;
 }
 function insideObj(o, p) {
+  if (o.segs && o.points) { const tl = Math.max(8 / S.zoom, (o.strokeWidth || 0) / 2), Q = pathDocPts(o); for (let i = 0; i + 1 < Q.length; i += 2) { const x0 = Q[i][0], y0 = Q[i][1], dx = Q[i + 1][0] - x0, dy = Q[i + 1][1] - y0, L2 = dx * dx + dy * dy || 1, u = clamp(((p.x - x0) * dx + (p.y - y0) * dy) / L2, 0, 1); if (Math.hypot(p.x - x0 - u * dx, p.y - y0 - u * dy) <= tl) return true; } return false; }
   const l = toLocal(o, p);
   let tol = (OFF + 1) / S.zoom;
   if (isLine(o) || o.type === 'path') tol = Math.max(8 / S.zoom, (o.strokeWidth || 0) / 2);
@@ -1000,9 +1026,9 @@ function drawObj(c, o, k, ghost) {
     drawText(c, o);
   } else if (o.type === 'path') {
     const P = o.points, pt = i => [-hw + P[i][0] * o.w, -hh + P[i][1] * o.h];
-    c.beginPath(); let a = pt(0); c.moveTo(a[0], a[1]);
-    for (let i = 1; i < P.length - 1; i++) { const p = pt(i), q = pt(i + 1); c.quadraticCurveTo(p[0], p[1], (p[0] + q[0]) / 2, (p[1] + q[1]) / 2); }
-    a = pt(P.length - 1); c.lineTo(a[0], a[1]);
+    c.beginPath(); let a = pt(0); if (o.segs) { for (let i = 0; i + 1 < P.length; i += 2) { const s = pt(i), t = pt(i + 1); c.moveTo(s[0], s[1]); c.lineTo(t[0], t[1]); } } else c.moveTo(a[0], a[1]);
+    for (let i = 1; !o.segs && i < P.length - 1; i++) { const p = pt(i), q = pt(i + 1); c.quadraticCurveTo(p[0], p[1], (p[0] + q[0]) / 2, (p[1] + q[1]) / 2); }
+    if (!o.segs) { a = pt(P.length - 1); c.lineTo(a[0], a[1]); }
     c.lineWidth = o.strokeWidth; c.strokeStyle = o.stroke; c.lineCap = o.cap || 'round'; c.lineJoin = 'round'; c.stroke();
   } else if (isLine(o)) {
     const sw = Math.max(1, o.strokeWidth);
@@ -1397,7 +1423,7 @@ function drawOverlay() {
     ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = .75; ctx.stroke();
   }
-  if (SET.nodeSnap && lastSP && (S.tool === 'brush' || S.tool === 'line') && (!drag || ['brush', 'createLine'].includes(drag.mode))) {
+  if ((S.tool === 'line' ? SET.lineSnap : SET.nodeSnap) && lastSP && (S.tool === 'brush' || S.tool === 'line') && (!drag || ['brush', 'createLine'].includes(drag.mode))) {
     const n = nearestNode(toDoc(lastSP), drag && drag.o ? drag.o.id : null);
     if (n) { const q = toScreen(n); ctx.save(); ctx.beginPath(); ctx.arc(q.x, q.y, 6, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = C.accent; ctx.stroke(); ctx.restore(); }
   }
@@ -1478,7 +1504,7 @@ function drawSizePill(o) {
 let lastMove = null, ptrSpeed = 0, ptrMoved = false;
 
 /* ---------- snapping ---------- */
-const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, blend: false, ui: 100, nodeSnap: true };
+const SET = { guides: true, grid: false, showGrid: false, gridSize: 50, blend: false, ui: 100, nodeSnap: true, lineSnap: true, lineMode: 'single' };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('plate-editor:settings') || '{}')); } catch (e) {}
 function snapCandidate(d, ax, raw) {
   const b = d.box, vals = ax === 'x' ? [b.x0, (b.x0 + b.x1) / 2, b.x1] : [b.y0, (b.y0 + b.y1) / 2, b.y1];
@@ -1553,7 +1579,7 @@ function armDwell(d, sp) {
 }
 function saveSettings() { try { localStorage.setItem('plate-editor:settings', JSON.stringify(SET)); } catch (e) {} }
 function syncSettings() {
-  $('#s-guides').checked = SET.guides; $('#s-grid').checked = SET.grid; $('#s-nodes').checked = SET.nodeSnap; $('#s-showgrid').checked = SET.showGrid;
+  $('#s-guides').checked = SET.guides; $('#s-grid').checked = SET.grid; $('#s-nodes').checked = SET.nodeSnap; $('#s-lines').checked = SET.lineSnap; $('#s-linemode').value = SET.lineMode; $('#s-showgrid').checked = SET.showGrid;
   if (document.activeElement !== $('#s-gridsize')) $('#s-gridsize').value = SET.gridSize;
   $('#s-size-row').classList.toggle('dim', !SET.grid && !SET.showGrid);
   $('#s-blend').checked = SET.blend;
@@ -1727,7 +1753,7 @@ function after() {
 }
 function syncUI() { syncPanel(); syncCanvasPanel(); renderLayers(); updateStatus(); updateWelcome(); updateQuickBar(); render(); }
 function syncAll() {
-  if (S.sel.length && panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); drivePanelResize(false); }
+  if (innerWidth > 820 && S.sel.length && panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); drivePanelResize(false); syncPanelClass(); }
   syncUI();
 }
 let welcomeGone = false, welcomeT = 0, welcomeHideT = 0;
@@ -2014,7 +2040,7 @@ function beginTool(p, sp) {
     case 'line': {
       if (!onCanvas) { offCanvasNote(); return; }
       const sw = Math.max(1, S.style.lineWidth);
-      if (SET.nodeSnap) { const n = nearestNode(p); if (n) p = { x: n.x, y: n.y }; }
+      if (SET.lineSnap) { const n = nearestNode(p); if (n) p = { x: n.x, y: n.y }; }
       const o = base(S.lineKind, { x: p.x, y: p.y - sw / 2, w: 0, h: sw, fillOn: false, stroke: S.style.fill, strokeWidth: sw, freeNodes: true });
       S.objects.push(o);
       drag = { mode: 'createLine', o, start: p }; break;
@@ -2143,7 +2169,7 @@ cv.addEventListener('pointermove', e => {
     }
     case 'createLine': {
       const o = d.o, s = d.start;
-      const nd = SET.nodeSnap && !e.shiftKey ? nearestNode(p, o.id) : null;
+      const nd = SET.lineSnap && !e.shiftKey ? nearestNode(p, o.id) : null;
       const tp = nd ? { x: nd.x, y: nd.y } : p;
       let ang = Math.atan2(tp.y - s.y, tp.x - s.x), len = Math.hypot(tp.x - s.x, tp.y - s.y);
       if (e.shiftKey) ang = Math.round(ang / rad(15)) * rad(15);
@@ -2236,6 +2262,7 @@ function endPointer(e) {
     case 'createLine': {
       const o = d.o;
       if (o.w < 3) { o.w = 220; o.rot = 0; o.x = d.start.x - 110; o.y = d.start.y - o.h / 2; }
+      if (SET.lineMode === 'single' && o.type === 'line') { mergeLine(o); commit(); break; }
       groupIntoRun(o, lineRun, 'Lines');
       lineRun = { last: o.id, gid: o.group || null };
       commit(); break;
@@ -2298,7 +2325,7 @@ function doResize(d, p, e) {
     const fromC = e.altKey;
     const fixed = fromC ? center(O) : toWorld(O, { x: -hx * O.w / 2, y: 0 });
     let ex = p.x, ey = p.y;
-    const nd = SET.nodeSnap && !e.shiftKey && !fromC ? nearestNode(p, O.id) : null;
+    const nd = SET.lineSnap && !e.shiftKey && !fromC ? nearestNode(p, O.id) : null;
     if (nd) { ex = nd.x; ey = nd.y; }
     else {
       let ang = Math.atan2(ey - fixed.y, ex - fixed.x);
@@ -2404,7 +2431,7 @@ function nearestNode(p, excludeId) {
   for (const o of S.objects) {
     if (!o.visible || o.locked || o.id === excludeId) continue;
     let ends = null;
-    if (o.type === 'path' && o.points && o.points.length) ends = [pathPt(o, 0), pathPt(o, o.points.length - 1)];
+    if (o.type === 'path' && o.points && o.points.length) ends = o.segs ? o.points.map((_, i) => pathPt(o, i)) : [pathPt(o, 0), pathPt(o, o.points.length - 1)];
     else if (isLine(o)) { const a = toWorld(o, { x: -o.w / 2, y: 0 }), b = toWorld(o, { x: o.w / 2, y: 0 }); ends = [[a.x, a.y], [b.x, b.y]]; }
     if (!ends) continue;
     ends.forEach((q, end) => { const d = Math.hypot(q[0] - p.x, q[1] - p.y); if (d < bd) { bd = d; best = { o, end, x: q[0], y: q[1] }; } });
@@ -2431,7 +2458,7 @@ function finishBrush(pts, startNode) {
     let endNode = null;
     const l = pts[pts.length - 1], en = nearestNode({ x: l[0], y: l[1] });
     if (en) { pts[pts.length - 1] = [en.x, en.y]; endNode = en; }
-    const ok = n => n && n.o.type === 'path' && !(n.o.erase && n.o.erase.length) && n.o.stroke === S.style.fill && Math.abs(n.o.strokeWidth - S.style.brush) < 0.5 && (n.o.cap || 'round') === K0.cap;
+    const ok = n => n && n.o.type === 'path' && !n.o.segs && !(n.o.erase && n.o.erase.length) && n.o.stroke === S.style.fill && Math.abs(n.o.strokeWidth - S.style.brush) < 0.5 && (n.o.cap || 'round') === K0.cap;
     const A = ok(startNode) ? startNode : null, B = ok(endNode) ? endNode : null;
     if (A || B) {
       let seq = pts.slice(), target = null;
@@ -2467,6 +2494,36 @@ function finishBrushNew(pts) {
   }
   brushRun = { last: o.id, gid: o.group || null };
   commit();
+}
+function mergeLine(o) {
+  // Each line adds two points to one layer. Replace point arrays rather than mutating
+  // them so undo can restore the previous line.
+  const a = toWorld(o, { x: -o.w / 2, y: 0 });
+  const b = toWorld(o, { x: o.w / 2, y: 0 });
+  const pair = [[a.x, a.y], [b.x, b.y]];
+  const t = lineRun && byId(lineRun.last);
+
+  if (
+    t && t.type === 'path' && t.segs && t.visible && !t.locked &&
+    !(t.erase && t.erase.length) &&
+    t.stroke === o.stroke && t.strokeWidth === o.strokeWidth
+  ) {
+    rebuildPath(t, pathDocPts(t).concat(pair));
+    S.objects = S.objects.filter(x => x !== o);
+    lineRun = { last: t.id, gid: t.group || null };
+    return;
+  }
+
+  const n = S.objects.filter(x => x.segs).length + 1;
+  Object.assign(o, {
+    type: 'path',
+    segs: true,
+    cap: 'round',
+    name: 'Lines ' + n,
+    fillOn: false
+  });
+  rebuildPath(o, pair);
+  lineRun = { last: o.id, gid: null };
 }
 let brushRun = null;
 
@@ -2736,7 +2793,6 @@ function startTextEdit(o, selectAll) {
   const ta = $('#inline-edit');
   ta.value = o.text; ta.hidden = false;
   positionInlineEdit();
-  openPanelsMobile();
   setTimeout(() => { ta.focus(); if (selectAll) ta.select(); else ta.setSelectionRange(ta.value.length, ta.value.length); }, 10);
 }
 function positionInlineEdit() {
@@ -3825,7 +3881,7 @@ function makePicker(host) {
   };
   function draw() {
     const c = P.c, solid = hsvHex({ ...c, a: 1 }, false);
-    sv.style.background = `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${c.h},100%,50%))`;
+    sv.style.background = `linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, hsl(${c.h},100%,50%))`;
     sv.querySelector('.knob').style.cssText = `left:${c.s * 100}%;top:${(1 - c.v) * 100}%`;
     hue.querySelector('.knob').style.left = (c.h / 360 * 100) + '%';
     alpha.style.setProperty('--solid', solid);
@@ -3844,7 +3900,7 @@ function makePicker(host) {
     const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); changed(true); };
     el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); mv(e);
   });
-  area(sv, (x, y) => { P.none = false; P.c.s = clamp(x, 0, 1); P.c.v = clamp(1 - y, 0, 1); });
+  area(sv, (x, y) => { const sn = n => n < 0.05 ? 0 : n > 0.95 ? 1 : n; P.none = false; P.c.s = sn(clamp(x, 0, 1)); P.c.v = 1 - sn(clamp(y, 0, 1)); });
   area(hue, x => { P.none = false; P.c.h = clamp(x, 0, 1) * 360; });
   area(alpha, x => { P.none = false; P.c.a = clamp(x, 0, 1); });
   hex.addEventListener('input', e => { const v = e.target.value.trim(); const c = parseColor(v.startsWith('#') ? v : '#' + v); if (c && /^#?([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(v)) { P.c = c; P.none = false; draw(); if (P.onChange) P.onChange(P.value()); } });
@@ -3959,6 +4015,7 @@ function openDual(anchor) {
 function closeDual() { $('#picker-dual').classList.remove('open'); $('#sw-fg').setAttribute('aria-expanded', 'false'); }
 $('#sw-fg').addEventListener('click', () => { if ($('#picker-dual').classList.contains('open')) closeDual(); else openDual(); });
 
+document.addEventListener('click', e => { if (e.target.closest('[data-pk-close]')) { closePicker(); closeDual(); } });
 let pickerDismissed = false;
 document.addEventListener('pointerdown', e => {
   pickerDismissed = false;
@@ -4263,11 +4320,12 @@ function drivePanelResize(rescale) {
   };
   panelAnimT = requestAnimationFrame(step);
 }
-function togglePanels() { panels.classList.toggle('hidden-panel'); drivePanelResize(true); }
+function syncPanelClass() { document.body.classList.toggle('panel-open', !panels.classList.contains('hidden-panel')); }
+function togglePanels() { panels.classList.toggle('hidden-panel'); syncPanelClass(); drivePanelResize(true); }
 $('#b-panels').addEventListener('click', togglePanels);
 panels.classList.add('hidden-panel');
-function openPanelsMobile() { if (panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); drivePanelResize(false); } }
-function closePanelsMobile() { if (innerWidth <= 820 && !panels.classList.contains('hidden-panel')) { panels.classList.add('hidden-panel'); drivePanelResize(false); } }
+function openPanelsMobile() { if (panels.classList.contains('hidden-panel')) { panels.classList.remove('hidden-panel'); syncPanelClass(); drivePanelResize(false); } }
+function closePanelsMobile() { if (innerWidth <= 820 && !panels.classList.contains('hidden-panel')) { panels.classList.add('hidden-panel'); syncPanelClass(); drivePanelResize(false); } }
 
 /* ---------- dialogs ---------- */
 function enterSetup(canCancel) {
@@ -4488,6 +4546,8 @@ cur = snapshot();
 new ResizeObserver(() => { const first = !vw; resize(); if (first) fit(); }).observe(stage);
 $('#s-guides').addEventListener('change', e => { SET.guides = e.target.checked; saveSettings(); syncSettings(); });
 $('#s-nodes').addEventListener('change', e => { SET.nodeSnap = e.target.checked; saveSettings(); syncSettings(); render(); });
+$('#s-lines').addEventListener('change', e => { SET.lineSnap = e.target.checked; saveSettings(); syncSettings(); render(); });
+$('#s-linemode').addEventListener('change', e => { SET.lineMode = e.target.value; saveSettings(); syncSettings(); });
 $('#s-grid').addEventListener('change', e => { SET.grid = e.target.checked; saveSettings(); syncSettings(); });
 $('#s-showgrid').addEventListener('change', e => { SET.showGrid = e.target.checked; saveSettings(); syncSettings(); render(); });
 $('#s-gridsize').addEventListener('input', e => { const n = Math.round(+e.target.value); if (n >= 2) { SET.gridSize = Math.min(2000, n); saveSettings(); render(); } });
