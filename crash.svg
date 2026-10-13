@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- 1. Core animated filter engine -->
+    <filter id="f">
+      <feTurbulence baseFrequency=".01" numOctaves="5" seed="1">
+        <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9" dur=".01s" repeatCount="indefinite" calcMode="discrete"/>
+      </feTurbulence>
+    </filter>
+
+    <!-- 2. Single base asset using screen blending -->
+    <rect id="l0" width="512" height="512" filter="url(#f)" style="mix-blend-mode: screen;"/>
+
+    <!-- 3. EXPONENTIAL STACKING: Multiplies references by 5 at each tier -->
+    <g id="l1">
+      <use href="#l0"/><use href="#l0"/><use href="#l0"/><use href="#l0"/><use href="#l0"/>
+    </g>
+    <g id="l2">
+      <use href="#l1"/><use href="#l1"/><use href="#l1"/><use href="#l1"/><use href="#l1"/>
+    </g>
+    <g id="l3">
+      <use href="#l2"/><use href="#l2"/><use href="#l2"/><use href="#l2"/><use href="#l2"/>
+    </g>
+    <g id="l4">
+      <use href="#l3"/><use href="#l3"/><use href="#l3"/><use href="#l3"/><use href="#l3"/>
+    </g>
+  </defs>
+
+  <!-- 4. Background color layer acting as a visual anchor -->
+  <rect width="512" height="512" fill="#111111"/>
+
+  <!-- 5. Execution node that triggers the 625-layer loop -->
+  <use href="#l4"/>
+</svg>

@@ -467,7 +467,7 @@ body.ui-enter .zoomdock{animation:ui-in-fade .38s ease-out .12s backwards}
   <hr>
   <label class="mrow"><input type="checkbox" id="s-blend"> Show blend modes</label>
   <hr>
-  <div class="mrow" style="display:block"><div style="display:flex;justify-content:space-between"><span>Interface size</span><span id="s-ui-out" style="color:var(--muted)">100%</span></div>
+  <div class="mrow" style="display:block"><div style="display:flex;justify-content:space-between"><span>Interface size</span><span id="s-ui-out" style="color:var(--muted)">90%</span></div>
     <input type="range" id="s-ui" min="80" max="160" step="5" value="100" style="width:100%;accent-color:var(--accent);margin-top:4px"></div>
   <hr>
   <button type="button" id="s-shortcuts">Keyboard shortcuts… <span style="color:var(--muted)">›</span></button>
@@ -2736,7 +2736,7 @@ function endLasso(d) {
   if (P.length < 3 || (x1 - x0) * S.zoom < 4 || (y1 - y0) * S.zoom < 4) { if (S.sel.length) { S.sel = []; syncAll(); } return; }
   if (S.style.lassoMode === 'select') {
     const ids = S.objects.filter(o => o.visible && !o.locked).filter(o => { const c = center(o); return pointInPoly(c.x, c.y, P) || corners(o).some(q => pointInPoly(q.x, q.y, P)); }).map(o => o.id);
-    S.sel = expandSel(ids); syncAll();
+    S.sel = expandSel(ids); if (ids.length) setTool('select', { keepSel: true }); syncAll();
     if (!ids.length) toast('No layers inside the lasso.');
     return;
   }
@@ -2775,7 +2775,7 @@ function lassoCut(P, b) {
   toast('Cut out onto its own layer. Drag it to move it.');
 }
 function createText(p) {
-  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: S.style.fontSize, bold: S.style.bold, italic: S.style.italic, underline: false, align: S.style.align, lineHeight: 1.2, strokeWidth: S.style.strokeWidth, fill: S.style.fill, stroke: S.style.stroke });
+  const o = base('text', { name: 'Your text', text: 'Your text', font: S.style.font, fontSize: clamp(Math.round(S.style.fontSize / S.zoom), 4, Math.max(4, Math.round(S.doc.h * 0.5))), bold: S.style.bold, italic: S.style.italic, underline: false, align: S.style.align, lineHeight: 1.2, strokeWidth: S.style.strokeWidth, fill: S.style.fill, stroke: S.style.stroke });
   const m = measureText(o); o.iw = m.iw; o.ih = m.ih; o.w = m.iw; o.h = m.ih; o.x = p.x; o.y = p.y - o.h / 2;
   S.objects.push(o); S.sel = [o.id]; commit(); focusText(true);
   document.fonts && document.fonts.load(textFont(o)).then(() => { updateText(o); render(); }).catch(() => {});
@@ -3075,6 +3075,9 @@ document.addEventListener('paste', async e => {
   if (clip.length) { e.preventDefault(); pasteInternal(); }
 });
 
+document.addEventListener('copy', e => { if (isTyping(e.target) || !S.sel.length) return; e.preventDefault(); act('copy'); });
+document.addEventListener('cut', e => { if (isTyping(e.target) || !S.sel.length) return; e.preventDefault(); act('cut'); });
+
 /* ---------- drag & drop ---------- */
 const isProjectFile = f => /\.(plate|json)$/i.test(f.name);
 let dragDepth = 0;
@@ -3219,7 +3222,7 @@ function align(dir) {
 }
 function pasteInternal() {
   pasteN++;
-  const copies = cloneSet(clip, 20 * pasteN, true).map((c, i) => ({ ...c, name: clip[i].name }));
+  const copies = cloneSet(clip, 0, true).map((c, i) => ({ ...c, name: clip[i].name }));
   S.objects.push(...copies); S.sel = copies.map(c => c.id); commit();
 }
 function resizeCanvas(w, h, anchor) {
@@ -3249,8 +3252,8 @@ function act(a) {
     case 'openProject': $('#f-project').click(); break;
     case 'saveProject': saveProject(); break;
     case 'export': openExport(); break;
-    case 'copy': if (sel.length) { clip = sel.map(o => ({ ...o })); pasteN = 0; toast(`Copied ${sel.length} layer${sel.length > 1 ? 's' : ''}`); } break;
-    case 'cut': if (sel.length) { clip = sel.map(o => ({ ...o })); pasteN = -1; S.objects = S.objects.filter(o => !S.sel.includes(o.id)); S.sel = []; commit(); } break;
+    case 'copy': { const c = tgts && tgts.length ? tgts : selObjs(); if (c.length) { clip = c.map(o => ({ ...o })); pasteN = 0; toast(`Copied ${c.length} layer${c.length > 1 ? 's' : ''}`); } break; }
+    case 'cut': { const c = tgts && tgts.length ? tgts : selObjs(); if (c.length) { const ids = c.map(o => o.id); clip = c.map(o => ({ ...o })); pasteN = 0; S.objects = S.objects.filter(o => !ids.includes(o.id)); S.sel = S.sel.filter(id => !ids.includes(id)); commit(); } break; }
     case 'paste': if (clip.length) pasteInternal(); else toast('Nothing copied yet. Use Ctrl+V to paste an image from your clipboard.'); break;
     case 'duplicate': if (sel.length) { const c = cloneSet(sel, 20); S.objects.push(...c); S.sel = c.map(o => o.id); commit(); } break;
     case 'delete': if (sel.length) { S.objects = S.objects.filter(o => !selIds.includes(o.id)); S.sel = S.sel.filter(id => !selIds.includes(id)); commit(); } break;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1000" height="1000"
+     viewBox="0 0 1000 1000">
+  <defs>
+<g id="level0">
+<circle cx="0" cy="0" r="10" fill="red"/>
+</g>
+<g id="level1">
+<use href="#level0" transform="translate(0, 0)"/>
+<use href="#level0" transform="translate(50, 0)"/>
+</g>
+<g id="level2">
+<use href="#level1" transform="translate(0, 0)"/>
+<use href="#level1" transform="translate(50, 0)"/>
+</g>
+<g id="level3">
+<use href="#level2" transform="translate(0, 0)"/>
+<use href="#level2" transform="translate(50, 0)"/>
+</g>
+<g id="level4">
+<use href="#level3" transform="translate(0, 0)"/>
+<use href="#level3" transform="translate(50, 0)"/>
+</g>
+<g id="level5">
+<use href="#level4" transform="translate(0, 0)"/>
+<use href="#level4" transform="translate(50, 0)"/>
+</g>
+  </defs>
+
+  <use href="#level5" xlink:href="#level5"/>
+</svg>
