@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel Rush</title>
+<style>
+:root{--bg:#efeaff;--fg:#1d1540;--btn:#6b3df5;box-sizing:border-box;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0a1f;--fg:#f1ecff;--btn:#8a63ff}}
+:root[data-theme="dark"]{--bg:#0d0a1f;--fg:#f1ecff;--btn:#8a63ff}
+body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:600 15px system-ui,sans-serif;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px}
+#hud{flex:1 1 100%}
+#sz,#kc{width:52px;background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:6px;padding:3px 6px;font:inherit;text-align:center}
+button,label,select{background:var(--btn);color:#fff;border:0;border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
+#stage{flex:1;min-height:0;display:flex;justify-content:center;align-items:center}
+canvas{touch-action:manipulation;border-radius:16px;display:block}
+</style></head><body>
+<div id="bar"><span id="hud"></span><label>Scale <input id="sz" type="number" inputmode="numeric" min="2" value="70" aria-label="Grid scale"></label><label>Colours <input id="kc" type="number" inputmode="numeric" min="2" value="14" aria-label="Number of colours"></label><button id="rs">Restart</button><label>Image<input id="f" type="file" accept="image/*" hidden></label></div>
+<div id="stage"><canvas id="c"></canvas></div>
+<script>
+let P=[[0,0,0]];
+const hex=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
+const W=360,H=616,FX=20,FY=44,FS=320,LY=478,HOLE={x:180,y:384};
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),stage=document.getElementById('stage');
+cv.width=W*2;cv.height=H*2;
+const fc=document.createElement('canvas');fc.width=W*2;fc.height=H*2;const fx=fc.getContext('2d');
+function paintField(){
+  fx.setTransform(2,0,0,2,0,0);fx.clearRect(0,0,W,H);
+  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const v=grid[y][x];
+    if(v>=0){fx.fillStyle=hex(P[v]);fx.fillRect(gx0+(x+1)*cell,gy0+(y+1)*cell,cell+.35,cell+.35)}}}
+let orig,grid,GW,GH,cell,gx0,gy0,lanes,slots,dots,reserved,left,state,pulse=0,last=0;
+
+function fit(){const s=Math.min(stage.clientWidth/W,stage.clientHeight/H);cv.style.width=W*s+'px';cv.style.height=H*s+'px'}
+addEventListener('resize',fit);
+
+function lab(c){
+  const f=v=>{v/=255;return v>.04045?Math.pow((v+.055)/1.055,2.4):v/12.92},r=f(c[0]),g=f(c[1]),b=f(c[2]);
+  const h=t=>t>.008856?Math.cbrt(t):7.787*t+16/116;
+  const x=h((.4124*r+.3576*g+.1805*b)/.95047),y=h(.2126*r+.7152*g+.0722*b),z=h((.0193*r+.1192*g+.9505*b)/1.08883);
+  return[116*y-16,500*(x-y),200*(y-z)]}
+const d3=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;
+function rng(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function kmeans(px,k,R){
+  const n=px.length,dist=px.map(()=>1e9);let cen=[];
+  for(let i=Math.floor(R()*n);;){ // k-means++ seeding
+    cen.push(px[i].l);px.forEach((p,j)=>dist[j]=Math.min(dist[j],d3(p.l,px[i].l)));
+    if(cen.length>=k)break;
+    let t=dist.reduce((x,y)=>x+y,0)*R();i=0;for(;i<n-1&&(t-=dist[i])>0;i++);}
+  const as=new Array(n).fill(0),pd=new Array(n).fill(0);let sse=0;
+  for(let it=0;it<25;it++){
+    sse=0;let ch=false;
+    px.forEach((p,j)=>{let b=0,bd=1e9;cen.forEach((c,m)=>{const d=d3(p.l,c);if(d<bd){bd=d;b=m}});if(as[j]!==b)ch=true;as[j]=b;pd[j]=bd;sse+=bd});
+    const sum=cen.map(()=>[0,0,0,0]);
+    px.forEach((p,j)=>{const q=sum[as[j]];q[0]+=p.l[0];q[1]+=p.l[1];q[2]+=p.l[2];q[3]++});
+    cen=sum.map(q=>{if(q[3])return[q[0]/q[3],q[1]/q[3],q[2]/q[3]];
+      let w=0;pd.forEach((d,j)=>{if(d>pd[w])w=j});pd[w]=0;return px[w].l.slice()}); // re-seed empty clusters
+    if(!ch&&it>0)break}
+  return{as,sse,cen,k}}
+// Colour detection: k-means in Lab space with exactly the number of colours the user chose (best of 5 runs).
+// Seeded from the pixel values themselves, so the same picture always gives the same colours.
+function quant(px){
+  px.forEach(p=>p.l=lab(p.c));
+  let hs=2166136261;px.forEach(p=>{for(const v of p.c)hs=Math.imul(hs^v,16777619)});
+  const k=Math.max(1,Math.min(COLS,px.length));let best=null;
+  const R=rng(hs^k);
+  for(let t=0;t<5;t++){const q=kmeans(px,k,R);if(!best||q.sse<best.sse)best=q}
+  const sum=best.cen.map(()=>[0,0,0,0]);
+  px.forEach((p,j)=>{p.idx=best.as[j];const q=sum[p.idx];q[0]+=p.c[0];q[1]+=p.c[1];q[2]+=p.c[2];q[3]++});
+  const used=sum.map((q,i)=>q[3]?i:-1).filter(i=>i>=0),mp=new Map(used.map((u,i)=>[u,i]));
+  px.forEach(p=>p.idx=mp.get(p.idx));
+  return used.map(u=>[0,1,2].map(i=>Math.round(sum[u][i]/sum[u][3])))}
+// Inner cells (deep inside the picture) share one colour, but only where the real pixel is already close to it, so it still looks right
+function inner(rows,pal){
+  const h=rows.length,w=rows[0].length,dep=rows.map(r=>r.map(()=>1e9)),q=[];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    if(!rows[y][x]){dep[y][x]=0;q.push([x,y])}
+    else if(x===0||y===0||x===w-1||y===h-1){dep[y][x]=1;q.push([x,y])}}
+  for(let i=0;i<q.length;i++){const[x,y]=q[i];
+    for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;
+      if(nx>=0&&ny>=0&&nx<w&&ny<h&&rows[ny][nx]&&dep[ny][nx]===1e9){dep[ny][nx]=dep[y][x]+1;q.push([nx,ny])}}}
+  let mx=0;dep.forEach(r=>r.forEach(v=>{if(v<1e9&&v>mx)mx=v}));const th=Math.max(2,Math.ceil(mx*.6)),cells=[];
+  rows.forEach((r,y)=>r.forEach((o,x)=>{if(o&&dep[y][x]>=th)cells.push(o)}));
+  if(!cells.length)return;
+  const cnt={};cells.forEach(o=>cnt[o.idx]=(cnt[o.idx]||0)+1);
+  const d=+Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+  let nn=1e9;pal.forEach((q,m)=>{if(m!==d)nn=Math.min(nn,Math.hypot(q[0]-pal[d][0],q[1]-pal[d][1],q[2]-pal[d][2]))});
+  const lim=Math.min(70,nn*.6); // with many colours the limit shrinks, so your chosen colour count is respected
+  cells.forEach(o=>{if(Math.hypot(o.c[0]-pal[d][0],o.c[1]-pal[d][1],o.c[2]-pal[d][2])<lim)o.idx=d})}
+function build(rows){const px=[];rows.forEach(r=>r.forEach(o=>o&&px.push(o)));const pal=quant(px);inner(rows,pal);return{g:rows.map(r=>r.map(o=>o?o.idx:-1)),pal}}
+
+// built-in scene, drawn in proportions so it works at any scale
+function demo(){const w=SIZE,h=Math.round(SIZE*.85),k=w/28,rows=[];
+  for(let y=0;y<h;y++){rows.push([]);for(let x=0;x<w;x++){
+    const t=Math.min(1,y/(.625*h));let c=[70+185*t,130+60*t,220-80*t];
+    if(Math.hypot(x-.68*w,y-.42*h)<.13*w)c=[255,225,90];
+    if(y>=.25*h&&Math.abs(x-.25*w)<(y-.21*h)*.85)c=[110,90,150];
+    if(y>=.42*h&&Math.abs(x-.79*w)<(y-.375*h)*1.2)c=[95,80,135];
+    if(y>.583*h+2*k*Math.sin(x/k*.4))c=[40,150,80];
+    if(y>.75*h+1.4*k*Math.sin(x/k*.6+1))c=[20,100,60];
+    if(y>=.875*h)c=[25,70,100];
+    rows[y].push({c})}}
+  return build(rows)}
+
+let COLS=14,SIZE=70,srcImg=null; // COLS = colours chosen by the user // SIZE = cubes along the long side (no upper limit)
+function newGame(){
+  if(!srcImg){const d=demo();load(d.g,d.pal);return}
+  const k=SIZE/Math.max(srcImg.width,srcImg.height),w=Math.max(2,Math.round(srcImg.width*k)),h=Math.max(2,Math.round(srcImg.height*k));
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const x=c.getContext('2d');x.drawImage(srcImg,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data,rows=[];
+  for(let y=0;y<h;y++){rows.push([]);for(let X=0;X<w;X++){const i=(y*w+X)*4;
+    rows[y].push(d[i+3]<128?null:{c:[d[i],d[i+1],d[i+2]]})}}
+  const r=build(rows);load(r.g,r.pal)}
+function fromImage(file){
+  const im=new Image();
+  im.onload=()=>{srcImg=im;newGame()};
+  im.src=URL.createObjectURL(file)}
+
+function load(g,pal){if(pal)P=pal;
+  orig=g;grid=g.map(r=>r.slice());GH=g.length;GW=g[0].length;
+  cell=Math.min(FS/(GW+2),FS/(GH+2));gx0=FX+(FS-(GW+2)*cell)/2;gy0=FY+FS-(GH+2)*cell;
+  const cnt=Array(P.length).fill(0);left=0;
+  g.forEach(r=>r.forEach(v=>{if(v>=0){cnt[v]++;left++}}));
+  const ch=[];
+  // Level generation: peel the picture layer by layer with the same exposure rules the game uses.
+  // Each peeled group of one colour becomes one lane cube, so taking the cubes in order always wins.
+  const w=GW+2,h=GH+2,cube=new Int16Array(w*h).fill(-1),reach=new Uint8Array(w*h),seen=new Uint8Array(w*h),cand=P.map(()=>[]),q=[];
+  g.forEach((r,y)=>r.forEach((v,x)=>{cube[(y+1)*w+x+1]=v}));
+  const spread=()=>{
+    while(q.length){const k=q.pop(),x=k%w,y=(k/w)|0;
+      for(const[dx,dy]of[[0,-1],[1,0],[-1,0],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<0||nx>=w||ny<0||ny>=h)continue;const m=ny*w+nx;
+        if(cube[m]>=0){if(!seen[m]){seen[m]=1;cand[cube[m]].push(m)}}
+        else if(!reach[m]){reach[m]=1;q.push(m)}}}};
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(x===0||x===w-1||y===0||y===h-1){const k=y*w+x;reach[k]=1;q.push(k)}
+  spread();
+  // colours nearer the picture's centre are preferred whenever they are reachable
+  const cen=Array(P.length).fill(0);
+  g.forEach((r,y)=>r.forEach((v,x)=>{if(v>=0)cen[v]+=Math.hypot(x+.5-GW/2,y+.5-GH/2)}));
+  cen.forEach((t,c)=>cen[c]=cnt[c]?t/cnt[c]:1e9);
+  const rank=[...cen.keys()].sort((x,y)=>cen[y]-cen[x]),pr=P.map((_,c)=>rank.indexOf(c));
+  for(let rem=left;rem>0;){
+    let c=-1;for(let i=0;i<P.length;i++)if(cand[i].length&&(c<0||pr[i]>pr[c]))c=i;
+    if(c<0)break;
+    let m=0;
+    while(cand[c].length){const k=cand[c].pop();cube[k]=-1;reach[k]=1;q.push(k);spread();m++;rem--}
+    ch.push({c,n:m})}
+  lanes=[[],[],[]];ch.forEach((x,i)=>lanes[i%3].push(x));
+  slots=Array(4).fill(null);dots=[];reserved=new Set();state='play';paintField();
+}
+
+const cc=(px,py)=>({x:gx0+(px+.5)*cell,y:gy0+(py+.5)*cell});
+const slotPos=i=>({x:84+i*64,y:430});
+const occupied=(px,py)=>px>=1&&px<=GW&&py>=1&&py<=GH&&grid[py-1][px-1]>=0;
+
+// BFS through empty space only; stops at the nearest exposed, unreserved cube of colour c
+function find(c,sx){
+  const w=GW+2,h=GH+2,sc=Math.max(0,Math.min(w-1,Math.round((sx-gx0)/cell-.5)));
+  const par=new Int32Array(w*h).fill(-2),q=[sc+(h-1)*w];par[q[0]]=-1;
+  for(let i=0;i<q.length;i++){
+    const cur=q[i],cx=cur%w,cy=(cur/w)|0;
+    for(const[dx,dy]of[[0,-1],[1,0],[-1,0],[0,1]]){
+      const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;
+      const k=nx+ny*w;
+      if(occupied(nx,ny)){
+        if(grid[ny-1][nx-1]===c&&!reserved.has(k)){
+          const path=[];for(let t=cur;t!==-1;t=par[t])path.push(t);path.reverse();
+          return{path:path.map(t=>[t%w,(t/w)|0]),tx:nx,ty:ny,k}}
+      }else if(par[k]===-2){par[k]=cur;q.push(k)}
+    }}
+  return null}
+
+function launch(s,i){
+  const sp=slotPos(i),r=find(s.c,sp.x);if(!r)return false;
+  reserved.add(r.k);
+  const cells=r.path.map(([x,y])=>cc(x,y)),t=cc(r.tx,r.ty);
+  dots.push({pts:[sp,...cells,t],back:[t,...cells.slice().reverse(),HOLE],i:1,x:sp.x,y:sp.y,c:s.c,carry:false,k:r.k,tx:r.tx,ty:r.ty});
+  return true}
+
+function step(d,dt){
+  let rem=560*dt;
+  while(rem>0&&d.i<d.pts.length){
+    const p=d.pts[d.i],dx=p.x-d.x,dy=p.y-d.y,dist=Math.hypot(dx,dy);
+    if(dist<=rem){d.x=p.x;d.y=p.y;rem-=dist;d.i++}
+    else{d.x+=dx/dist*rem;d.y+=dy/dist*rem;rem=0}}
+  if(d.i>=d.pts.length){
+    if(!d.carry){grid[d.ty-1][d.tx-1]=-1;fx.clearRect(gx0+d.tx*cell,gy0+d.ty*cell,cell,cell);reserved.delete(d.k);left--;d.carry=true;d.pts=d.back;d.i=1}
+    else{d.done=true;pulse=1}}}
+
+cv.addEventListener('pointerdown',e=>{
+  if(state!=='play')return;
+  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  if(y<LY-8)return;
+  const li=Math.floor(x/120),i=slots.indexOf(null);
+  if(li<0||li>2||i<0||!lanes[li].length)return;
+  const c=lanes[li].shift();
+  slots[i]={c:c.c,n:c.n,t:0,cd:0,fx:60+li*120,fy:LY+18}});
+
+function tick(ts){
+  const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+  if(state==='play'){
+    slots.forEach((s,i)=>{
+      if(!s)return;
+      if(s.t<1){s.t=Math.min(1,s.t+dt*4);return}
+      s.cd-=dt;
+      if(s.cd<=0&&launch(s,i)){s.cd=.06*Math.min(1,(48/SIZE)**2);if(--s.n===0)slots[i]=null}});
+    dots.forEach(d=>step(d,dt));dots=dots.filter(d=>!d.done);
+    if(!dots.length){
+      if(left===0)state='win';
+      else{
+        const occ=slots.map((s,i)=>[s,i]).filter(x=>x[0]);
+        const full=occ.length===4||lanes.every(l=>!l.length);
+        if(full&&occ.every(([s])=>s.t>=1)&&!occ.some(([s,i])=>find(s.c,slotPos(i).x)))state='stuck'}}}
+  document.getElementById('hud').textContent='Cubes left: '+left+' · '+P.length+' colours';
+  draw();requestAnimationFrame(tick)}
+
+function rr(x,y,w,h,r,f,s){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(f){ctx.fillStyle=f;ctx.fill()}if(s){ctx.lineWidth=2;ctx.strokeStyle=s;ctx.stroke()}}
+function txt(t,x,y,sz){ctx.font=`800 ${sz}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.55)';ctx.strokeText(t,x,y);ctx.fillStyle='#fff';ctx.fillText(t,x,y)}
+
+function draw(){
+  ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,W,H);ctx.globalAlpha=1;
+  rr(0,0,W,H,16,'#171233');
+  rr(FX,FY,FS,FS,10,'#0f0b24');
+  ctx.drawImage(fc,0,0,W,H);
+  // hole
+  ctx.beginPath();ctx.ellipse(HOLE.x,HOLE.y,28+pulse*6,11+pulse*3,0,0,7);ctx.fillStyle='#000';ctx.fill();
+  ctx.lineWidth=2;ctx.strokeStyle='#6b5bd6';ctx.stroke();pulse=Math.max(0,pulse-.06);
+  // slots
+  for(let i=0;i<4;i++){const sp=slotPos(i);rr(sp.x-27,sp.y-27,54,54,12,'#241d4d','#3d3380')}
+  slots.forEach((s,i)=>{if(!s)return;const sp=slotPos(i),e=1-Math.pow(1-s.t,3),
+    x=s.fx+(sp.x-s.fx)*e,y=s.fy+(sp.y-s.fy)*e;
+    rr(x-25,y-25,50,50,10,hex(P[s.c]));txt(s.n,x,y,22)});
+  // lanes (front cube on top, nearest the slots)
+  lanes.forEach((l,li)=>{const x=60+li*120;
+    for(let k=Math.min(3,l.length)-1;k>=0;k--){const w=k?78:96,y=LY+k*40;
+      rr(x-w/2,y,w,36,9,hex(P[l[k].c]));txt(l[k].n,x,y+18,k?15:20)}
+    ctx.globalAlpha=1;
+    if(l.length>3){ctx.font='700 11px system-ui';ctx.fillStyle='#a79ee0';ctx.textAlign='center';ctx.fillText('+'+(l.length-3)+' more',x,LY+122)}});
+  // dots / carried cubes
+  dots.forEach(d=>{
+    if(d.carry){const s=Math.max(cell,3);ctx.fillStyle=hex(P[d.c]);ctx.fillRect(d.x-s/2,d.y-s/2,s,s)}
+    else{ctx.beginPath();ctx.arc(d.x,d.y,Math.max(3,cell*.4),0,7);ctx.fillStyle=hex(P[d.c]);ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#fff';ctx.stroke()}});
+  if(state!=='play'){
+    rr(FX,FY+110,FS,100,16,'rgba(10,6,30,.85)');
+    txt(state==='win'?'Cleared! 🎉':'Stuck! 😵',W/2,FY+145,28);
+    ctx.font='600 14px system-ui';ctx.fillStyle='#d9d3ff';ctx.textAlign='center';
+    ctx.fillText(state==='win'?'Tap Restart to play again':'All slots are blocked. Tap Restart',W/2,FY+185)}}
+
+document.getElementById('rs').onclick=()=>load(orig);
+document.getElementById('f').onchange=e=>{if(e.target.files[0])fromImage(e.target.files[0]);e.target.value=''};
+
+const kc=document.getElementById('kc');
+kc.onchange=()=>{COLS=Math.max(2,Math.round(+kc.value)||COLS);kc.value=COLS;newGame()};
+const sz=document.getElementById('sz');
+sz.onchange=()=>{SIZE=Math.max(2,Math.round(+sz.value)||SIZE);sz.value=SIZE;newGame()}; // any size the user types
+newGame();fit();requestAnimationFrame(tick);
+</script></body></html>
