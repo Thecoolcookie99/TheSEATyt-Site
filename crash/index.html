@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Stress Test</title>
+    
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #1e1e1e;
+        }
+
+        button {
+            padding: 20px 45px;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+
+<body>
+
+    <button onclick="starttest()">Start</button>
+
+    <script>
+        function starttest  () {
+            for (let i = 0; i < 100; i++) {
+                const audio = new Audio("./wav.wav");
+
+                audio.volume = 1.0;
+
+                audio.play().catch(error => {
+                    console.error("Audio playback failed:", error);
+                });
+            }
+        }
+        for (let i = 0; i < 100 ; i++) {
+            document.write('<img src="./svg.svg">');
+        }
+    </script>
+
+</body>
+</html>
