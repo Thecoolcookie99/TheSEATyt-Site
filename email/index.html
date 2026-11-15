@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Send email · theseat.yt</title>
+<style>
+  :root {
+    --bg: #eef0f3; --panel: #ffffff; --ink: #1c2330; --muted: #5d6779;
+    --line: #cfd5de; --accent: #1f4fd8; --accent-ink: #ffffff;
+    --ok: #17703a; --err: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11151c; --panel: #1a202b; --ink: #e8ecf3; --muted: #97a1b3;
+      --line: #2e3748; --accent: #6b8cff; --accent-ink: #0c1020;
+      --ok: #5fcf8a; --err: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: grid; place-items: center; padding: 24px;
+  }
+  main { width: 100%; max-width: 560px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
+  h1 { font-size: 1.25rem; margin: 0 0 20px; font-weight: 650; }
+  label { display: block; font-size: .9rem; color: var(--muted); margin: 16px 0 6px; }
+  input, textarea {
+    width: 100%; font: inherit; color: inherit; background: transparent;
+    border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
+  }
+  textarea { min-height: 220px; resize: vertical; }
+  input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .addr { display: flex; align-items: stretch; }
+  .addr input { border-radius: 6px 0 0 6px; border-right: 0; min-width: 0; }
+  .addr span { display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--line); border-radius: 0 6px 6px 0; color: var(--muted); background: var(--bg); white-space: nowrap; }
+  button {
+    margin-top: 22px; font: inherit; font-weight: 600; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 6px; padding: 10px 18px;
+  }
+  button:disabled { opacity: .6; cursor: progress; }
+  #status { margin-top: 14px; min-height: 1.5em; font-size: .95rem; }
+  #status.ok { color: var(--ok); } #status.err { color: var(--err); }
+  .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .link { background: none; color: var(--muted); padding: 0; margin: 0; font-weight: 400; font-size: .9rem; text-decoration: underline; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <section id="login">
+    <h1>Enter password</h1>
+    <form id="loginForm">
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password" required autofocus>
+      <button type="submit" id="loginBtn">Unlock</button>
+      <div id="loginStatus" class="err" role="alert"></div>
+    </form>
+  </section>
+
+  <section id="compose" hidden>
+    <div class="row">
+      <h1>Send email</h1>
+      <button type="button" class="link" id="lock">Lock</button>
+    </div>
+    <form id="sendForm">
+      <label for="from">From</label>
+      <div class="addr">
+        <input id="from" type="text" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="name" required pattern="[A-Za-z0-9._+\-]+" aria-describedby="fromDomain">
+        <span id="fromDomain">@theseat.yt</span>
+      </div>
+
+      <label for="to">To</label>
+      <input id="to" type="email" multiple placeholder="someone@example.com" required>
+
+      <label for="subject">Subject</label>
+      <input id="subject" type="text" required>
+
+      <label for="body">Message</label>
+      <textarea id="body" required></textarea>
+
+      <button type="submit" id="sendBtn">Send email</button>
+      <div id="status" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const KEY = "email-pw";
+  let password = null;
+  try { password = sessionStorage.getItem(KEY); } catch {}
+
+  async function api(payload) {
+    const res = await fetch("/email/api", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, ...payload })
+    });
+    let data = {};
+    try { data = await res.json(); } catch {}
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  function show(unlocked) {
+    $("login").hidden = unlocked;
+    $("compose").hidden = !unlocked;
+    if (unlocked) $("from").focus(); else $("pw").focus();
+  }
+
+  function lock() {
+    password = null;
+    try { sessionStorage.removeItem(KEY); } catch {}
+    show(false);
+  }
+
+  $("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    $("loginBtn").disabled = true;
+    $("loginStatus").textContent = "";
+    password = $("pw").value;
+    const r = await api({ action: "login" });
+    $("loginBtn").disabled = false;
+    if (r.ok) {
+      try { sessionStorage.setItem(KEY, password); } catch {}
+      $("pw").value = "";
+      show(true);
+    } else {
+      password = null;
+      $("loginStatus").textContent = r.status === 401 ? "Wrong password." : (r.data.error || "Could not reach the server.");
+    }
+  });
+
+  $("lock").addEventListener("click", lock);
+
+  $("sendForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const st = $("status");
+    st.className = ""; st.textContent = "Sending…";
+    $("sendBtn").disabled = true;
+    const r = await api({
+      action: "send",
+      from: $("from").value.trim(),
+      to: $("to").value.split(",").map(s => s.trim()).filter(Boolean),
+      subject: $("subject").value,
+      text: $("body").value
+    });
+    $("sendBtn").disabled = false;
+    if (r.ok) {
+      st.className = "ok"; st.textContent = "Email sent.";
+      $("to").value = ""; $("subject").value = ""; $("body").value = "";
+    } else if (r.status === 401) {
+      lock();
+      $("loginStatus").textContent = "Session expired. Enter the password again.";
+    } else {
+      st.className = "err"; st.textContent = r.data.error || "Sending failed.";
+    }
+  });
+
+  if (password) {
+    api({ action: "login" }).then(r => r.ok ? show(true) : lock());
+  }
+})();
+</script>
+</body>
+</html>
