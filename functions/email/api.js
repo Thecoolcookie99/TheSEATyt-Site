@@ -1,7 +1,7 @@
 // Cloudflare Pages Function -> POST /email/api
 // Sends through Cloudflare Email Service (Email Sending) via its REST API.
 // Secrets / variables (Pages > Settings > Variables and Secrets):
-//   EMAIL_PASSWORD  - the password for the page
+//   FILES_PASSWORD  - the password for the page
 //   CF_API_TOKEN    - your Cloudflare API token (needs Email Sending permission)
 //   CF_ACCOUNT_ID   - your Cloudflare account ID
 // theseat.yt must be onboarded under Email Sending in the Cloudflare dashboard.
@@ -28,15 +28,25 @@ async function safeEqual(a, b) {
 const EMAIL_RE = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 
 export async function onRequestPost({ request, env }) {
-  if (!env.EMAIL_PASSWORD || !env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
-    return json({ error: "Server is missing EMAIL_PASSWORD, CF_API_TOKEN or CF_ACCOUNT_ID." }, 500);
+  if (!env.FILES_PASSWORD || !env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
+    return json({ error: "Server is missing FILES_PASSWORD, CF_API_TOKEN or CF_ACCOUNT_ID." }, 500);
   }
 
   let body;
   try { body = await request.json(); } catch { return json({ error: "Bad request." }, 400); }
 
-  if (!body.password || !(await safeEqual(body.password, env.EMAIL_PASSWORD))) {
-    return json({ error: "Unauthorized." }, 401);
+  if (!body.password || !(await safeEqual(body.password, env.FILES_PASSWORD))) {
+    // TEMP DEBUG: remove after fixing
+    const exp = String(env.FILES_PASSWORD);
+    const got = String(body.password || "");
+    return json({
+      error: "Unauthorized.",
+      gotLen: got.length,
+      expectedLen: exp.length,
+      expectedFirst: exp.slice(0, 1),
+      expectedLast: exp.slice(-1),
+      expectedLastCode: exp.length ? exp.charCodeAt(exp.length - 1) : null
+    }, 401);
   }
 
   if (body.action === "login") return json({ ok: true });
