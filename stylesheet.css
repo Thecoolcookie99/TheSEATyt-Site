@@ -288,7 +288,7 @@ body.loaded .tool-section {
     display: flex;
     align-items: center;
     gap: 0.85rem;
-}
+} 
 
 .card-icon,
 .resource-icon {
